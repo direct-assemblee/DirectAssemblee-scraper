@@ -47,7 +47,7 @@ module.exports = {
     mandateStartingDate: {
       type: 'string'
     },
-    partyInvolvment: {
+    roleInParty: {
       type: 'string'
     },
     partyShort: {

@@ -62,14 +62,18 @@ var deputeParser = function(callback) {
 }
 
 module.exports = {
-  parse: function(content, callback) {
-    var parser = deputeParser(function(resultItems) {
-      callback(resultItems);
-    });
-    parser.write(content);
-    parser.end();
+  parse: function(content) {
+    return new Promise(function(resolve, reject) {
+      var parser = deputeParser(function(resultItems) {
+        resolve(resultItems);
+      });
+      parser.write(content);
+      parser.end();
+    })
   }
 }
+
+
 
 var print = function(parsedItem) {
   console.log("------------- ");

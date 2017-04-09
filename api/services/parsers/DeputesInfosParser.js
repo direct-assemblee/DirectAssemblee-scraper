@@ -33,7 +33,7 @@ return Promise.resolve({
     "circonscriptionName": deputeInfos.nom_circo,
     "circonscriptionNumber": deputeInfos.num_circo,
     "mandateStartingDate": deputeInfos.mandat_debut,
-    "partyInvolvment": deputeInfos.groupe,
+    "roleInParty": deputeInfos.groupe,
     "partyShort": deputeInfos.groupe_sigle,
     "party": deputeInfos.parti_ratt_financier,
     "responsabilities": deputeInfos.responsabilites,

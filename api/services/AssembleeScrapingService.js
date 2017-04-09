@@ -8,6 +8,7 @@ var LawService = require('./database/LawService.js');
 var VoteService = require('./database/VoteService.js');
 var DeputeListParser = require('./parsers/DeputesListParser');
 var DeputeVotesParser = require('./parsers/DeputeVotesParser');
+var DeputeMandatesParser = require('./parsers/DeputeMandatesParser');
 var LawParser = require('./parsers/LawParser');
 
 const EVERY_MINUTE = '* * * * *';
@@ -21,7 +22,6 @@ var insertDeputesAndRetrieveDeputesVotes = function(deputes) {
   DeputeService.insertAllDeputes(deputes)
   .then(function(insertedDeputes) {
     console.log("inserted or updated " + insertedDeputes.length + " deputes")
-    var deputes = insertedDeputes.slice(0, 10)
     return retrieveAllVotes(insertedDeputes, 0)
   })
 }
@@ -156,6 +156,28 @@ var retrieveAllDeputesPhotos = function(deputes) {
   }
 }
 
+var retrieveAllDeputesMandates = function(deputes) {
+  var getDeputeMandatesPromises = [];
+  for (var i = 0 ; i < deputes.length ; i++) {
+    getDeputeMandatesPromises.push(retrieveDeputeMandates(deputes[i]));
+  }
+  return Promise.all(getDeputeMandatesPromises)
+}
+
+var retrieveDeputeMandates = function(depute) {
+  var mandatesUrl = Constants.DEPUTE_INFO_URL.replace(Constants.PARAM_DEPUTE_ID, depute.officialId);
+  var mandatesUrl = "http://www2.assemblee-nationale.fr/deputes/fiche/OMC_PA334"
+  console.log(mandatesUrl)
+  return FetchUrlService.retrieveContent(mandatesUrl)
+  .then(function(content) {
+    return DeputeMandatesParser.parse(content)
+    .then(function(mandates) {
+      depute.mandates = mandates;
+      return depute;
+    })
+  })
+}
+
 var self = module.exports = {
   startService: function() {
     cron.schedule(EVERY_HOUR, function() {
@@ -167,9 +189,13 @@ var self = module.exports = {
   startScraping: function() {
     FetchUrlService.retrieveContent(Constants.DEPUTES_LIST_URL)
     .then(function(content) {
-      DeputeListParser.parse(content, function(resultItems) {
-        retrieveAllDeputesPhotos(resultItems)
-        insertDeputesAndRetrieveDeputesVotes(resultItems)
+      return DeputeListParser.parse(content)
+      .then(function(deputes) {
+        retrieveAllDeputesPhotos(deputes)
+        return retrieveAllDeputesMandates(deputes)
+      })
+      .then(function(deputes) {
+        insertDeputesAndRetrieveDeputesVotes(deputes)
       });
     });
   }

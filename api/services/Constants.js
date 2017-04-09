@@ -6,7 +6,7 @@ const PARAM_LAW_ID = "{law_id}";
 
 const MANDATE_NUMBER = "14";
 const DEPUTES_LIST_URL = BASE_URL + "deputes/liste/departements/(vue)/tableau";
-const DEPUTE_INFO_URL = BASE_URL + "deputes/fiche/" + PARAM_DEPUTE_ID;
+const DEPUTE_INFO_URL = BASE_URL + "deputes/fiche/OMC_PA" + PARAM_DEPUTE_ID;
 const DEPUTE_PHOTO_URL = BASE_URL + "static/tribun/" + MANDATE_NUMBER + "/photos/" + PARAM_DEPUTE_ID + ".jpg"
 const DEPUTE_VOTES_URL = BASE_URL + "deputes/votes/(offset)/" + PARAM_OFFSET + "/(id_omc)/OMC_PA" + PARAM_DEPUTE_ID + "/(legislature)/" + MANDATE_NUMBER;
 const LAW_URL = BASE_URL + "scrutins/detail/(legislature)/" + MANDATE_NUMBER + "/(num)/" + PARAM_LAW_ID;

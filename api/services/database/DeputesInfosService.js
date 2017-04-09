@@ -13,7 +13,7 @@ var createDeputeInfosModel = function(deputeInfos) {
     "circonscriptionName": deputeInfos.circonscriptionName,
     "circonscriptionNumber": deputeInfos.circonscriptionNumber,
     "mandateStartingDate": deputeInfos.mandateStartingDate,
-    "partyInvolvment": deputeInfos.partyInvolvment.fonction,
+    "roleInParty": deputeInfos.roleInParty.fonction,
     "partyShort": deputeInfos.partyShort,
     "party": deputeInfos.party,
     "responsabilities": deputeInfos.responsabilities,
