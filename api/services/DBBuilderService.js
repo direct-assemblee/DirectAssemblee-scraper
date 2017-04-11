@@ -15,6 +15,7 @@ const TABLE_DEPUTE = "Depute";
 const TABLE_DEPUTE_INFOS = "DeputeInfos";
 const TABLE_LAW = "Law";
 const TABLE_VOTE = "Vote";
+const TABLE_MANDATE = "Mandate";
 const TABLE_SUBSCRIBER = 'Subscriber';
 const TABLE_DEPUTES_SUBSCRIBERS = 'depute_subscribers__subscriber_followeddeputeids'
 
@@ -50,7 +51,7 @@ var importSQLFiles = function(db) {
 var dropTables = function(client) {
   var query = 'DROP TABLE IF EXISTS ' + TABLE_SUBSCRIBER + ', ' + TABLE_DEPUTES_SUBSCRIBERS;
   makeQuery(client, query);
-  var query = 'DROP TABLE IF EXISTS ' + TABLE_VOTE;
+  var query = 'DROP TABLE IF EXISTS ' + TABLE_VOTE + ', ' + TABLE_MANDATE;
   makeQuery(client, query);
   var query = 'DROP TABLE IF EXISTS ' + TABLE_DEPUTE + ', ' + TABLE_LAW+ ', ' + TABLE_DEPUTE_INFOS;
   makeQuery(client, query);

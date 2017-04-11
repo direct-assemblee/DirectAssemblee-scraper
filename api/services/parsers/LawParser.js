@@ -1,6 +1,6 @@
 // http://www2.assemblee-nationale.fr/scrutins/detail/(legislature)/14/(num)/1304
 
-var moment = require('moment');
+var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
 var lawParser = function(lawId, callback) {
@@ -22,9 +22,7 @@ var lawParser = function(lawId, callback) {
         // console.log(text)
         parsedItem.dateDetailed = text.split('-')[1].trim();
         var strDate = parsedItem.dateDetailed.split(' ').pop()
-        var parsedDate = moment(strDate, 'DD/MM/YYYY');
-        var formattedDate = moment(parsedDate).format("YYYY-MM-DD");
-        parsedItem.date = formattedDate;
+        parsedItem.date = DateHelper.formatDate(strDate);
       } else if (expectedItem === "title") {
         parsedItem.title = text;
       }

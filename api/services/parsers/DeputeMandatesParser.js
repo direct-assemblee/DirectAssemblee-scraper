@@ -24,7 +24,7 @@ var currentMandatesParser = function(callback) {
         mandates = [];
         expectedType = attribs.id;
         expectMandates = true;
-      } else if (expectedType === TAG_PAST_DEPUTE_MANDATES) {
+      } else if (expectedType === TAG_PAST_DEPUTE_MANDATES || expectedType === TAG_PAST_INTL_MISSIONS) {
         if (reallyExpectPreviousDeputesMandates) {
           if (attribs.class === "fonctions-liste-attributs") {
             retrieveMandate = true;
@@ -32,9 +32,13 @@ var currentMandatesParser = function(callback) {
             reallyExpectPreviousDeputesMandates = false;
             retrieveMandate = false;
           }
+        } else if (tagname === "span") {
+          reallyExpectPreviousDeputesMandates = true;
         }
-      } else if (expectMandates && tagname === "ul") {
+      } else if (expectMandates && tagname === "li") {
         retrieveMandate = true;
+      } else if (expectMandates && tagname === "h4") {
+        retrieveMandate = false;
       }
     },
     ontext: function(text) {
@@ -66,7 +70,6 @@ var currentMandatesParser = function(callback) {
       } else if (tagname === "h4" || tagname === "h3") {
         retrieveMandate = false;
       } else if (tagname === "html") {
-        print(parsedItem)
         callback(parsedItem);
       }
     }
