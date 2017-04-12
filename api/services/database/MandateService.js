@@ -21,27 +21,26 @@ var clearMandatesForDepute = function(deputeId) {
 
 var createMandatesModels = function(mandates, deputeId) {
   var promises = [];
-  // console.log(mandates)
   var otherCurrentMandates = mandates.otherCurrentMandates;
   for (j in otherCurrentMandates) {
     promises.push(createMandateModel(deputeId, otherCurrentMandates[j]));
   }
 
-  var pastDeputeMandates = parsePastDeputeMandate(deputeId, mandates.pastDeputeMandates);
+  var pastDeputeMandates = parsePastMandates(deputeId, mandates.pastDeputeMandates);
   promises = promises.concat(pastDeputeMandates)
-
-  var otherPastGouvMissions = mandates.otherPastGouvMissions;
-  var otherPastInternationalMissions = mandates.otherPastInternationalMissions;
-
+  var otherPastGouvMissions = parsePastMandates(deputeId, mandates.otherPastGouvMissions);
+  promises = promises.concat(otherPastGouvMissions)
+  var otherPastInternationalMissions = parsePastMandates(deputeId, mandates.otherPastInternationalMissions);
+  promises = promises.concat(otherPastInternationalMissions)
   return Promise.all(promises)
 }
 
-var parsePastDeputeMandate = function(deputeId, pastDeputeMandates) {
+var parsePastMandates = function(deputeId, pastMandates) {
   var promises = [];
   var name = "";
   var previousName = "";
-  for (k in pastDeputeMandates) {
-    var text = pastDeputeMandates[k];
+  for (k in pastMandates) {
+    var text = pastMandates[k];
     var startingDateMatched = text.match(START_DATE_REGEX);
     var endingDateMatched = text.match(END_DATE_REGEX);
     var startingDate = "";
@@ -94,7 +93,7 @@ var createMandates = function(mandatesToInsert) {
   for (i in mandatesToInsert) {
     Mandate.create(mandatesToInsert[i])
     .then(function(insertedMandate) {
-      console.log("created mandate : " + insertedMandate.name + " from " + insertedMandate.startingDate + " to " + insertedMandate.endingDate + " for " + insertedMandate.deputeId);
+      // console.log("created mandate : " + insertedMandate.name + " from " + insertedMandate.startingDate + " to " + insertedMandate.endingDate + " for " + insertedMandate.deputeId);
     });
   }
 }
