@@ -90,12 +90,32 @@ var removeUnwantedCharacters = function(str) {
 }
 
 var createMandates = function(mandatesToInsert) {
+  var promises = [];
   for (i in mandatesToInsert) {
-    Mandate.create(mandatesToInsert[i])
-    .then(function(insertedMandate) {
-      // console.log("created mandate : " + insertedMandate.name + " from " + insertedMandate.startingDate + " to " + insertedMandate.endingDate + " for " + insertedMandate.deputeId);
-    });
+    promises.push(createMandate(mandatesToInsert[i]));
   }
+  return Promise.all(promises)
+}
+
+var createMandate = function(mandateToInsert) {
+  return Mandate.create(mandateToInsert)
+  .then(function(insertedMandate) {
+    console.log("created mandate : " + insertedMandate.name + " from " + insertedMandate.startingDate + " to " + insertedMandate.endingDate + " for " + insertedMandate.deputeId);
+  });
+}
+
+var findMandatesForDepute = function(deputeId) {
+  return Mandate.find()
+  .where({ deputeId: deputeId });
+}
+
+var getAllMandatesDuration = function(mandates) {
+  var days = 0;
+  for (i in mandates) {
+    var mandate = mandates[i];
+    days = days + DateHelper.getDurationInDays(mandate.startingDate, mandate.endingDate);
+  }
+  return DateHelper.convertDaysToYears(days);
 }
 
 module.exports = {
@@ -105,5 +125,12 @@ module.exports = {
 			promises.push(insertMandates(parsedDeputes[i].mandates, insertedDeputes[i].id));
 		}
 		return Promise.all(promises)
+  },
+
+  getPoliticalAgeOfDepute: function(deputeId) {
+    findMandatesForDepute(deputeId)
+    .then(function(mandates) {
+      return getAllMandatesDuration(mandates)
+    })
   }
 }
