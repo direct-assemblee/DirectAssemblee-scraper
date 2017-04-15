@@ -4,13 +4,13 @@ var moment = require('moment');
 
 var FetchUrlService = require('./FetchUrlService.js');
 var DeputeService = require('./database/DeputeService.js');
-var LawService = require('./database/LawService.js');
+var LawListService = require('./database/LawListService.js');
 var VoteService = require('./database/VoteService.js');
 var MandateService = require('./database/MandateService.js');
 var DeputeListParser = require('./parsers/DeputesListParser');
 var DeputeVotesParser = require('./parsers/DeputeVotesParser');
 var DeputeMandatesParser = require('./parsers/DeputeMandatesParser');
-var LawParser = require('./parsers/LawParser');
+var LawListParser = require('./parsers/LawListParser');
 
 const EVERY_MINUTE = '* * * * *';
 const EVERY_HOUR = '1 * * * *';
@@ -141,8 +141,8 @@ var retrieveLawInfos = function(lawId) {
   return FetchUrlService.retrieveContent(lawUrl)
   .then(function(content) {
     return new Promise(function(resolve, reject) {
-      LawParser.parse(lawId, content, function(lawInfos) {
-        LawService.insertLaw(lawInfos)
+      LawListParser.parse(lawId, content, function(lawInfos) {
+        LawListService.insertLaw(lawInfos)
         .then(function(insertedLaw) {
           resolve(insertedLaw);
         })
@@ -200,5 +200,8 @@ var self = module.exports = {
         insertDeputesAndRetrieveDeputesVotes(deputes)
       });
     });
+  },
+
+  startParsingLaw: function() {
   }
 }

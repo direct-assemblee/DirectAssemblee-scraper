@@ -3,7 +3,7 @@
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
-var lawParser = function(lawId, callback) {
+var lawListParser = function(lawId, callback) {
   var parsedItem = {};
   parsedItem.officialId = lawId
 
@@ -39,7 +39,7 @@ var lawParser = function(lawId, callback) {
 
 module.exports = {
   parse: function(lawId, content, callback) {
-    var parser = lawParser(lawId, function(resultItems) {
+    var parser = lawListParser(lawId, function(resultItems) {
       callback(resultItems);
     });
     parser.write(content);
