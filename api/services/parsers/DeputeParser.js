@@ -1,10 +1,16 @@
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
+const SECTION_PREFIX = "content-wrap-"
+
 var deputeParser = function(callback) {
   var parsedItem = {};
-  var parsedPropositions = [];
-  var currentProp = {};
+  parsedItem.questions = [];
+  parsedItem.reports = [];
+  parsedItem.propositions = [];
+  parsedItem.cosignedPropositions = [];
+
+  var currentSectionItem = {};
   var expectedItem;
   var expectedSection;
 
@@ -14,17 +20,20 @@ var deputeParser = function(callback) {
         expectedItem = "phone";
       } else if (attribs.class === "email") {
         parsedItem.email = attribs.href.replace("mailto:", '')
-      } else if (attribs.id && attribs.id.startsWith("content-wrap-")) {
-        expectedSection = attribs.id.split("content-wrap-")[1];
-      } else if (expectedSection === "propositionsloi") {
+      } else if (attribs.id && attribs.id.startsWith(SECTION_PREFIX)) {
+        expectedSection = attribs.id.split(SECTION_PREFIX)[1];
+        console.log(expectedSection)
+      } else if (expectedSection) {
         if (tagname === "h4") {
-          currentProp = {}
-          expectedItem = "prop.id";
-        } else if (currentProp) {
+          currentSectionItem = {}
+          expectedItem = "section.id";
+        } else if (currentSectionItem) {
           if (attribs.href) {
-            currentProp.url = attribs.href;
+            currentSectionItem.url = attribs.href;
           } else if (tagname === "p") {
-            expectedItem = "prop.description";
+            if (!attribs.class) {
+              expectedItem = "section.description";
+            }
           }
         }
       }
@@ -35,31 +44,43 @@ var deputeParser = function(callback) {
       } else if (expectedItem === "phoneValue") {
         parsedItem.phone = text.replace(/\s+/g, '');
         expectedItem = null;
-      } else if (expectedSection === "propositionsloi") {
-        if (expectedItem === "prop.id") {
-          var splitText = text.split(" ");
-          currentProp.id = splitText[splitText.length - 1];
-          expectedItem = "prop.date";
-        } else if (expectedItem === "prop.date") {
-          var text = text.trim();
+      } else if (expectedSection) {
+        if (expectedItem === "section.id") {
+          var trimmed = text.trim();
+          if (trimmed) {
+            currentSectionItem.title = trimmed;
+            var splitText = trimmed.split(" ");
+            var index = splitText.indexOf("n°") + 1;
+            currentSectionItem.id = splitText[index];
+            expectedItem = "section.date";
+          }
+        } else if (expectedItem === "section.date") {
+          var text = text.replace("Publiée le", '').trim();
           if (text) {
-            currentProp.date = text;
+            currentSectionItem.date = text;
             expectedItem = null;
           }
-        } else if (expectedItem === "prop.description") {
+        } else if (expectedItem === "section.description") {
           var text = text.trim();
           if (text) {
-            currentProp.description = text;
-            parsedPropositions.push(currentProp);
+            currentSectionItem.description = text;
+            if (expectedSection === "questions") {
+              parsedItem.questions.push(currentSectionItem);
+            } else if (expectedSection === "propositionsloi") {
+              parsedItem.propositions.push(currentSectionItem);
+            } else if (expectedSection === "rapportsparlementaires") {
+              parsedItem.reports.push(currentSectionItem);
+            } else if (expectedSection === "propositionsloicosignataire") {
+              parsedItem.cosignedPropositions.push(currentSectionItem);
+            }
             expectedItem = null;
-            currentProp = null;
+            currentSectionItem = null;
           }
         }
       }
     },
     onclosetag: function(tagname) {
       if (tagname == "html") {
-        parsedItem.propositions = parsedPropositions
         print(parsedItem);
         callback(parsedItem);
       }
@@ -83,6 +104,9 @@ var print = function(parsedItem) {
   console.log("------------- ");
   console.log(parsedItem.phone);
   console.log(parsedItem.email);
+  console.log(parsedItem.questions);
+  console.log(parsedItem.reports);
   console.log(parsedItem.propositions);
+  console.log(parsedItem.cosignedPropositions);
   console.log("------------- ");
 }
