@@ -23,7 +23,7 @@ var insertDeputesAndRetrieveDeputesVotes = function(parsedDeputes) {
   DeputeService.insertAllDeputes(parsedDeputes)
   .then(function(insertedDeputes) {
     console.log("inserted or updated " + insertedDeputes.length + " deputes")
-    MandateService.insertAllMandates(parsedDeputes, insertedDeputes);
+    MandateService.insertAllMandates(parsedDeputes, insertedDeputes)
     return retrieveAllVotes(insertedDeputes, 0)
   })
 }
@@ -174,7 +174,6 @@ var retrieveDeputeMandates = function(depute) {
   .then(function(content) {
     return DeputeMandatesParser.parse(content)
     .then(function(mandates) {
-      console.log(mandates)
       depute.mandates = mandates;
       return depute;
     })

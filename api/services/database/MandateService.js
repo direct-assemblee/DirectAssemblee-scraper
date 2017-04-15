@@ -104,20 +104,6 @@ var createMandate = function(mandateToInsert) {
   });
 }
 
-var findMandatesForDepute = function(deputeId) {
-  return Mandate.find()
-  .where({ deputeId: deputeId });
-}
-
-var getAllMandatesDuration = function(mandates) {
-  var days = 0;
-  for (i in mandates) {
-    var mandate = mandates[i];
-    days = days + DateHelper.getDurationInDays(mandate.startingDate, mandate.endingDate);
-  }
-  return DateHelper.convertDaysToYears(days);
-}
-
 module.exports = {
   insertAllMandates: function(parsedDeputes, insertedDeputes) {
     var promises = [];
@@ -125,12 +111,5 @@ module.exports = {
 			promises.push(insertMandates(parsedDeputes[i].mandates, insertedDeputes[i].id));
 		}
 		return Promise.all(promises)
-  },
-
-  getPoliticalAgeOfDepute: function(deputeId) {
-    findMandatesForDepute(deputeId)
-    .then(function(mandates) {
-      return getAllMandatesDuration(mandates)
-    })
   }
 }
