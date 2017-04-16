@@ -63,7 +63,7 @@ module.exports = {
 String.prototype.removeSpecialCharsBetter = function() {
   return this.replace(/\.\r\n/g, "[dotspace]")
   .replace(/\s\s+/g, ' ')
-  .replace(/\\n/g, " ")
+  .replace(/\\n/g, ' ')
   .replace(/\\'/g, "\"")
   .replace(/\\"/g, '\"')
   .replace(/\\&/g, "")
