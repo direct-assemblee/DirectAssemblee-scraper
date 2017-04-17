@@ -10,30 +10,30 @@ var currentMandatesParser = function(callback) {
 
   var expectMandates = false;
   var retrieveMandate = false;
-  var previousDeputeMandatesRetrieved = false;
-  var reallyExpectPreviousDeputesMandates = false;
+  var previousDeputyMandatesRetrieved = false;
+  var reallyExpectPreviousDeputiesMandates = false;
 
   const TAG_OTHERS = "autres";
-  const TAG_PAST_DEPUTE_MANDATES = "mandats-an-historique";
+  const TAG_PAST_DEPUTY_MANDATES = "mandats-an-historique";
   const TAG_PAST_OTHER_GOUV_MISSIONS = "mandats-nationaux-historique";
   const TAG_PAST_INTL_MISSIONS = "internationales-judiciaires-historique";
 
   return new htmlparser.Parser({
     onopentag: function(tagname, attribs) {
-      if (tagname === 'div' && (attribs.id == TAG_OTHERS || attribs.id == TAG_PAST_DEPUTE_MANDATES || attribs.id == TAG_PAST_OTHER_GOUV_MISSIONS || attribs.id == TAG_PAST_INTL_MISSIONS)) {
+      if (tagname === 'div' && (attribs.id == TAG_OTHERS || attribs.id == TAG_PAST_DEPUTY_MANDATES || attribs.id == TAG_PAST_OTHER_GOUV_MISSIONS || attribs.id == TAG_PAST_INTL_MISSIONS)) {
         mandates = [];
         expectedType = attribs.id;
         expectMandates = true;
-      } else if (expectedType === TAG_PAST_DEPUTE_MANDATES || expectedType === TAG_PAST_INTL_MISSIONS) {
-        if (reallyExpectPreviousDeputesMandates) {
+      } else if (expectedType === TAG_PAST_DEPUTY_MANDATES || expectedType === TAG_PAST_INTL_MISSIONS) {
+        if (reallyExpectPreviousDeputiesMandates) {
           if (attribs.class === "fonctions-liste-attributs") {
             retrieveMandate = true;
           } else if (tagname === "h4") {
-            reallyExpectPreviousDeputesMandates = false;
+            reallyExpectPreviousDeputiesMandates = false;
             retrieveMandate = false;
           }
         } else if (tagname === "span") {
-          reallyExpectPreviousDeputesMandates = true;
+          reallyExpectPreviousDeputiesMandates = true;
         }
       } else if (expectMandates && tagname === "li") {
         retrieveMandate = true;
@@ -42,9 +42,9 @@ var currentMandatesParser = function(callback) {
       }
     },
     ontext: function(text) {
-      if (expectedType === TAG_PAST_DEPUTE_MANDATES) {
+      if (expectedType === TAG_PAST_DEPUTY_MANDATES) {
         if (text === "Mandat de député") {
-          reallyExpectPreviousDeputesMandates = true;
+          reallyExpectPreviousDeputiesMandates = true;
         }
       }
       if (retrieveMandate) {
@@ -58,8 +58,8 @@ var currentMandatesParser = function(callback) {
       if (tagname === "div" && expectMandates) {
         if (expectedType === TAG_OTHERS) {
           parsedItem.otherCurrentMandates = mandates;
-        } else if (expectedType === TAG_PAST_DEPUTE_MANDATES) {
-          parsedItem.pastDeputeMandates = mandates;
+        } else if (expectedType === TAG_PAST_DEPUTY_MANDATES) {
+          parsedItem.pastDeputyMandates = mandates;
         } else if (expectedType === TAG_PAST_OTHER_GOUV_MISSIONS) {
           parsedItem.otherPastGouvMissions = mandates;
         } else if (expectedType === TAG_PAST_INTL_MISSIONS) {

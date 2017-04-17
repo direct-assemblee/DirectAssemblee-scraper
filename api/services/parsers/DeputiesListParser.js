@@ -2,7 +2,7 @@
 
 var htmlparser = require('htmlparser2');
 
-var deputeParser = function(callback) {
+var deputyParser = function(callback) {
   var resultItems = [];
   var parsedItem = {};
 
@@ -64,7 +64,7 @@ var deputeParser = function(callback) {
 module.exports = {
   parse: function(content) {
     return new Promise(function(resolve, reject) {
-      var parser = deputeParser(function(resultItems) {
+      var parser = deputyParser(function(resultItems) {
         resolve(resultItems);
       });
       parser.write(content);
@@ -72,8 +72,6 @@ module.exports = {
     })
   }
 }
-
-
 
 var print = function(parsedItem) {
   console.log("------------- ");

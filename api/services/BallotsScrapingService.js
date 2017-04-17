@@ -9,7 +9,7 @@ const BALLOT_TYPE_ORDINARY = "SOR";
 const BALLOT_TYPE_SOLEMN = "SSO";
 const BALLOT_TYPE_OTHER = "AUT";
 const BALLOT_TYPE_ALL = "TOUS";
-const BALLOT_TYPES = [BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER];
+const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER ];
 const BALLOTS_PAGE_SIZE = 100;
 const BALLOTS_LIST_URL = Constants.BASE_URL + "scrutins/liste/offset/" + Constants.PARAM_OFFSET + "/(legislature)/14/(type)/" + PARAM_BALLOT_TYPE + "/(idDossier)/TOUS";
 
@@ -38,21 +38,17 @@ var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots
     for (var i in ballots) {
       previousBallots.push(ballots[i]);
     }
-    // var lastBallot = previousBallots[previousBallots.length - 1];
-    // if (lastBallot) {
-    //   if (ballots.length >= BALLOTS_PAGE_SIZE) {
-    //     var newOffset = pageOffset + 1;
-    //     return retrieveBallotsListOfType(ballotType, newOffset, previousBallots);
-    //   } else {
-    //     return Promise.resolve(previousBallots);
-    //   }
-    // } else {
+    var lastBallot = previousBallots[previousBallots.length - 1];
+    if (lastBallot && ballots && ballots.length >= BALLOTS_PAGE_SIZE) {
+        var newOffset = pageOffset + 1;
+        return retrieveBallotsListOfType(ballotType, newOffset, previousBallots);
+    } else {
       return Promise.resolve(previousBallots);
-    // }
+    }
   })
 }
 
-retrieveBallotDetail = function(ballot) {
+retrieveBallotDetails = function(ballot) {
   return FetchUrlService.retrieveContent(ballot.analysisUrl)
   .then(function(content) {
     return BallotParser.parse(content)
@@ -100,7 +96,7 @@ module.exports = {
     .then(function(ballots) {
       var promises = [];
       for (var i = 0 ; i < 10 ; i++) {
-        promises.push(retrieveBallotDetail(ballots[i]));
+        promises.push(retrieveBallotDetails(ballots[i]));
       }
       return Promise.all(promises);
     })
