@@ -35,17 +35,19 @@ var retrieveAllDeputies = function() {
 var retrieveDeputyDetails = function(deputy) {
   return retrieveDeputyWork(deputy)
   .then(function(deputyWork) {
-    deputy.work = []
+    deputy.works = []
     for (i in deputyWork) {
-      deputy.work = deputy.work.concat(deputyWork[i])
+      deputy.works = deputy.works.concat(deputyWork[i])
     }
+    console.log("retrieved works for : " + deputy.lastname);
     return deputy;
   })
   .then(function(deputy) {
     return retrieveDeputyInfosAndMandates(deputy)
   })
   .then(function(deputy) {
-    console.log(deputy)
+    console.log("retrieved all from deputy " + deputy.lastname)
+    return deputy
   })
 }
 
@@ -83,19 +85,26 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
   .then(function(content) {
     return DeputyMandatesParser.parse(content)
     .then(function(mandates) {
+      console.log("retrieved mandates for : " + deputy.lastname);
       deputy.mandates = mandates;
       return deputy;
     })
     .then(function(deputy) {
       return DeputyInfosParser.parse(content)
       .then(function(deputyInfos) {
+        console.log("retrieved deputyInfos for : " + deputy.lastname);
         deputy.phone = deputyInfos.phone;
         deputy.email = deputyInfos.email;
-        return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)
-        .then(function(declarations) {
-          deputy.declarations = declarations;
+        if (deputyInfos.declarationsUrl) {
+          return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)
+          .then(function(declarations) {
+            deputy.declarations = declarations;
+            console.log("retrieved declarations for : " + deputy.lastname);
+            return deputy;
+          })
+        } else {
           return deputy;
-        })
+        }
       })
     })
   })

@@ -4,7 +4,7 @@ var fs = require('fs');
 var entities = require('html-entities').AllHtmlEntities;
 var Constants = require('./Constants.js')
 
-var httpGet = function(url) {
+var httpGet = function(url, isIsoEncoding) {
   return new Promise(function(resolve, reject) {
     var retry = function(e) {
       console.log("Got error: " + e.message);
@@ -16,6 +16,11 @@ var httpGet = function(url) {
     }
 
     var req = http.get(url, function(res) {
+      if (isIsoEncoding) {
+        res.setEncoding('binary')
+      } else {
+        res.setEncoding('utf8');
+      }
       var data = "";
       res.on('data', function (chunk) {
         data += chunk;
@@ -32,14 +37,17 @@ var httpGet = function(url) {
   })
 }
 
-module.exports = {
+var self = module.exports = {
   retrieveContent: function(url) {
+    return self.retrieveContent(url, false);
+  },
+
+  retrieveContent: function(url, isIsoEncoding) {
     // console.log(url);
-    return httpGet(url)
+    return httpGet(url, isIsoEncoding)
     .then(function(content) {
       var text = entities.decode(content);
       var cleaned = text.removeSpecialCharsBetter();
-      // console.log(cleaned)
       return cleaned
     });
   },

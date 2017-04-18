@@ -18,8 +18,8 @@ module.exports = {
       type: 'string',
       unique: true
     },
-    followedDeputeIds: {
-      collection: 'depute',
+    followedDeputiesIds: {
+      collection: 'deputy',
       via: 'subscribers'
     }
   }

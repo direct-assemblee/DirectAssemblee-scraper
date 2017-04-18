@@ -41,8 +41,8 @@ var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots
     }
     var lastBallot = previousBallots[previousBallots.length - 1];
     if (lastBallot && ballots && ballots.length >= BALLOTS_PAGE_SIZE) {
-        var newOffset = pageOffset + 1;
-        return retrieveBallotsListOfType(ballotType, newOffset, previousBallots);
+      var newOffset = pageOffset + 1;
+      return retrieveBallotsListOfType(ballotType, newOffset, previousBallots);
     } else {
       return Promise.resolve(previousBallots);
     }
@@ -64,7 +64,7 @@ retrieveBallotDetails = function(ballot) {
 }
 
 retrieveBallotTheme = function(ballot) {
-  return FetchUrlService.retrieveContent(ballot.fileUrl)
+  return FetchUrlService.retrieveContent(ballot.fileUrl, true)
   .then(function(content) {
     return BallotThemeParser.parse(content)
     .then(function(theme) {
@@ -75,33 +75,13 @@ retrieveBallotTheme = function(ballot) {
 }
 
 var mergeBallotWithAnalysis = function(ballot, ballotAnalysis) {
-  ballot.analysisTitle = ballotAnalysis.title;
-  ballot.analysisDate = ballotAnalysis.date;
-  ballot.analysisDateDetailed = ballotAnalysis.dateDetailed;
-  ballot.analysisTotalVotes = ballotAnalysis.totalVotes;
-  ballot.analysisYesVotes = ballotAnalysis.yesVotes;
-  ballot.analysisNoVotes = ballotAnalysis.noVotes;
-  ballot.analysisVotes = ballotAnalysis.votes;
+  ballot.title = ballotAnalysis.title;
+  ballot.detailedDate = ballotAnalysis.detailedDate;
+  ballot.totalVotes = ballotAnalysis.totalVotes;
+  ballot.yesVotes = ballotAnalysis.yesVotes;
+  ballot.noVotes = ballotAnalysis.noVotes;
+  ballot.votes = ballotAnalysis.votes;
   return ballot
-}
-
-var print = function(ballot) {
-  // console.log("------------- ");
-  // console.log("id: " + ballot.id);
-  // console.log("date: " + ballot.date);
-  // console.log("analysisDateDetailed: " + ballot.analysisDateDetailed);
-  //
-  // console.log("description: " + ballot.description);
-  // console.log("type: " + ballot.type);
-  //
-  // console.log("analysisTotalVotes: " + ballot.analysisTotalVotes);
-  // console.log("analysisYesVotes: " + ballot.analysisYesVotes);
-  // console.log("analysisNoVotes: " + ballot.analysisNoVotes);
-  // console.log("analysisVotes: " + ballot.analysisVotes)
-  //
-  // console.log("fileUrl: " + ballot.fileUrl);
-  console.log("analysisUrl: " + ballot.analysisUrl);
-  // console.log("------------- ");
 }
 
 module.exports = {
@@ -109,7 +89,7 @@ module.exports = {
     return retrieveBallotsList()
     .then(function(ballots) {
       var promises = [];
-      for (var i = 0 ; i < 10 ; i++) {
+      for (var i = 0 ; i < ballots.length ; i++) {
         promises.push(retrieveBallotDetails(ballots[i]));
       }
       return Promise.all(promises);

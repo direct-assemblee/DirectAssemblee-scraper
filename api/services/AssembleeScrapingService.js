@@ -3,14 +3,18 @@ var Promise = require("bluebird");
 var moment = require('moment');
 
 var FetchUrlService = require('./FetchUrlService.js');
-var DeputeService = require('./database/DeputeService.js');
+var DeputyService = require('./database/DeputyService.js');
+var BallotService = require('./database/BallotService.js');
 var LawListService = require('./database/LawListService.js');
 var VoteService = require('./database/VoteService.js');
 var MandateService = require('./database/MandateService.js');
-var DeputeListParser = require('./parsers/DeputesListParser');
+var DeclarationService = require('./database/DeclarationService.js');
+var WorkService = require('./database/WorkService.js');
 var DeputeVotesParser = require('./parsers/DeputeVotesParser');
-var DeputeMandatesParser = require('./parsers/DeputeMandatesParser');
 var LawListParser = require('./parsers/LawListParser');
+var BallotsScrapingService = require('./BallotsScrapingService');
+var DeputiesScrapingService = require('./DeputiesScrapingService');
+var DeputyHelper = require('./helpers/DeputyHelper')
 
 const EVERY_MINUTE = '* * * * *';
 const EVERY_HOUR = '1 * * * *';
@@ -19,15 +23,80 @@ const RANGE_STEP = 10;
 var lastScanTime = new Date();
 var yesterday = moment().subtract(100, 'days').format("YYYY-MM-DD");
 
-var insertDeputesAndRetrieveDeputesVotes = function(parsedDeputes) {
-  DeputeService.insertAllDeputes(parsedDeputes)
-  .then(function(insertedDeputes) {
-    console.log("inserted or updated " + insertedDeputes.length + " deputes")
-    MandateService.insertAllMandates(parsedDeputes, insertedDeputes)
-    return retrieveAllVotes(insertedDeputes, 0)
+var insertDeputies = function(parsedDeputies) {
+  return insertAllDeputies(parsedDeputies)
+  .then(function(insertedDeputies) {
+    console.log("inserted or updated " + insertedDeputies.length + " deputies")
+    return insertedDeputies;
   })
 }
 
+var insertAllDeputies = function(deputies) {
+  var promises = [];
+  for (i in deputies) {
+    promises.push(insertDeputy(deputies[i]));
+  }
+  return Promise.all(promises)
+}
+
+var insertDeputy = function(deputy) {
+  return DeputyService.insertDeputy(deputy, true)
+  .then(function(insertedDeputy) {
+    return MandateService.insertMandates(deputy.mandates, insertedDeputy.id)
+    .then(function(insertedMandates) {
+      console.log("inserted " + insertedMandates.length + " mandates for deputy : " + deputy.lastname)
+      return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.id)
+      .then(function(insertedDeclarations) {
+        console.log("inserted " + insertedDeclarations.length + " declarations for deputy : " + deputy.lastname)
+        return WorkService.insertWorks(deputy.works, insertedDeputy.id)
+        .then(function(insertedWorks) {
+          console.log("inserted " + insertedWorks.length + " works for deputy : " + deputy.lastname)
+        })
+      })
+    })
+  })
+}
+
+var insertBallots = function(parsedBallots) {
+  return insertAllBallots(parsedBallots)
+  .then(function(insertedBallots) {
+    console.log("inserted or updated " + insertedBallots.length + " ballots")
+    return DeputyService.getDeputiesNames()
+    .then(function(deputies) {
+      var promises = [];
+      for (i in parsedBallots) {
+        promises.push(insertVotesForBallot(parsedBallots[i], deputies))
+      }
+      return Promise.all(promises)
+    })
+  })
+}
+
+var insertAllBallots = function(ballots) {
+  var promises = [];
+  for (i in ballots) {
+    promises.push(insertBallot(ballots[i]));
+  }
+  return Promise.all(promises)
+}
+
+var insertBallot = function(ballot) {
+  return BallotService.insertBallot(ballot, true)
+}
+
+var insertVotesForBallot = function(ballot, deputies) {
+  var votes = ballot.votes;
+  var promises = [];
+  for (i in votes) {
+    var deputyId = DeputyHelper.getDeputyIdForVoteInBallot(deputies, votes[i]);
+    if (deputyId) {
+      var vote = { deputyId: deputyId, ballotId: ballot.id, value: votes[i].value}
+      promises.push(VoteService.insertVote(vote))
+    }
+  }
+  return Promise.all(promises)
+}
+/*
 var retrieveAllVotes = function(insertedDeputes, startIndex) {
   var endIndex = startIndex + Math.min(insertedDeputes.length - startIndex, RANGE_STEP);
   var deputes = insertedDeputes.slice(startIndex, endIndex);
@@ -94,7 +163,7 @@ var retrieveVotesForDeputeRange = function(deputes) {
 
 var retrieveDeputeVotes = function(depute, pageOffset, previousVotes) {
   // console.log("retrieveDeputeVotes " + depute.lastname + " " + pageOffset)
-  var votesUrl = Constants.DEPUTE_VOTES_URL.replace(Constants.PARAM_OFFSET, pageOffset * 10).replace(Constants.PARAM_DEPUTE_ID, depute.officialId);
+  var votesUrl = Constants.DEPUTE_VOTES_URL.replace(Constants.PARAM_OFFSET, pageOffset * 10).replace(Constants.PARAM_DEPUTY_ID, depute.officialId);
   return FetchUrlService.retrieveContent(votesUrl)
   .then(function(content) {
     return DeputeVotesParser.parse(depute.id, content)
@@ -153,33 +222,11 @@ var retrieveLawInfos = function(lawId) {
 
 var retrieveAllDeputesPhotos = function(deputes) {
   for (i in deputes) {
-    var photoUrl = Constants.DEPUTE_PHOTO_URL.replace(Constants.PARAM_DEPUTE_ID, deputes[i].officialId)
+    var photoUrl = Constants.DEPUTE_PHOTO_URL.replace(Constants.PARAM_DEPUTY_ID, deputes[i].officialId)
     FetchUrlService.retrievePhoto(photoUrl);
   }
 }
-
-var retrieveAllDeputesMandates = function(deputes) {
-  var getDeputeMandatesPromises = [];
-  for (var i = 0 ; i < deputes.length ; i++) {
-    getDeputeMandatesPromises.push(retrieveDeputeMandates(deputes[i]));
-  }
-  return Promise.all(getDeputeMandatesPromises)
-}
-
-var retrieveDeputeMandates = function(depute) {
-  var mandatesUrl = Constants.DEPUTE_INFO_URL.replace(Constants.PARAM_DEPUTE_ID, depute.officialId);
-  // mandatesUrl = "http://www2.assemblee-nationale.fr/deputes/fiche/OMC_PA2952";
-  // mandatesUrl = "http://www2.assemblee-nationale.fr/deputes/fiche/OMC_PA267407";
-  return FetchUrlService.retrieveContent(mandatesUrl)
-  .then(function(content) {
-    return DeputeMandatesParser.parse(content)
-    .then(function(mandates) {
-      depute.mandates = mandates;
-      return depute;
-    })
-  })
-}
-
+*/
 var self = module.exports = {
   startService: function() {
     cron.schedule(EVERY_HOUR, function() {
@@ -188,20 +235,18 @@ var self = module.exports = {
     });
   },
 
-  startScraping: function() {
-    FetchUrlService.retrieveContent(Constants.DEPUTES_LIST_URL)
-    .then(function(content) {
-      return DeputeListParser.parse(content)
-      .then(function(deputes) {
-        retrieveAllDeputesPhotos(deputes)
-        return retrieveAllDeputesMandates(deputes)
+  startScrapingDeputies: function() {
+    DeputiesScrapingService.retrieveDeputies()
+    .then(function(deputies) {
+      console.log("retrived deputies " + deputies.length)
+      return insertDeputies(deputies);
+    })
+    .then(function(deputies) {
+      BallotsScrapingService.retrieveBallots()
+      .then(function(ballots) {
+        // console.log(ballots)
+        return insertBallots(ballots);
       })
-      .then(function(deputes) {
-        insertDeputesAndRetrieveDeputesVotes(deputes)
-      });
-    });
-  },
-
-  startParsingLaw: function() {
+    })
   }
 }

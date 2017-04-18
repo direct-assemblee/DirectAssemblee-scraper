@@ -7,14 +7,20 @@ module.exports = {
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
+    title: {
       type: 'string'
     },
-    startingDate: {
+    officialId: {
+      type: 'int',
+    },
+    date: {
       type: 'date'
     },
-    endingDate: {
-      type: 'date'
+    url: {
+      type: 'string'
+    },
+    description: {
+      type: 'string'
     },
     deputyId: {
       type: 'int',

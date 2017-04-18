@@ -29,7 +29,7 @@ var ballotParser = function(ballotType, callback) {
         }
       } else if (expectedData === "description") {
         if (text.trim()) {
-          parsedItem.description = text.replace('[', '').trim();
+          parsedItem.title = text.replace('[', '').trim();
           expectedData = "url";
         }
       } else if (expectedData === "urlType") {

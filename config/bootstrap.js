@@ -21,7 +21,7 @@ module.exports.bootstrap = function(cb) {
       console.log("Initializing DB")
       DBBuilderService.initDB();
       AssembleeScrapingService.startScraping();
-      // NosDeputesScrapingService.startScraping();
+      // AssembleeScrapingService.startScraping();
     }
   });
 

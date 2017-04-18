@@ -1,10 +1,3 @@
-/**
- * Depute.js
- *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
- */
-
 module.exports = {
   autoCreatedAt: true,
   autoUpdatedAt: true,
@@ -33,15 +26,21 @@ module.exports = {
     departmentId: {
       type: 'int'
     },
-    subdepartment: {
+    circonscription: {
       type: 'int'
     },
     commission: {
       type: 'string'
     },
+    phone: {
+      type: 'string'
+    },
+    email: {
+      type: 'string'
+    },
     subscribers: {
       collection: 'subscriber',
-      via: 'followedDeputeIds',
+      via: 'followedDeputiesIds',
       dominant: true
     }
   }

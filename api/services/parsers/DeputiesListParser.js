@@ -6,7 +6,7 @@ var deputyParser = function(callback) {
   var resultItems = [];
   var parsedItem = {};
 
-  var expectedData = [ "civility", "firstname", "lastname", "party", "department", "subdepartment", "commission", "id" ];
+  var expectedData = [ "civility", "firstname", "lastname", "party", "department", "circonscription", "commission", "id" ];
   var expectedDataPos = -1;
 
   return new htmlparser.Parser({
@@ -37,7 +37,7 @@ var deputyParser = function(callback) {
           parsedItem.department = text;
           break;
         case 5:
-          parsedItem.subdepartment = text;
+          parsedItem.circonscription = text;
           break;
         case 6:
           parsedItem.commission = text;
@@ -81,7 +81,7 @@ var print = function(parsedItem) {
   console.log("item : " + parsedItem.lastname);
   console.log("item : " + parsedItem.party);
   console.log("item : " + parsedItem.department);
-  console.log("item : " + parsedItem.subdepartment);
+  console.log("item : " + parsedItem.circonscription);
   console.log("item : " + parsedItem.commission);
   console.log("------------- ");
 }

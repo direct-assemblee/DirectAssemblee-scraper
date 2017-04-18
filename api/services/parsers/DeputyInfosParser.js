@@ -25,7 +25,7 @@ var deputyParser = function(callback) {
     },
     onclosetag: function(tagname) {
       if (tagname == "html") {
-        print(parsedItem);
+        // print(parsedItem);
         callback(parsedItem);
       }
     }

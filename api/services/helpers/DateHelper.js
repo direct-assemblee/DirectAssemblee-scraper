@@ -1,8 +1,17 @@
 var moment = require('moment');
 
-module.exports = {
+var self = module.exports = {
   formatDate: function(dateString) {
-    var parsedDate = moment(dateString, 'DD/MM/YYYY');
+    return self.formatDateWithTemplate(dateString, "DD/MM/YYYY");
+  },
+
+  formatWrittenDate: function(dateString) {
+    return self.formatDateWithTemplate(dateString, "DD MMMM YYYY");
+  },
+
+  formatDateWithTemplate: function(dateString, formatTemplate) {
+    moment.locale('fr')
+    var parsedDate = moment(dateString, formatTemplate);
     return moment(parsedDate).format("YYYY-MM-DD");
   },
 

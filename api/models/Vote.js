@@ -1,10 +1,3 @@
-/**
- * Vote.js
- *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
- */
-
 module.exports = {
   autoCreatedAt: true,
   autoUpdatedAt: true,
@@ -17,13 +10,13 @@ module.exports = {
     value: {
       type: 'string'
     },
-    lawId: {
+    ballotId: {
       type: 'int',
-      model: 'Law'
+      model: 'Ballot'
     },
-    deputeId: {
+    deputyId: {
       type: 'int',
-      model: 'Depute'
+      model: 'Deputy'
     }
   }
 };
