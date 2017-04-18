@@ -3,6 +3,7 @@ var Constants = require('./Constants.js')
 
 var BallotsListParser = require('./parsers/BallotsListParser');
 var BallotParser = require('./parsers/BallotParser');
+var BallotThemeParser = require('./parsers/BallotThemeParser');
 
 const PARAM_BALLOT_TYPE = "{ballot_type}";
 const BALLOT_TYPE_ORDINARY = "SOR";
@@ -55,8 +56,21 @@ retrieveBallotDetails = function(ballot) {
   })
   .then(function(ballotAnalysis) {
     ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)
-    print(ballot)
     return Promise.resolve(ballot);
+  })
+  .then(function(ballot) {
+    return retrieveBallotTheme(ballot);
+  })
+}
+
+retrieveBallotTheme = function(ballot) {
+  return FetchUrlService.retrieveContent(ballot.fileUrl)
+  .then(function(content) {
+    return BallotThemeParser.parse(content)
+    .then(function(theme) {
+      ballot.theme = theme;
+      return ballot;
+    })
   })
 }
 
