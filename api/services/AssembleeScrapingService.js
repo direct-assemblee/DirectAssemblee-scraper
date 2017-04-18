@@ -227,6 +227,30 @@ var retrieveAllDeputesPhotos = function(deputes) {
   }
 }
 */
+
+var retrieveDeputiesRange = function(deputies, start) {
+  var end = start + RANGE_STEP;
+  if (end > deputies.length) {
+    end = deputies.length;
+  }
+  console.log(start + "-" + end);
+  var deputiesRange = deputies.slice(start, end);
+  return DeputiesScrapingService.retrieveDeputies(deputiesRange)
+  .then(function(deputiesRetrieved) {
+    console.log("retrieved deputies " + deputiesRetrieved.length)
+    return insertDeputies(deputiesRetrieved);
+  })
+  .then(function(insertedDeputies) {
+    console.log("inserted deputies " + insertedDeputies.length)
+    var newStart = start + RANGE_STEP
+    if (newStart < deputies.length) {
+      return retrieveDeputiesRange(deputies, newStart)
+    } else {
+      return;
+    }
+  })
+}
+
 var self = module.exports = {
   startService: function() {
     cron.schedule(EVERY_HOUR, function() {
@@ -235,16 +259,15 @@ var self = module.exports = {
     });
   },
 
-  startScrapingDeputies: function() {
-    DeputiesScrapingService.retrieveDeputies()
+  startScraping: function() {
+    DeputiesScrapingService.retrieveDeputiesList()
     .then(function(deputies) {
-      console.log("retrived deputies " + deputies.length)
-      return insertDeputies(deputies);
+      return retrieveDeputiesRange(deputies, 0)
     })
-    .then(function(deputies) {
+    .then(function() {
+      console.log('start scraping ballots');
       BallotsScrapingService.retrieveBallots()
       .then(function(ballots) {
-        // console.log(ballots)
         return insertBallots(ballots);
       })
     })

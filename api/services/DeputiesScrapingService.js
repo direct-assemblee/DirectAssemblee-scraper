@@ -18,18 +18,12 @@ const WORK_PAGE_SIZE = 10;
 const DEPUTY_WORK_URL = Constants.BASE_URL + "deputes/documents_parlementaires/(offset)/" + Constants.PARAM_OFFSET + "/(id_omc)/OMC_PA" + Constants.PARAM_DEPUTY_ID + "/(type)/" + PARAM_WORK_TYPE;
 const DEPUTY_DECLARATIONS_URL = "http://www.hatvp.fr/fiche-nominative/?declarant=" + PARAM_DEPUTE_NAME;
 
-var retrieveAllDeputies = function() {
-  return FetchUrlService.retrieveContent(Constants.DEPUTIES_LIST_URL)
-  .then(function(content) {
-    return DeputiesListParser.parse(content)
-  })
-  .then(function(deputies) {
-    var promises = [];
-    for (var i = 0 ; i < deputies.length ; i++) {
-      promises.push(retrieveDeputyDetails(deputies[i]));
-    }
-    return Promise.all(promises);
-  })
+var retrieveDeputiesForRange = function(deputies) {
+  var promises = [];
+  for (var i = 0 ; i < deputies.length ; i++) {
+    promises.push(retrieveDeputyDetails(deputies[i]));
+  }
+  return Promise.all(promises);
 }
 
 var retrieveDeputyDetails = function(deputy) {
@@ -121,7 +115,18 @@ var retrieveDeclarationPdfUrl = function(allDeclaUrl) {
 }
 
 module.exports = {
-  retrieveDeputies: function() {
-    return retrieveAllDeputies()
+  retrieveDeputiesList: function() {
+    return FetchUrlService.retrieveContent(Constants.DEPUTIES_LIST_URL)
+    .then(function(content) {
+      return DeputiesListParser.parse(content)
+    })
+  },
+
+  retrieveDeputies: function(deputies) {
+    return retrieveDeputiesForRange(deputies)
+    .then(function(deputies) {
+      console.log(deputies.length)
+      return deputies;
+    })
   }
 }
