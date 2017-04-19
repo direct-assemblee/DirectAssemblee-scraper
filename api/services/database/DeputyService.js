@@ -40,7 +40,7 @@ module.exports = {
 var createDeputyModel = function(deputy, departmentId) {
   return {
     "officialId": deputy.officialId,
-    "civility": deputy.civility,
+    "civility": deputy.civility === "M." ? "M" : "F",
     "firstname": deputy.firstname,
     "lastname": deputy.lastname,
     "party": deputy.party,
