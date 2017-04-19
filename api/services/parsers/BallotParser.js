@@ -27,8 +27,9 @@ var ballotParser = function(callback) {
       } else if (attribs.class === "Non-votants") {
         currentVoteValue = "non-votants";
       } else if (attribs.class === "deputes") {
-        expectedItem = "vote.firstname";
         currentVoteDepute = {};
+      } else if (tagname === "li" && currentVoteDepute) {
+        expectedItem = "vote.firstname";
       } else if (tagname === "b" && expectedItem === "vote.firstname") {
         expectedItem = "vote.lastname";
       }
@@ -49,10 +50,9 @@ var ballotParser = function(callback) {
       if (expectedItem === "vote.firstname") {
         var textTrimmed = text.trim();
         if (textTrimmed) {
-          var splitText = textTrimmed.split(/\s+/);
-          var firstname = splitText[splitText.length - 1].trim();
-          if (firstname === "de") {
-            firstname = splitText[splitText.length - 2].trim();
+          var firstname = textTrimmed;
+          if (firstname.endsWith(" de")) {
+            firstname = firstname.substring(0, firstname.length - 3);
             currentVoteDepute.lastname = "de ";
           }
           currentVoteDepute.firstname = firstname;
@@ -97,6 +97,9 @@ var ballotParser = function(callback) {
       }
     },
     onclosetag: function(tagname) {
+      if (tagname === "ul") {
+        currentVoteDepute = null;
+      }
       if (tagname === "div") {
         expectedItem = null;
       }

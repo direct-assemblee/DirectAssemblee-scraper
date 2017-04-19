@@ -24,7 +24,7 @@ module.exports = {
     date: {
       type: 'date'
     },
-    detailedDate: {
+    dateDetailed: {
       type: 'string'
     }
   }

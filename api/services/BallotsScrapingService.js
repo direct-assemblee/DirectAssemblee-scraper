@@ -14,19 +14,29 @@ const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTH
 const BALLOTS_PAGE_SIZE = 100;
 const BALLOTS_LIST_URL = Constants.BASE_URL + "scrutins/liste/offset/" + Constants.PARAM_OFFSET + "/(legislature)/14/(type)/" + PARAM_BALLOT_TYPE + "/(idDossier)/TOUS";
 
-var retrieveBallotsList = function() {
-  var promises = [];
-  for (var i = 0 ; i < BALLOT_TYPES.length ; i++) {
-    promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i], 0, []))
-  }
-  return Promise.all(promises)
-  .then(function(ballots) {
-    var allBallots = [];
-    for (i in ballots) {
-      allBallots = allBallots.concat(ballots[i]);
+module.exports = {
+  retrieveBallotsList: function() {
+    var promises = [];
+    for (var i = 0 ; i < BALLOT_TYPES.length ; i++) {
+      promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i], 0, []))
     }
-    return allBallots;
-  })
+    return Promise.all(promises)
+    .then(function(ballots) {
+      var allBallots = [];
+      for (i in ballots) {
+        allBallots = allBallots.concat(ballots[i]);
+      }
+      return allBallots;
+    })
+  },
+
+  retrieveBallots: function(ballots) {
+    var promises = [];
+    for (var i = 0 ; i < ballots.length ; i++) {
+      promises.push(retrieveBallotDetails(ballots[i]));
+    }
+    return Promise.all(promises);
+  }
 }
 
 var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots) {
@@ -56,10 +66,14 @@ retrieveBallotDetails = function(ballot) {
   })
   .then(function(ballotAnalysis) {
     ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)
-    return Promise.resolve(ballot);
+    return ballot;
   })
   .then(function(ballot) {
-    return retrieveBallotTheme(ballot);
+    if (ballot.fileUrl) {
+      return retrieveBallotTheme(ballot);
+    } else {
+      return ballot;
+    }
   })
 }
 
@@ -76,23 +90,10 @@ retrieveBallotTheme = function(ballot) {
 
 var mergeBallotWithAnalysis = function(ballot, ballotAnalysis) {
   ballot.title = ballotAnalysis.title;
-  ballot.detailedDate = ballotAnalysis.detailedDate;
+  ballot.dateDetailed = ballotAnalysis.dateDetailed;
   ballot.totalVotes = ballotAnalysis.totalVotes;
   ballot.yesVotes = ballotAnalysis.yesVotes;
   ballot.noVotes = ballotAnalysis.noVotes;
-  ballot.votes = ballotAnalysis.votes;
+  ballot.votes = ballotAnalysis.votes
   return ballot
-}
-
-module.exports = {
-  retrieveBallots: function() {
-    return retrieveBallotsList()
-    .then(function(ballots) {
-      var promises = [];
-      for (var i = 0 ; i < ballots.length ; i++) {
-        promises.push(retrieveBallotDetails(ballots[i]));
-      }
-      return Promise.all(promises);
-    })
-  }
 }

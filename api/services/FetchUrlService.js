@@ -8,7 +8,7 @@ var httpGet = function(url, isIsoEncoding) {
   return new Promise(function(resolve, reject) {
     var retry = function(e) {
       console.log("Got error: " + e.message);
-      return httpGet(url);
+      return;
     }
     var retryAfterTimeout = function() {
       console.log("---- Timeout");
@@ -70,7 +70,7 @@ var self = module.exports = {
 
 String.prototype.removeSpecialCharsBetter = function() {
   return this.replace(/\.\r\n/g, "[dotspace]")
-  .replace(/\s\s+/g, ' ')
+  .replace(/\s+/g, ' ')
   .replace(/\\n/g, ' ')
   .replace(/\\'/g, "\"")
   .replace(/\\"/g, '\"')

@@ -19,7 +19,7 @@ var self = module.exports = {
 var createVote = function(voteToInsert) {
   return Vote.create(voteToInsert)
   .then(function(insertedVote) {
-    console.log("created vote : " + insertedVote.value + " from " + insertedVote.deputyId + " for " + insertedVote.ballotId);
+    // console.log("created vote : " + insertedVote.value + " from " + insertedVote.deputyId + " for " + insertedVote.ballotId);
     return insertedVote;
   });
 }
