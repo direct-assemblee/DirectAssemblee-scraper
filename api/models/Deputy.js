@@ -11,7 +11,7 @@ module.exports = {
       type: 'int',
       unique: true
     },
-    civility: {
+    gender: {
       type: 'string'
     },
     firstname: {
@@ -36,6 +36,9 @@ module.exports = {
       type: 'string'
     },
     email: {
+      type: 'string'
+    },
+    job: {
       type: 'string'
     },
     subscribers: {

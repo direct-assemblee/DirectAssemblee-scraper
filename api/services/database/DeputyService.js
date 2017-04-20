@@ -40,7 +40,7 @@ module.exports = {
 var createDeputyModel = function(deputy, departmentId) {
   return {
     "officialId": deputy.officialId,
-    "civility": deputy.civility === "M." ? "M" : "F",
+    "gender": deputy.civility === "M." ? "M" : "F",
     "firstname": deputy.firstname,
     "lastname": deputy.lastname,
     "party": deputy.party,
@@ -48,7 +48,8 @@ var createDeputyModel = function(deputy, departmentId) {
     "circonscription": deputy.circonscription,
     "commission": deputy.commission,
     "phone": deputy.phone,
-    "email": deputy.email
+    "email": deputy.email,
+    "job": deputy.job
   }
 }
 

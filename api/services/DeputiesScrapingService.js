@@ -114,6 +114,7 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
         console.log("retrieved deputyInfos for : " + deputy.lastname);
         deputy.phone = deputyInfos.phone;
         deputy.email = deputyInfos.email;
+        deputy.job = deputyInfos.job;
         if (deputyInfos.declarationsUrl) {
           return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)
           .then(function(declarations) {
