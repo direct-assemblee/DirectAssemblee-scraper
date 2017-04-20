@@ -23,7 +23,7 @@ var createMandates = function(mandates, deputyId) {
   return Mandate.create(mandatesToInsert)
   .then(function(insertedMandates) {
     for (i in insertedMandates) {
-      console.log("created mandate : " + insertedMandates[i].name + " from " + insertedMandates[i].startingDate + " to " + insertedMandates[i].endingDate + " for " + insertedMandates[i].deputyId);
+      // console.log("created mandate : " + insertedMandates[i].name + " from " + insertedMandates[i].startingDate + " to " + insertedMandates[i].endingDate + " for " + insertedMandates[i].deputyId);
     }
     return insertedMandates;
   });

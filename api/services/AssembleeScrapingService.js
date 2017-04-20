@@ -7,6 +7,7 @@ var DeputyService = require('./database/DeputyService.js');
 var BallotService = require('./database/BallotService.js');
 var VoteService = require('./database/VoteService.js');
 var MandateService = require('./database/MandateService.js');
+var ExtraPositionService = require('./database/ExtraPositionService.js');
 var DeclarationService = require('./database/DeclarationService.js');
 var WorkService = require('./database/WorkService.js');
 var DeputeVotesParser = require('./parsers/DeputeVotesParser');
@@ -81,12 +82,16 @@ var insertDeputy = function(deputy) {
     return MandateService.insertMandates(deputy.mandates, insertedDeputy.id)
     .then(function(insertedMandates) {
       console.log("inserted " + insertedMandates.length + " mandates for deputy : " + deputy.lastname)
-      return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.id)
-      .then(function(insertedDeclarations) {
-        console.log("inserted " + insertedDeclarations.length + " declarations for deputy : " + deputy.lastname)
-        return WorkService.insertWorks(deputy.works, insertedDeputy.id)
-        .then(function(insertedWorks) {
-          console.log("inserted " + insertedWorks.length + " works for deputy : " + deputy.lastname)
+      return ExtraPositionService.insertExtraPositions(deputy.extraPositions, insertedDeputy.id)
+      .then(function(insertedExtraPositions) {
+        console.log("inserted " + insertedExtraPositions.length + " extra positions for deputy : " + deputy.lastname)
+        return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.id)
+        .then(function(insertedDeclarations) {
+          console.log("inserted " + insertedDeclarations.length + " declarations for deputy : " + deputy.lastname)
+          return WorkService.insertWorks(deputy.works, insertedDeputy.id)
+          .then(function(insertedWorks) {
+            console.log("inserted " + insertedWorks.length + " works for deputy : " + deputy.lastname)
+          })
         })
       })
     })

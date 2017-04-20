@@ -6,6 +6,7 @@ var DeputyWorkParser = require('./parsers/DeputyWorkParser');
 var DeputyInfosParser = require('./parsers/DeputyInfosParser');
 var DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
 var DeputyMandatesParser = require('./parsers/DeputyMandatesParser');
+var DeputyExtraPositionsParser = require('./parsers/DeputyExtraPositionsParser');
 
 const PARAM_WORK_TYPE = "{work_type}";
 const PARAM_DEPUTE_NAME = "{depute_name}";
@@ -36,7 +37,7 @@ module.exports = {
 
 var retrieveDeputiesForRange = function(deputies) {
   var promises = [];
-  for (var i = 0 ; i < deputies.length ; i++) {
+  for (var i = 0 ; i < 1 ; i++) {
     promises.push(retrieveDeputyDetails(deputies[i]));
   }
   return Promise.all(promises);
@@ -98,6 +99,14 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
       console.log("retrieved mandates for : " + deputy.lastname);
       deputy.mandates = mandates;
       return deputy;
+    })
+    .then(function(deputy) {
+      return DeputyExtraPositionsParser.parse(content)
+      .then(function(extraPositions) {
+        console.log("retrieved extra positions for : " + deputy.lastname);
+        deputy.extraPositions = extraPositions;
+        return deputy;
+      })
     })
     .then(function(deputy) {
       return DeputyInfosParser.parse(content)
