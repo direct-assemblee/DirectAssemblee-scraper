@@ -10,7 +10,6 @@ var MandateService = require('./database/MandateService.js');
 var ExtraPositionService = require('./database/ExtraPositionService.js');
 var DeclarationService = require('./database/DeclarationService.js');
 var WorkService = require('./database/WorkService.js');
-var DeputeVotesParser = require('./parsers/DeputeVotesParser');
 var BallotsScrapingService = require('./BallotsScrapingService');
 var DeputiesScrapingService = require('./DeputiesScrapingService');
 var DeputyHelper = require('./helpers/DeputyHelper')
