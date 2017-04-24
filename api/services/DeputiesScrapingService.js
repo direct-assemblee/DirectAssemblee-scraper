@@ -97,6 +97,7 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
     return DeputyMandatesParser.parse(content)
     .then(function(mandates) {
       console.log("retrieved mandates for : " + deputy.lastname);
+      deputy.currentMandateStartDate = mandates.currentMandateStartDate;
       deputy.mandates = mandates;
       return deputy;
     })

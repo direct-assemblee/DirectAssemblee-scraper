@@ -1,4 +1,5 @@
 var Promise = require("bluebird");
+var DateHelper = require('../helpers/DateHelper.js');
 
 var self = module.exports = {
   findDeputyWithOfficialId: function(officialId) {
@@ -43,6 +44,7 @@ var self = module.exports = {
 }
 
 var createDeputyModel = function(deputy, departmentId) {
+  var startingDate = deputy.currentMandateStartDate ? DateHelper.formatDate(deputy.currentMandateStartDate) : null;
   return {
     "officialId": deputy.officialId,
     "gender": deputy.civility === "M." ? "M" : "F",
@@ -54,7 +56,8 @@ var createDeputyModel = function(deputy, departmentId) {
     "commission": deputy.commission,
     "phone": deputy.phone,
     "email": deputy.email,
-    "job": deputy.job
+    "job": deputy.job,
+    "currentMandateStartDate": startingDate
   }
 }
 

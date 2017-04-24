@@ -41,6 +41,9 @@ module.exports = {
     job: {
       type: 'string'
     },
+    currentMandateStartDate: {
+      type: 'date'
+    },
     subscribers: {
       collection: 'subscriber',
       via: 'followedDeputiesIds',
