@@ -4,14 +4,14 @@ var DateHelper = require('../helpers/DateHelper.js');
 module.exports = {
   insertBallot: function(ballot, shouldUpdate) {
     return Ballot.findOne({
-      officialId: ballot.id
+      officialId: ballot.officialId
     }).then(function(foundBallot) {
       if (!foundBallot || shouldUpdate) {
         var ballotToInsert = createBallotModel(ballot)
         if (!foundBallot) {
           return createBallot(ballotToInsert);
         } else {
-          return updateBallot(ballotToInsert);
+          return updateBallot(foundBallot, ballotToInsert);
         }
       }
     });
@@ -21,7 +21,7 @@ module.exports = {
 var createBallotModel = function(ballot) {
   var date = DateHelper.formatDate(ballot.date)
   return {
-    "officialId": ballot.id,
+    "officialId": ballot.officialId,
     "title": ballot.title,
     "theme": ballot.theme,
     "date": date,
@@ -43,9 +43,9 @@ var createBallot = function(ballotToInsert) {
     })
 }
 
-var updateBallot = function(ballotToUpdate) {
+var updateBallot = function(foundBallot, ballotToUpdate) {
   return Ballot.update({
-    officialId: ballotToUpdate.officialId
+    id: foundBallot.id
   }, ballotToUpdate)
   .then(function(updatedBallot) {
     // console.log("updated ballot : " + updatedBallot[0].officialId);

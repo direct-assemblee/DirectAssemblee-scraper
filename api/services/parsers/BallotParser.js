@@ -3,7 +3,7 @@ var htmlparser = require('htmlparser2');
 
 const VOTES_DATA_REGEX = /var\spositions=(.+\}\])/i;
 
-var ballotParser = function(callback) {
+var ballotParser = function(url, callback) {
   var parsedItem = {};
   parsedItem.votes = [];
   var expectedItem;
@@ -42,7 +42,7 @@ var ballotParser = function(callback) {
           var votes = JSON.parse(votesData);
           for (i in votes) {
             var voteValue = votes[i].RECTIFICATION ? votes[i].RECTIFICATION : votes[i].POSITION;
-            parsedItem.votes.push({ "deputeId" : votes[i].ID_ACTEUR, "value" : voteValue })
+            parsedItem.votes.push({ "deputy" : { id: votes[i].ID_ACTEUR }, "value" : voteValue })
           }
         }
       }
@@ -65,7 +65,7 @@ var ballotParser = function(callback) {
             currentVoteDepute.lastname = ""
           }
           currentVoteDepute.lastname = currentVoteDepute.lastname + lastname;
-          parsedItem.votes.push({ "depute": currentVoteDepute, "value" : currentVoteValue })
+          parsedItem.votes.push({ "deputy": currentVoteDepute, "value" : currentVoteValue })
           currentVoteDepute = {}
           expectedItem = "vote.firstname";
         }
@@ -112,9 +112,9 @@ var ballotParser = function(callback) {
 }
 
 module.exports = {
-  parse: function(content) {
+  parse: function(url, content) {
     return new Promise(function(resolve, reject) {
-      var parser = ballotParser(function(ballot) {
+      var parser = ballotParser(url, function(ballot) {
         resolve(ballot);
       });
       parser.write(content);

@@ -62,7 +62,7 @@ var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots
 retrieveBallotDetails = function(ballot) {
   return FetchUrlService.retrieveContent(ballot.analysisUrl)
   .then(function(content) {
-    return BallotParser.parse(content)
+    return BallotParser.parse(ballot.analysisUrl, content)
   })
   .then(function(ballotAnalysis) {
     ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)

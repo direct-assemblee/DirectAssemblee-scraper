@@ -11,8 +11,8 @@ var self = module.exports = {
 
       var iterFirstname = latinize(iterDeputy.firstname).replace(' ', '-')
       var iterLastname = latinize(iterDeputy.lastname).replace(' ', '-')
-      var voteFirstname = latinize(vote.depute.firstname).replace(' ', '-')
-      var voteLastname = latinize(vote.depute.lastname).replace(' ', '-')
+      var voteFirstname = latinize(vote.deputy.firstname).replace(' ', '-')
+      var voteLastname = latinize(vote.deputy.lastname).replace(' ', '-')
 
       if (iterFirstname == voteFirstname) {
         firstnameMatch = true;

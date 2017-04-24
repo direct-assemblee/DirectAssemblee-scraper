@@ -1,6 +1,12 @@
 var Promise = require("bluebird");
 
-module.exports = {
+var self = module.exports = {
+  findDeputyWithOfficialId: function(officialId) {
+    return Deputy.findOne({
+      officialId: officialId
+    })
+  },
+
   getDeputiesNames: function() {
     return Deputy.find()
     .then(function(deputies) {
@@ -14,9 +20,8 @@ module.exports = {
   },
 
   insertDeputy: function(deputy, shouldUpdate) {
-    return Deputy.findOne({
-      officialId: deputy.officialId
-    }).then(function(foundDeputy) {
+    return self.findDeputyWithOfficialId(deputy.officialId)
+    .then(function(foundDeputy) {
       if (!foundDeputy || shouldUpdate) {
         return Department.findOne(
           { "name": deputy.department }

@@ -111,7 +111,7 @@ var retrieveBallotsRange = function(ballots, start) {
     return insertBallots(ballotsRangeRetrieved, 0)
     .then(function(insertedBallots) {
       console.log("--- inserted ballots " + insertBallots.length)
-      return insertVotesForBallots(ballotsRangeRetrieved)
+      return insertVotesForBallots(insertedBallots, ballotsRangeRetrieved)
     })
     .then(function(insertedVotes) {
       console.log("---- inserted votes " + insertedVotes.length)
@@ -137,28 +137,29 @@ var insertBallot = function(ballot) {
   return BallotService.insertBallot(ballot, true)
 }
 
-var insertVotesForBallots = function(ballots) {
+var insertVotesForBallots = function(insertedBallots, ballots) {
   return DeputyService.getDeputiesNames()
   .then(function(deputies) {
     var promises = [];
     for (i in ballots) {
-      promises.push(insertVotesForBallot(ballots[i], deputies))
+      promises.push(insertVotesForBallot(insertedBallots[i].id, ballots[i].votes, deputies))
     }
     return Promise.all(promises)
   })
 }
 
-var insertVotesForBallot = function(ballot, deputies) {
-  var votes = ballot.votes;
+var insertVotesForBallot = function(ballotId, votes, deputies) {
   var promises = [];
   for (i in votes) {
     var vote = votes[i]
-    var deputyId = vote.deputyId;
-    if (!deputyId) {
+    var deputyId;
+    if (vote.deputy.id) {
+      deputyId = DeputyService.findDeputyWithOfficialId(vote.deputy.id);
+    } else {
       deputyId = DeputyHelper.getDeputyIdForVoteInBallot(deputies, vote);
     }
     if (deputyId) {
-      var vote = { deputyId: deputyId, ballotId: ballot.id, value: vote.value }
+      var vote = { deputyId: deputyId, ballotId: ballotId, value: vote.value }
       promises.push(VoteService.insertVote(vote))
     }
   }

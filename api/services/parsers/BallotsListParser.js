@@ -20,7 +20,7 @@ var ballotParser = function(ballotType, callback) {
     },
     ontext: function(text) {
       if (expectedData === "id") {
-        parsedItem.id = text.replace('*', '');
+        parsedItem.officialId = text.replace('*', '');
         expectedData = "date";
       } else if (expectedData === "date") {
         if (text.trim()) {
@@ -52,7 +52,7 @@ var ballotParser = function(ballotType, callback) {
           expectedData = "url";
         }
       } else if (tagname === "tr") {
-        if (parsedItem.id) {
+        if (parsedItem.officialId) {
           parsedItem.type = ballotType;
           resultItems.push(parsedItem);
         }
