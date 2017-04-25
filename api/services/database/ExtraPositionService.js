@@ -31,7 +31,7 @@ var createExtraPositions = function(extraPositions, deputyId) {
 var createExtraPosition = function(extraPositionToInsert) {
   return ExtraPosition.create(extraPositionToInsert)
   .then(function(insertedExtraPosition) {
-    console.log("created extra position : " + insertedExtraPosition.text + " for " + insertedExtraPosition.deputyId);
+    console.log("created extra position : " + insertedExtraPosition.name + " for " + insertedExtraPosition.deputyId);
     return insertedExtraPosition;
   });
 }

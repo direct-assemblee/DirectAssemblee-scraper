@@ -24,10 +24,11 @@ var ballotParser = function(url, callback) {
         currentVoteValue = "contre";
       } else if (attribs.class === "Abstention") {
         currentVoteValue = "abstention";
-      } else if (attribs.class === "Non-votants") {
-        currentVoteValue = "non-votants";
+      } else if (attribs.class && attribs.class.startsWith("Non-votant")) {
+        currentVoteValue = "non-votant";
       } else if (attribs.class === "deputes") {
         currentVoteDepute = {};
+        expectedItem = "vote.firstname";
       } else if (tagname === "li" && currentVoteDepute) {
         expectedItem = "vote.firstname";
       } else if (tagname === "b" && expectedItem === "vote.firstname") {
@@ -55,6 +56,7 @@ var ballotParser = function(url, callback) {
             firstname = firstname.substring(0, firstname.length - 3);
             currentVoteDepute.lastname = "de ";
           }
+          firstname = firstname.replace("M. ", "").replace("Mme ", "")
           currentVoteDepute.firstname = firstname;
         }
       } else if (expectedItem === "vote.lastname") {
