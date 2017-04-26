@@ -37,7 +37,7 @@ module.exports = {
 
 var retrieveDeputiesForRange = function(deputies) {
   var promises = [];
-  for (var i = 0 ; i < 1 ; i++) {
+  for (var i = 0 ; i < deputies.length ; i++) {
     promises.push(retrieveDeputyDetails(deputies[i]));
   }
   return Promise.all(promises);
@@ -77,8 +77,11 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
     return DeputyWorkParser.parse(content, workUrl)
   })
   .then(function(works) {
+    var work;
     for (var i in works) {
-      previousWork.push(works[i]);
+      work = works[i];
+      work.type = getTypeName(workType);
+      previousWork.push(work);
     }
     var lastWork = previousWork[previousWork.length - 1];
     if (lastWork && works && works.length >= WORK_PAGE_SIZE) {
@@ -88,6 +91,25 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
       return Promise.resolve(previousWork);
     }
   })
+}
+
+var getTypeName = function(workType) {
+  var typeName;
+  switch (workType) {
+    case WORK_TYPE_QUESTIONS:
+      typeName = "question";
+      break;
+    case WORK_TYPE_REPORTS:
+      typeName = "report";
+      break;
+    case WORK_TYPE_PROPOSITIONS:
+      typeName = "law_proposal";
+      break;
+    case WORK_TYPE_COSIGNED_PROPOSITIONS:
+      typeName = "cosigned_law_proposal";
+      break;
+  }
+  return typeName;
 }
 
 var retrieveDeputyInfosAndMandates = function(deputy) {

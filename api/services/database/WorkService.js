@@ -36,6 +36,7 @@ var createWorkModel = function(deputyId, work) {
     "url": work.url,
     "officialId": work.id,
     "description": work.description,
-    "deputyId": deputyId
+    "deputyId": deputyId,
+    "type": work.type
   }
 }

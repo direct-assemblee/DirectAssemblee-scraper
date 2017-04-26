@@ -22,6 +22,9 @@ module.exports = {
     description: {
       type: 'string'
     },
+    type: {
+      type: 'string'
+    },
     deputyId: {
       type: 'int',
       model: 'Deputy'

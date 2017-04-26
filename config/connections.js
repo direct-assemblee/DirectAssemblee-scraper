@@ -46,7 +46,7 @@ module.exports.connections = {
     user: 'root', //optional
     password: '', //optional
     charset:'utf8',
-    database: 'assembleenationale_6' //optional
+    database: 'assembleenationale' //optional
   },
 
   /***************************************************************************

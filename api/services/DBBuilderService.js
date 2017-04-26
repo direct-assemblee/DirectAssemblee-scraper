@@ -5,7 +5,7 @@ var Promise = require("bluebird");
 
 var client;
 
-const DB_NAME = 'assembleenationale_6';
+const DB_NAME = 'assembleenationale';
 const DB_HOST = '127.0.0.1';
 const DB_USER = 'root';
 const DB_PASSWORD = '';
@@ -18,6 +18,7 @@ const TABLE_WORK = "Work";
 const TABLE_BALLOT = "Ballot";
 const TABLE_VOTE = "Vote";
 const TABLE_MANDATE = "Mandate";
+const TABLE_EXTRA_POSITION = "ExtraPosition";
 const TABLE_SUBSCRIBER = 'Subscriber';
 const TABLE_DEPUTIES_SUBSCRIBERS = 'deputy_subscribers__subscriber_followeddeputiesids'
 
@@ -53,7 +54,7 @@ var importSQLFiles = function(db) {
 var dropTables = function(client) {
   var query = 'DROP TABLE IF EXISTS ' + TABLE_DEPUTY_INFOS + ', ' + TABLE_SUBSCRIBER + ', ' + TABLE_DEPUTIES_SUBSCRIBERS;
   makeQuery(client, query);
-  var query = 'DROP TABLE IF EXISTS ' + TABLE_WORK + ', ' + TABLE_DECLARATION + ', ' + TABLE_VOTE + ', ' + TABLE_MANDATE;
+  var query = 'DROP TABLE IF EXISTS ' + TABLE_EXTRA_POSITION + ', ' + TABLE_WORK + ', ' + TABLE_DECLARATION + ', ' + TABLE_VOTE + ', ' + TABLE_MANDATE;
   makeQuery(client, query);
   var query = 'DROP TABLE IF EXISTS ' + TABLE_BALLOT + ', ' + TABLE_DEPUTY + ', ' + TABLE_DEPUTY_INFOS;
   makeQuery(client, query);
