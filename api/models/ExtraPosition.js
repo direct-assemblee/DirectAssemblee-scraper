@@ -7,7 +7,10 @@ module.exports = {
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
+    position: {
+      type: 'string'
+    },
+    office: {
       type: 'string'
     },
     type: {

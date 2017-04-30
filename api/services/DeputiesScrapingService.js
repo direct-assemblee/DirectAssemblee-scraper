@@ -38,12 +38,12 @@ module.exports = {
 var retrieveDeputiesForRange = function(deputies) {
   var promises = [];
   for (var i = 0 ; i < deputies.length ; i++) {
-    promises.push(retrieveDeputyDetails(deputies[i]));
+    promises.push(retrieveDeputyDetails(deputies[i], i));
   }
   return Promise.all(promises);
 }
 
-var retrieveDeputyDetails = function(deputy) {
+var retrieveDeputyDetails = function(deputy, i) {
   return retrieveDeputyWork(deputy)
   .then(function(deputyWork) {
     deputy.works = []
@@ -84,7 +84,7 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
       previousWork.push(work);
     }
     var lastWork = previousWork[previousWork.length - 1];
-    if (lastWork && works && works.length >= WORK_PAGE_SIZE) {
+    if (lastWork && works && works.length >= WORK_PAGE_SIZE && pageOffset < 1) {
       var newOffset = pageOffset + 1;
       return retrieveDeputyWorkOfType(deputy, workType, newOffset, previousWork);
     } else {

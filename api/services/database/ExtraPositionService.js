@@ -18,11 +18,7 @@ var createExtraPositions = function(extraPositions, deputyId) {
   var promises = [];
   for (i in extraPositions) {
     var positionToInsert;
-    if (extraPositions[i].bureau) {
-      positionToInsert = { name: extraPositions[i].bureau, type: 'bureau', deputyId: deputyId };
-    } else {
-      positionToInsert = { name: extraPositions[i].commission, type: 'commission', deputyId: deputyId };
-    }
+    positionToInsert = { position: extraPositions[i].position, office: extraPositions[i].office, type: extraPositions[i].type, deputyId: deputyId };
     promises.push(createExtraPosition(positionToInsert));
   }
   return Promise.all(promises)
@@ -31,7 +27,7 @@ var createExtraPositions = function(extraPositions, deputyId) {
 var createExtraPosition = function(extraPositionToInsert) {
   return ExtraPosition.create(extraPositionToInsert)
   .then(function(insertedExtraPosition) {
-    console.log("created extra position : " + insertedExtraPosition.name + " for " + insertedExtraPosition.deputyId);
+    // console.log("created extra position : " + insertedExtraPosition.position + " - " + insertedExtraPosition.office + " for " + insertedExtraPosition.deputyId);
     return insertedExtraPosition;
   });
 }
