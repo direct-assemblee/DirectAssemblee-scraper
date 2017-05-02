@@ -19,13 +19,13 @@ var ballotParser = function(url, callback) {
       } else if (attribs.class === "synthese") {
         expectedItem = "synthese";
       } else if (attribs.class === "Pour") {
-        currentVoteValue = "pour";
+        currentVoteValue = "for";
       } else if (attribs.class === "Contre") {
-        currentVoteValue = "contre";
+        currentVoteValue = "against";
       } else if (attribs.class === "Abstention") {
-        currentVoteValue = "abstention";
+        currentVoteValue = "blank";
       } else if (attribs.class && attribs.class.startsWith("Non-votant")) {
-        currentVoteValue = "non-votant";
+        currentVoteValue = "non-voting";
       } else if (attribs.class === "deputes") {
         currentVoteDepute = {};
         expectedItem = "vote.firstname";
@@ -51,13 +51,14 @@ var ballotParser = function(url, callback) {
       if (expectedItem === "vote.firstname") {
         var textTrimmed = text.trim();
         if (textTrimmed) {
+          textTrimmed = textTrimmed.replace("MM.", "").replace("M.", "").replace("Mmes", "").replace("Mme", "")
+            .replace(",", " ").replace(" et ", " ").replace(/\(.*\)/, " ");
           var firstname = textTrimmed;
           if (firstname.endsWith(" de")) {
             firstname = firstname.substring(0, firstname.length - 3);
             currentVoteDepute.lastname = "de ";
           }
-          firstname = firstname.replace("M. ", "").replace("Mme ", "")
-          currentVoteDepute.firstname = firstname;
+          currentVoteDepute.firstname = firstname.trim();
         }
       } else if (expectedItem === "vote.lastname") {
         var textTrimmed = text.trim();
