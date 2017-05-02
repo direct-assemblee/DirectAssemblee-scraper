@@ -2,7 +2,7 @@
 var Promise = require("bluebird");
 var htmlparser = require('htmlparser2');
 
-const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/i;
+const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/g;
 
 var currentMandatesParser = function(callback) {
   var mandates = [];
@@ -51,8 +51,8 @@ var currentMandatesParser = function(callback) {
         var trimmed = text.trim()
         if (trimmed) {
           var startingDateMatched = trimmed.match(DATE_REGEX);
-          if (startingDateMatched) {
-            parsedItem.currentMandateStartDate = startingDateMatched[1];
+          if (startingDateMatched && startingDateMatched.length > 0) {
+            parsedItem.currentMandateStartDate = startingDateMatched[startingDateMatched.length - 1];
             expectedType = null;
           }
         }
