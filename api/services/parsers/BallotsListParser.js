@@ -53,7 +53,12 @@ var ballotParser = function(ballotType, callback) {
         }
       } else if (tagname === "tr") {
         if (parsedItem.officialId) {
-          parsedItem.type = ballotType;
+          if (parsedItem.title.indexOf("motion de censure") > 0) {
+            console.log("---------- " + parsedItem.title);
+            parsedItem.type = "motion_of_censure"
+          } else {
+            parsedItem.type = ballotType;
+          }
           resultItems.push(parsedItem);
         }
         // print(parsedItem)
