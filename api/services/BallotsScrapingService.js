@@ -95,5 +95,6 @@ var mergeBallotWithAnalysis = function(ballot, ballotAnalysis) {
   ballot.yesVotes = ballotAnalysis.yesVotes;
   ballot.noVotes = ballotAnalysis.noVotes;
   ballot.votes = ballotAnalysis.votes
+  ballot.isAdopted = ballotAnalysis.isAdopted;
   return ballot
 }

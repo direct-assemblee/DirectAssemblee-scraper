@@ -18,6 +18,8 @@ var ballotParser = function(url, callback) {
         expectedItem = "title";
       } else if (attribs.class === "synthese") {
         expectedItem = "synthese";
+      } else if (attribs.class === "annoncevote") {
+        expectedItem = "annoncevote";
       } else if (attribs.class === "Pour") {
         currentVoteValue = "for";
       } else if (attribs.class === "Contre") {
@@ -47,7 +49,6 @@ var ballotParser = function(url, callback) {
           }
         }
       }
-
       if (expectedItem === "vote.firstname") {
         var textTrimmed = text.trim();
         if (textTrimmed) {
@@ -97,6 +98,9 @@ var ballotParser = function(url, callback) {
         } else if (textTrimmed === "Contre :") {
           expectedItem = "synthese.contre";
         }
+      } else if (expectedItem && expectedItem === "annoncevote") {
+        parsedItem.isAdopted = text.indexOf("pas adopté") === -1;
+        expectedItem = null;
       }
     },
     onclosetag: function(tagname) {
@@ -108,6 +112,12 @@ var ballotParser = function(url, callback) {
       }
       if (tagname == "html") {
         // print(parsedItem);
+        if (!parsedItem.noVotes) {
+          parsedItem.noVotes = 0;
+        }
+        if (!parsedItem.totalVotes) {
+          parsedItem.totalVotes = parseInt(parsedItem.noVotes) + parseInt(parsedItem.yesVotes);
+        }
         callback(parsedItem);
       }
     }
@@ -135,5 +145,6 @@ var print = function(parsedItem) {
   console.log(parsedItem.yesVotes);
   console.log(parsedItem.noVotes);
   console.log(parsedItem.votes);
+  console.log(parsedItem.isAdopted);
   console.log("------------- ");
 }

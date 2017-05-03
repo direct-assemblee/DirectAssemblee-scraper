@@ -30,8 +30,9 @@ var createBallotModel = function(ballot) {
     "totalVotes": ballot.totalVotes,
     "yesVotes": ballot.yesVotes,
     "noVotes": ballot.noVotes,
+    "isAdopted": ballot.isAdopted,
     "analysisUrl": ballot.analysisUrl,
-    "fileUrl": ballot.fileUrl,
+    "fileUrl": ballot.fileUrl
   }
 }
 
