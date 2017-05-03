@@ -25,5 +25,10 @@ var self = module.exports = {
 
   convertDaysToYears: function(days) {
     return Math.floor(days / 365);
+  },
+
+  yesterday: function() {
+    var yesterday = moment().subtract(1, "days");
+    return yesterday.format("DD/MM/YYYY");
   }
 }

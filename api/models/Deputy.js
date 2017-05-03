@@ -44,6 +44,12 @@ module.exports = {
     currentMandateStartDate: {
       type: 'date'
     },
+    mandateEndDate: {
+      type: 'date'
+    },
+    mandateEndReason: {
+      type: 'string'
+    },
     subscribers: {
       collection: 'subscriber',
       via: 'followedDeputiesIds',

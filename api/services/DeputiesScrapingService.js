@@ -32,6 +32,20 @@ module.exports = {
     .then(function(deputies) {
       return deputies;
     })
+  },
+
+  checkMandate: function(deputy) {
+    var deputyUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
+    return FetchUrlService.retrieveContent(deputyUrl)
+    .then(function(content) {
+      return DeputyInfosParser.parse(content)
+      .then(function(deputyInfos) {
+        console.log("checking mandate for : " + deputy.lastname + " - end of mandate : " + deputyInfos.endOfMandateDate);
+        deputy.endOfMandateDate = deputyInfos.endOfMandateDate;
+        deputy.endOfMandateReason = deputyInfos.endOfMandateReason;
+        return deputy;
+      })
+    })
   }
 }
 

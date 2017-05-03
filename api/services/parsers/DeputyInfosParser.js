@@ -1,6 +1,8 @@
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
+const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/g;
+
 var deputyParser = function(callback) {
   var parsedItem = {};
   var expectedItem;
@@ -15,7 +17,7 @@ var deputyParser = function(callback) {
       } else if (attribs.href && attribs.href.startsWith("http://www.hatvp.fr")) {
         parsedItem.declarationsUrl = attribs.href;
       } else if (tagname === "dt") {
-        expectedItem = "job";
+        expectedItem = "jobOrEnd";
       }
     },
     ontext: function(text) {
@@ -24,7 +26,7 @@ var deputyParser = function(callback) {
       } else if (expectedItem === "phoneValue") {
         parsedItem.phone = text.replace(/\s+/g, '');
         expectedItem = null;
-      } else if (expectedItem === "job") {
+      } else if (expectedItem === "jobOrEnd") {
         if (text === "Biographie") {
           expectJobTextCount = expectJobTextCount + 1;
         } else if (expectJobTextCount > 0) {
@@ -36,6 +38,21 @@ var deputyParser = function(callback) {
               expectedItem = null;
               expectJobTextCount = 0;
             }
+          }
+        } else if (text === "Date de fin de mandat") {
+          expectedItem = "endOfMandate";
+        }
+      } else if (expectedItem === "endOfMandate") {
+        var trimmed = text.trim();
+        if (trimmed) {
+          var dateMatched = trimmed.match(DATE_REGEX);
+          if (dateMatched && dateMatched.length > 0) {
+            parsedItem.endOfMandateDate = dateMatched[dateMatched.length - 1];
+            var reason = trimmed.match(/\((.*)\)/i);
+            if (reason && reason.length > 1) {
+              parsedItem.endOfMandateReason = reason[1];
+            }
+            expectedType = null;
           }
         }
       }
@@ -69,5 +86,7 @@ var print = function(parsedItem) {
   console.log(parsedItem.phone);
   console.log(parsedItem.email);
   console.log(parsedItem.declarationsUrl);
+  console.log(parsedItem.endOfMandateDate);
+  console.log(parsedItem.endOfMandateReason);
   console.log("------------- ");
 }

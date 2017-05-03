@@ -38,7 +38,34 @@ var self = module.exports = {
         return retrieveBallotsRange(ballots, 0);
       })
       .then(function() {
-        console.log("done scraping")
+        console.log("done scraping ballots")
+      })
+    })
+    .then(function() {
+      console.log('look for non-updated deputies');
+      return DeputyService.findNonUpdatedDeputies()
+      .then(function(nonUpdatedDeputies) {
+        console.log('found ' + nonUpdatedDeputies.length + " non updated deputies");
+        var promises = [];
+        for (i in nonUpdatedDeputies) {
+          promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
+        }
+        return Promise.all(promises)
+      })
+      .then(function(doneDeputies) {
+        var promises = [];
+        if (doneDeputies) {
+          for (i in doneDeputies) {
+            if (doneDeputies[i].endOfMandateDate) {
+              promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
+            }
+          }
+        }
+        console.log('updating ' + promises.length + " done deputies");
+        return Promise.all(promises)
+      })
+      .then(function() {
+        console.log("done updating database !!")
       })
     })
   }

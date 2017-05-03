@@ -2,6 +2,11 @@ var Promise = require("bluebird");
 var DateHelper = require('../helpers/DateHelper.js');
 
 var self = module.exports = {
+  findNonUpdatedDeputies: function() {
+    return Deputy.find()
+    .where({ updatedAt: { '>': DateHelper.yesterday() } });
+  },
+
   findDeputyWithOfficialId: function(officialId) {
     return Deputy.findOne({
       officialId: officialId
@@ -40,6 +45,22 @@ var self = module.exports = {
         })
       }
     });
+  },
+
+  saveEndOfMandate: function(deputy) {
+    var endingDate = deputy.endOfMandateDate ? DateHelper.formatDate(deputy.endOfMandateDate) : null;
+    var toUpdate = {
+      "currentMandateStartDate": null,
+      "mandateEndDate": endingDate,
+      "mandateEndReason": deputy.endOfMandateReason
+    };
+    return Deputy.update({
+      officialId: deputy.officialId
+    }, toUpdate)
+    .then(function(updatedDeputy) {
+      // console.log("updated deputy : " + updatedDeputy[0].lastname);
+      return updatedDeputy[0];
+    })
   }
 }
 
