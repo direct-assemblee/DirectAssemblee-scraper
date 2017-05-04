@@ -4,7 +4,7 @@ var DateHelper = require('../helpers/DateHelper.js');
 var self = module.exports = {
   findNonUpdatedDeputies: function() {
     return Deputy.find()
-    .where({ updatedAt: { '>': DateHelper.yesterday() } });
+    .where({ updatedAt: { '>=': DateHelper.yesterday() } });
   },
 
   findDeputyWithOfficialId: function(officialId) {
@@ -78,7 +78,9 @@ var createDeputyModel = function(deputy, departmentId) {
     "phone": deputy.phone,
     "email": deputy.email,
     "job": deputy.job,
-    "currentMandateStartDate": startingDate
+    "currentMandateStartDate": startingDate,
+    "mandateEndDate": null,
+    "mandateEndReason": null
   }
 }
 
