@@ -15,12 +15,19 @@ var DeputiesScrapingService = require('./DeputiesScrapingService');
 var DeputyHelper = require('./helpers/DeputyHelper')
 
 const EVERY_MINUTE = '* * * * *';
-const EVERY_HOUR = '1 * * * *';
+const SCRAP_TIMES = '0 2,13,19 * * *';
 const RANGE_STEP = 10;
 
 var self = module.exports = {
+  scrapThenStartService: function() {
+    self.startScraping()
+    .then(function() {
+      self.startService();
+    })
+  },
+
   startService: function() {
-    cron.schedule(EVERY_HOUR, function() {
+    cron.schedule(SCRAP_TIMES, function() {
       console.log('start looking for new votes');
       self.startScraping()
     });
@@ -39,6 +46,7 @@ var self = module.exports = {
       })
       .then(function() {
         console.log("done scraping ballots")
+        return;
       })
     })
     .then(function() {
@@ -66,6 +74,7 @@ var self = module.exports = {
       })
       .then(function() {
         console.log("done updating database !!")
+        return;
       })
     })
   }
@@ -154,7 +163,9 @@ var retrieveBallotsRange = function(ballots, start) {
 var insertBallots = function(ballots) {
   var promises = [];
   for (i in ballots) {
-    promises.push(insertBallot(ballots[i]));
+    if (ballots[i]) {
+      promises.push(insertBallot(ballots[i]));
+    }
   }
   return Promise.all(promises)
 }
