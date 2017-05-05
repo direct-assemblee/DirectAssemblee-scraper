@@ -33,7 +33,7 @@ module.exports = {
   retrieveBallots: function(ballots) {
     var promises = [];
     for (var i = 0 ; i < ballots.length ; i++) {
-      promises.push(retrieveBallotDetails(ballots[i]));
+      promises.push(retrieveBallotDetails(ballots[i], 0));
     }
     return Promise.all(promises);
   }
@@ -59,10 +59,19 @@ var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots
   })
 }
 
-retrieveBallotDetails = function(ballot) {
+retrieveBallotDetails = function(ballot, attempts) {
   return FetchUrlService.retrieveContent(ballot.analysisUrl)
   .then(function(content) {
-    return BallotParser.parse(ballot.analysisUrl, content)
+    if (content.indexOf("503 Service Unavailable") > 0) {
+      attempts++;
+      if (attempts < 3) {
+        return retrieveBallotDetails(ballot, attempts);
+      } else {
+        return;
+      }
+    } else {
+      return BallotParser.parse(ballot.analysisUrl, content)
+    }
   })
   .then(function(ballotAnalysis) {
     ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)
