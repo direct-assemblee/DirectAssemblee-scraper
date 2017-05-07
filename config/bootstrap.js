@@ -13,14 +13,18 @@ var program = require('commander');
 module.exports.bootstrap = function(cb) {
 
   sails.on('lifted', function() {
-    program.option('-r, --resetDB', 'Reset database').parse(process.argv);
+    program.option('-r, --resetDB', 'Reset database').option('-s, --startNow', 'Start scraping now').parse(process.argv);
     if (program.resetDB) {
       console.log("Resetting DB")
       DBBuilderService.resetDB();
+    }
+
+    console.log("Initializing DB")
+    DBBuilderService.initDB();
+    if (program.startNow) {
+      AssembleeScrapingService.scrapThenStartService();
     } else {
-      console.log("Initializing DB")
-      DBBuilderService.initDB();
-      AssembleeScrapingService.startScraping();
+      AssembleeScrapingService.startService();
     }
   });
 
