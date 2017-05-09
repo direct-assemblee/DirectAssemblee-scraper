@@ -42,11 +42,12 @@ module.exports.connections = {
   ***************************************************************************/
   assNatMysqlServer: {
     adapter: 'sails-mysql',
-    host: 'localhost',
+    host: process.env.DATABASE_HOST || 'localhost',
+    port: 3306,
     user: 'root', //optional
     password: '', //optional
     charset:'utf8',
-    database: 'assembleenationale' //optional
+    database: 'directassemblee' //optional
   },
 
   /***************************************************************************

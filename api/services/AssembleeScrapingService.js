@@ -34,13 +34,13 @@ var self = module.exports = {
   },
 
   startScraping: function() {
-    DeputiesScrapingService.retrieveDeputiesList()
+    return DeputiesScrapingService.retrieveDeputiesList()
     .then(function(deputies) {
       return retrieveDeputiesRange(deputies, 0)
     })
     .then(function() {
       console.log('start scraping ballots');
-      BallotsScrapingService.retrieveBallotsList()
+      return BallotsScrapingService.retrieveBallotsList()
       .then(function(ballots) {
         return retrieveBallotsRange(ballots, 0);
       })

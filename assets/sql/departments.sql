@@ -26,24 +26,24 @@ SET time_zone = "+00:00";
 -- Table structure for table `departement`
 --
 
-CREATE TABLE IF NOT EXISTS Department (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `Code` varchar(3) CHARACTER SET utf8 DEFAULT NULL,
-  `Name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `NameUppercase` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `Slug` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `SoundexName` varchar(20),
-  PRIMARY KEY (`Id`),
-  KEY `Slug` (`Slug`),
-  KEY `Code` (`Code`),
-  KEY `SoundexName` (`SoundexName`)
+CREATE TABLE IF NOT EXISTS department (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(3) CHARACTER SET utf8 DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `nameuppercase` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `slug` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `soundexname` varchar(20),
+  PRIMARY KEY (`id`),
+  KEY `slug` (`slug`),
+  KEY `code` (`code`),
+  KEY `soundexname` (`soundexname`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=102 ;
 
 --
 -- Dumping data for table `Department`
 --
 
-INSERT IGNORE `Department` (`Id`, `Code`, `Name`, `NameUppercase`, `Slug`, `SoundexName`) VALUES
+INSERT IGNORE `department` (`id`, `code`, `name`, `nameuppercase`, `slug`, `soundexname`) VALUES
 (1, '01', 'Ain', 'AIN', 'ain', 'A500'),
 (2, '02', 'Aisne', 'AISNE', 'aisne', 'A250'),
 (3, '03', 'Allier', 'ALLIER', 'allier', 'A460'),

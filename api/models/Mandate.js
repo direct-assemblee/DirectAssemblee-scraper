@@ -8,7 +8,7 @@ module.exports = {
       autoIncrement: true
     },
     name: {
-      type: 'string'
+      type: 'text'
     },
     startingDate: {
       type: 'date'

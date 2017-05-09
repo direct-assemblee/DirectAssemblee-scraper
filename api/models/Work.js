@@ -20,7 +20,7 @@ module.exports = {
       type: 'string'
     },
     description: {
-      type: 'string'
+      type: 'text'
     },
     type: {
       type: 'string'
