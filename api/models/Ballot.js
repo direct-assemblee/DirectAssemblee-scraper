@@ -12,7 +12,7 @@ module.exports = {
       unique: true
     },
     title: {
-      type: 'string'
+      type: 'text'
     },
     theme: {
       type: 'string'
