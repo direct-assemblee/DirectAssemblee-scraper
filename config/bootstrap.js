@@ -21,11 +21,11 @@ module.exports.bootstrap = function(cb) {
 
     console.log("Initializing DB")
     DBBuilderService.initDB();
-    if (program.startNow) {
+    // if (program.startNow) {
       AssembleeScrapingService.scrapThenStartService();
-    } else {
-      AssembleeScrapingService.startService();
-    }
+    // } else {
+      // AssembleeScrapingService.startService();
+    // }
   });
 
   // It's very important to trigger this callback method when you are finished
