@@ -3,5 +3,5 @@ apps:
     name      : 'directass_dbbuilder'
     node_args : '--max_old_space_size=4096'
     env :
-      PORT      : 1327
+      PORT      : ${DBBUILDER_PORT}
       NODE_ENV  : 'development'
