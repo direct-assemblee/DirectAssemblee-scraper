@@ -3,8 +3,9 @@ var DateHelper = require('../helpers/DateHelper.js');
 
 var self = module.exports = {
   findNonUpdatedDeputies: function() {
+    console.log(DateHelper.yesterday())
     return Deputy.find()
-    .where({ updatedAt: { '>=': DateHelper.yesterday() } });
+    .where({ updatedAt: { '<': DateHelper.yesterday() } });
   },
 
   findDeputyWithOfficialId: function(officialId) {
