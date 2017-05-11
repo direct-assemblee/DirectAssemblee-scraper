@@ -40,14 +40,15 @@ module.exports.connections = {
   * Run: npm install sails-mysql                                             *
   *                                                                          *
   ***************************************************************************/
+
   assNatMysqlServer: {
     adapter: 'sails-mysql',
     host: process.env.DATABASE_HOST || 'localhost',
-    port: 3306,
-    user: 'root', //optional
-    password: '', //optional
-    charset:'utf8',
-    database: 'directassemblee' //optional
+    port: process.env.DATABASE_PORT || 3306,
+    user: process.env.DATABASE_USER || 'root',
+    password: process.env.DATABASE_PASSWORD || '',
+    database: process.env.DATABASE_NAME || 'directassemblee',
+    charset:'utf8'
   },
 
   /***************************************************************************

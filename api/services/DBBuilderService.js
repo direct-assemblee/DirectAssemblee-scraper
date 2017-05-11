@@ -5,11 +5,12 @@ var Promise = require("bluebird");
 
 var client;
 
-const DB_NAME = 'directassemblee';
+const DB_NAME = process.env.DATABASE_NAME || 'directassemblee';
 const DB_HOST = process.env.DATABASE_HOST || 'localhost';
-const DB_PORT = 3306;
-const DB_USER = 'root';
-const DB_PASSWORD = '';
+const DB_PORT = process.env.DATABASE_PORT || 3306;
+const DB_USER = process.env.DATABASE_USER || 'root';
+const DB_PASSWORD = process.env.DATABASE_PASSWORD || '';
+const DB_ROOT_PASSWORD = process.env.DATABASE_ROOT_PASSWORD || '';
 
 const TABLE_DEPARTMENT = 'Department';
 const TABLE_DEPUTY = "Deputy";
@@ -25,38 +26,35 @@ const TABLE_DEPUTIES_SUBSCRIBERS = 'deputy_subscribers__subscriber_followeddeput
 
 module.exports = {
   resetDB: function() {
-    client = getClientWithDB(DB_NAME);
+    client = getClient(DB_NAME, false);
     dropTables(client);
   },
 
   initDB: function() {
-    client = getClientWithDB(DB_NAME);
-    setNamesUtf8(client);
+    console.log("pass : " + process.env.DATABASE_PASSWORD)
+
+    var rootedClient = getClient(DB_NAME, true);
+    configDB(rootedClient);
+
+    client = getClient(DB_NAME, false);
     importSQLFiles(client);
   }
 }
 
-var getClient = function() {
+var getClient = function(db, root) {
+  var user = root ? 'root' : DB_USER;
+  var pwd = root ? DB_ROOT_PASSWORD : DB_PASSWORD;
   return new Client({
     host: DB_HOST,
     port: DB_PORT,
-    user: DB_USER,
-    password: DB_PASSWORD
-  });
-}
-
-var getClientWithDB = function(db) {
-  return new Client({
-    host: DB_HOST,
-    port: DB_PORT,
-    user: DB_USER,
-    password: DB_PASSWORD,
+    user: user,
+    password: pwd,
     db: db,
     multiStatements: true
   });
 }
 
-var setNamesUtf8 = function(client) {
+var configDB = function(client) {
   makeQuery(client, 'SET NAMES UTF8');
   makeQuery(client, 'SET GLOBAL sql_mode = \"\"');
 }
