@@ -16,7 +16,7 @@ var DeputyHelper = require('./helpers/DeputyHelper')
 
 const DEBUG = false;
 const EVERY_MINUTE = '* * * * *';
-const SCRAP_TIMES = '0 2,12,17 * * *';
+const SCRAP_TIMES = '0 2,15 * * *';
 const RANGE_STEP = 10;
 
 var self = module.exports = {
