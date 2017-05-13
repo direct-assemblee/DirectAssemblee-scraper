@@ -74,7 +74,7 @@ var createDeputyModel = function(deputy, departmentId) {
     "lastname": deputy.lastname,
     "party": deputy.party,
     "departmentId": departmentId,
-    "circonscription": deputy.circonscription,
+    "district": deputy.district,
     "commission": deputy.commission,
     "phone": deputy.phone,
     "email": deputy.email,

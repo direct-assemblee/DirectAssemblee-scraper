@@ -26,7 +26,7 @@ module.exports = {
     departmentId: {
       type: 'int'
     },
-    circonscription: {
+    district: {
       type: 'int'
     },
     commission: {

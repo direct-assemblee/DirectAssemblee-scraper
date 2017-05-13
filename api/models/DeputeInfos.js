@@ -35,13 +35,13 @@ module.exports = {
     departmentNumber: {
       type: 'string'
     },
-    circonscriptionName: {
+    districtName: {
       type: 'string'
     },
-    circonscriptionNumber: {
+    districtNumber: {
       type: 'int'
     },
-    circonscriptionNumber: {
+    districtNumber: {
       type: 'string'
     },
     mandateStartingDate: {
