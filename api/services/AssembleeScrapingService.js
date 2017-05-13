@@ -86,7 +86,7 @@ var self = module.exports = {
 var subArrayIfDebug = function(array, start, size) {
   if (DEBUG) {
     var subArray = [];
-    for (var i = start ; i < size ; i++) {
+    for (var i = start ; i < start + size ; i++) {
       subArray.push(array[i])
     }
     return subArray;
@@ -169,7 +169,7 @@ var retrieveBallotsRange = function(ballots, start) {
       if (newStart < ballots.length) {
         return retrieveBallotsRange(ballots, newStart)
       } else {
-        return;
+        return ballots;
       }
     })
   })
