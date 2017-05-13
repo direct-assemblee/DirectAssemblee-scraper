@@ -1,4 +1,4 @@
-var Client = require('mariasql');
+var Client = require('mysql');
 var FileHelper = require('./helpers/FileHelper.js');
 var path = require('path');
 var Promise = require("bluebird");
@@ -31,8 +31,6 @@ module.exports = {
   },
 
   initDB: function() {
-    console.log("pass : " + process.env.DATABASE_PASSWORD)
-
     var rootedClient = getClient(DB_NAME, true);
     configDB(rootedClient);
 
@@ -44,14 +42,16 @@ module.exports = {
 var getClient = function(db, root) {
   var user = root ? 'root' : DB_USER;
   var pwd = root ? DB_ROOT_PASSWORD : DB_PASSWORD;
-  return new Client({
+  var connection = Client.createConnection({
     host: DB_HOST,
     port: DB_PORT,
     user: user,
     password: pwd,
-    db: db,
-    multiStatements: true
+    database: db,
+    multipleStatements: true
   });
+  connection.connect();
+  return connection;
 }
 
 var configDB = function(client) {
