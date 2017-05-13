@@ -1,7 +1,7 @@
 apps:
   - script    : ./dbbuilder/app.js
     name      : 'directass_dbbuilder'
-    node_args : '--max_old_space_size=4096'
+    node_args : '--max_old_space_size=2048'
     env :
-      PORT      : ${DBBUILDER_PORT}
+      PORT      : 1337
       NODE_ENV  : 'development'
