@@ -32,6 +32,7 @@ var createWorkModel = function(deputyId, work) {
   var date = DateHelper.formatWrittenDate(work.date)
   return {
     "title": work.title,
+    "theme": work.theme,
     "date": date,
     "url": work.url,
     "officialId": work.id,

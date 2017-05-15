@@ -3,6 +3,7 @@ var Constants = require('./Constants.js')
 
 var DeputiesListParser = require('./parsers/DeputiesListParser');
 var DeputyWorkParser = require('./parsers/DeputyWorkParser');
+var DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
 var DeputyInfosParser = require('./parsers/DeputyInfosParser');
 var DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
 var DeputyMandatesParser = require('./parsers/DeputyMandatesParser');
@@ -91,11 +92,17 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
     return DeputyWorkParser.parse(content, workUrl)
   })
   .then(function(works) {
-    var work;
+    var worksWithTheme = [];
     for (var i in works) {
-      work = works[i];
-      work.type = getTypeName(workType);
-      previousWork.push(work);
+      works[i].type = workType;
+      worksWithTheme.push(retrieveThemeIfQuestion(works[i]));
+    }
+    return Promise.all(worksWithTheme)
+  })
+  .then(function(works) {
+    for (var i in works) {
+      works[i].type = getTypeName(workType);
+      previousWork.push(works[i]);
     }
     var lastWork = previousWork[previousWork.length - 1];
     if (lastWork && works && works.length >= WORK_PAGE_SIZE && pageOffset < 1) {
@@ -105,6 +112,23 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
       return Promise.resolve(previousWork);
     }
   })
+}
+
+var retrieveThemeIfQuestion = function(parsedWork) {
+  if (parsedWork.type === WORK_TYPE_QUESTIONS) {
+    return FetchUrlService.retrieveContent(parsedWork.url)
+    .then(function(content) {
+      return DeputyQuestionThemeParser.parse(content)
+      .then(function(theme) {
+        parsedWork.theme = theme;
+        return parsedWork;
+      })
+    })
+  } else {
+    return new Promise(function(resolve, reject) {
+      resolve(parsedWork);
+    })
+  }
 }
 
 var getTypeName = function(workType) {

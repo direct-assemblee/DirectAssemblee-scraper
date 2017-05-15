@@ -10,6 +10,9 @@ module.exports = {
     title: {
       type: 'string'
     },
+    theme: {
+      type: 'string'
+    },
     officialId: {
       type: 'int',
     },
