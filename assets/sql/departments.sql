@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS department (
   KEY `slug` (`slug`),
   KEY `code` (`code`),
   KEY `soundexname` (`soundexname`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=102 ;
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
 
 --
 -- Dumping data for table `Department`
@@ -146,12 +146,11 @@ INSERT IGNORE `department` (`id`, `code`, `name`, `nameuppercase`, `slug`, `soun
 (100, '972', 'Martinique', 'MARTINIQUE', 'martinique', 'M6352'),
 (101, '974', 'Réunion', 'RÉUNION', 'reunion', 'R500'),
 (102, '975', 'Saint-Pierre-et-Miquelon', 'SAINT-PIERRE-ET-MIQUELON', 'saint-pierre-et-miquelon', ''),
-(103, '976', 'Mayotte', 'MAYOTTE', 'mayotte', ''),
-(104, '977', 'Saint-Barthélemy et Saint-Martin', 'SAINT-BARTHELEMY ET SAINT-MARTIN', 'saint-barthelemy-et-saint-martin', ''),
-(105, '988', 'Nouvelle-Calédonie', 'NOUVELLE-CALEDONIE', 'nouvelle-caledonie', ''),
-(106, '9XX', 'Wallis-et-Futuna', 'WALLIS_ET_FUTUNA', 'wallis-et-futuna', ''),
-(107, '9YY', 'Polynésie Française', 'POLYNESIE FRANCAISE', 'polynesie-francaise', ''),
-(108, '9ZZ', 'Français établis hors de France', 'FRANCAIS ETABLIS HORS DE FRANCE', 'francais-etablis-hors-de-france', '');
+(103, '988', 'Nouvelle-Calédonie', 'NOUVELLE-CALEDONIE', 'nouvelle-caledonie', ''),
+(104, '986', 'Wallis-et-Futuna', 'WALLIS_ET_FUTUNA', 'wallis-et-futuna', ''),
+(105, '987', 'Polynésie Française', 'POLYNESIE FRANCAISE', 'polynesie-francaise', ''),
+(106, '900', 'Français établis hors de France', 'FRANCAIS ETABLIS HORS DE FRANCE', 'francais-etablis-hors-de-france', ''),
+(107, '901', 'Saint-Barthélemy et Saint-Martin', 'SAINT-BARTHELEMY ET SAINT-MARTIN', 'saint-barthelemy-et-saint-martin', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
