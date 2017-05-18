@@ -149,8 +149,8 @@ INSERT IGNORE `department` (`id`, `code`, `name`, `nameuppercase`, `slug`, `soun
 (103, '988', 'Nouvelle-Calédonie', 'NOUVELLE-CALEDONIE', 'nouvelle-caledonie', ''),
 (104, '986', 'Wallis-et-Futuna', 'WALLIS_ET_FUTUNA', 'wallis-et-futuna', ''),
 (105, '987', 'Polynésie Française', 'POLYNESIE FRANCAISE', 'polynesie-francaise', ''),
-(106, '900', 'Français établis hors de France', 'FRANCAIS ETABLIS HORS DE FRANCE', 'francais-etablis-hors-de-france', ''),
-(107, '901', 'Saint-Barthélemy et Saint-Martin', 'SAINT-BARTHELEMY ET SAINT-MARTIN', 'saint-barthelemy-et-saint-martin', '');
+(106, '977', 'Saint-Barthélemy et Saint-Martin', 'SAINT-BARTHELEMY ET SAINT-MARTIN', 'saint-barthelemy-et-saint-martin', ''),
+(107, '991', 'Français établis hors de France', 'FRANCAIS ETABLIS HORS DE FRANCE', 'francais-etablis-hors-de-france', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
