@@ -1,11 +1,9 @@
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
-const SECTION_PREFIX = "content-wrap-"
-
 var deputyParser = function(url, callback) {
   var parsedItems = [];
-  var currentSectionItem = {};
+  var currentSectionItem;
   var expectedItem;
   var expectedSection;
 
@@ -17,7 +15,8 @@ var deputyParser = function(url, callback) {
       } else if (currentSectionItem) {
         if (attribs.href) {
           currentSectionItem.url = attribs.href;
-        } else if (tagname === "p") {
+          expectedSection = "description";
+        } else if (expectedSection === "description" && (tagname === "p" || tagname === "li")) {
           if (!attribs.class) {
             expectedItem = "section.description";
           }
@@ -49,6 +48,7 @@ var deputyParser = function(url, callback) {
               parsedItems.push(currentSectionItem);
             }
             expectedItem = null;
+            expectedSection = null;
             currentSectionItem = null;
           }
         }
