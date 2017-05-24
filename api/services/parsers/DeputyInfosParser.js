@@ -1,8 +1,6 @@
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
-const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/g;
-
 var deputyParser = function(callback) {
   var parsedItem = {};
   var expectedItem;
@@ -45,7 +43,7 @@ var deputyParser = function(callback) {
       } else if (expectedItem === "endOfMandate") {
         var trimmed = text.trim();
         if (trimmed) {
-          var dateMatched = trimmed.match(DATE_REGEX);
+          var dateMatched = trimmed.match(DateHelper.DATE_REGEX);
           if (dateMatched && dateMatched.length > 0) {
             parsedItem.endOfMandateDate = dateMatched[dateMatched.length - 1];
             var reason = trimmed.match(/\((.*)\)/i);

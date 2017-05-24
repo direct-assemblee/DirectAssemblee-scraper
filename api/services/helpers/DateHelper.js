@@ -1,6 +1,31 @@
 var moment = require('moment');
 
+const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/g;
+const DATE_WRITTEN_REGEX = /((0?[1-9]|[12][0-9]|3[01])\s.*\s\d{4})/g;
+
 var self = module.exports = {
+  findDateInString: function(text) {
+    var date = self.findDateWithRegex(text, DATE_REGEX);
+    if (!date) {
+      date = self.findDateWithRegex(text, DATE_WRITTEN_REGEX);
+      if (date) {
+        date = self.formatWrittenDate(date);
+      }
+    }
+    return date;
+  },
+
+  findDateWithRegex: function(text, regex) {
+    var date;
+    if (text) {
+      var dateMatched = text.toString().match(regex);
+      if (dateMatched && dateMatched[0].length > 0) {
+        date = dateMatched[0];
+      }
+    }
+    return date;
+  },
+
   formatDate: function(dateString) {
     return self.formatDateWithTemplate(dateString, "DD/MM/YYYY");
   },

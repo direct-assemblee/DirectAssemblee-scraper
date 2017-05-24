@@ -1,8 +1,7 @@
 // http://www2.assemblee-nationale.fr/deputes/fiche/OMC_PA1012#autres
 var Promise = require("bluebird");
 var htmlparser = require('htmlparser2');
-
-const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/g;
+var DateHelper = require('../helpers/DateHelper.js');
 
 var currentMandatesParser = function(callback) {
   var mandates = [];
@@ -50,9 +49,9 @@ var currentMandatesParser = function(callback) {
       if (expectedType === TAG_CURRENT_MANDATE) {
         var trimmed = text.trim()
         if (trimmed) {
-          var startingDateMatched = trimmed.match(DATE_REGEX);
-          if (startingDateMatched && startingDateMatched.length > 0) {
-            parsedItem.currentMandateStartDate = startingDateMatched[startingDateMatched.length - 1];
+          var startingDateMatched = DateHelper.findDateInString(trimmed);
+          if (startingDateMatched) {
+            parsedItem.currentMandateStartDate = startingDateMatched;
             expectedType = null;
           }
         }

@@ -13,13 +13,11 @@ var deputyParser = function(url, callback) {
         currentSectionItem = {}
         expectedItem = "section.id";
       } else if (currentSectionItem) {
-        if (attribs.href) {
+        if (attribs.href && !currentSectionItem.url) {
           currentSectionItem.url = attribs.href;
           expectedSection = "description";
-        } else if (expectedSection === "description" && (tagname === "p" || tagname === "li")) {
-          if (!attribs.class) {
-            expectedItem = "section.description";
-          }
+        } else if (expectedSection === "description" && (tagname === "p" || tagname === "li") && !attribs.class) {
+          expectedItem = "section.description";
         }
       }
     },
@@ -29,34 +27,44 @@ var deputyParser = function(url, callback) {
           var trimmed = text.trim();
           if (trimmed) {
             currentSectionItem.title = trimmed;
-            var splitText = trimmed.split(" ");
-            var index = splitText.indexOf("n°") + 1;
-            currentSectionItem.id = splitText[index];
+            var index = trimmed.indexOf("n°");
+            if (index >= 0) {
+              currentSectionItem.id = trimmed[index + 3];
+            }
             expectedItem = "section.date";
           }
         } else if (expectedItem === "section.date") {
-          var text = text.replace("Publiée le", '').trim();
-          if (text) {
-            currentSectionItem.date = text;
-            expectedItem = null;
+          var trimmed = text.trim();
+          if (trimmed) {
+            var dateMatched = DateHelper.findDateInString(trimmed);
+            if (dateMatched) {
+              currentSectionItem.date = dateMatched;
+              expectedItem = null;
+            }
           }
         } else if (expectedItem === "section.description") {
           var text = text.trim();
           if (text) {
-            currentSectionItem.description = text;
-            if (currentSectionItem.title) {
-              parsedItems.push(currentSectionItem);
+            currentSectionItem.description = currentSectionItem.description ? currentSectionItem.description + " - " : "";
+            currentSectionItem.description += text;
+            if (currentSectionItem.id) { // all but public sessions (more lines <li>)
+              expectedSection = null;
+              expectedItem = null;
             }
-            expectedItem = null;
-            expectedSection = null;
-            currentSectionItem = null;
           }
         }
       }
     },
     onclosetag: function(tagname) {
-      if (tagname == "html") {
-        // print(parsedItems);
+      if (currentSectionItem && (tagname == "ul" || tagname == "div")) {
+        if (currentSectionItem.description) {
+          parsedItems.push(currentSectionItem);
+          expectedItem = null;
+          expectedSection = null;
+          currentSectionItem = null;
+        }
+      } else if (tagname == "html") {
+        print(parsedItems);
         callback(parsedItems);
       }
     }

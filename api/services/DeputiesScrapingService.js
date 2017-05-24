@@ -16,7 +16,8 @@ const WORK_TYPE_REPORTS = "RapportsParlementaires";
 const WORK_TYPE_PROPOSITIONS = "PropositionsLoi";
 const WORK_TYPE_COSIGNED_PROPOSITIONS = "PropositionsLoiCoSignataire";
 const WORK_TYPE_COMMISSIONS = "ComptesRendusCommission";
-const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS, WORK_TYPE_COMMISSIONS ]
+const WORK_TYPE_PUBLIC_SESSION = "ComptesRendusSeance";
+const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS, WORK_TYPE_COMMISSIONS, WORK_TYPE_PUBLIC_SESSION ]
 const WORK_PAGE_SIZE = 10;
 const DEPUTY_WORK_URL = Constants.BASE_URL + "deputes/documents_parlementaires/(offset)/" + Constants.PARAM_OFFSET + "/(id_omc)/OMC_PA" + Constants.PARAM_DEPUTY_ID + "/(type)/" + PARAM_WORK_TYPE;
 const DEPUTY_DECLARATIONS_URL = "http://www.hatvp.fr/fiche-nominative/?declarant=" + PARAM_DEPUTE_NAME;
@@ -152,6 +153,9 @@ var getTypeName = function(workType) {
       break;
     case WORK_TYPE_COMMISSIONS:
       typeName = "commission";
+      break;
+    case WORK_TYPE_PUBLIC_SESSION:
+      typeName = "public_session";
       break;
   }
   return typeName;
