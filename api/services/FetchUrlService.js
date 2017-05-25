@@ -79,5 +79,6 @@ String.prototype.removeSpecialCharsBetter = function() {
   .replace(/\\t/g, "")
   .replace(/\\b/g, "")
   .replace(/\\f/g, "")
+  .replace("data-place", "dataplace")
   .replace(/\[dotspace\]/g, ".<br>");
 };

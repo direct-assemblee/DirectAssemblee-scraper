@@ -50,6 +50,9 @@ module.exports = {
     mandateEndReason: {
       type: 'string'
     },
+    seatNumber: {
+      type: 'int'
+    },
     subscribers: {
       collection: 'subscriber',
       via: 'followedDeputiesIds',

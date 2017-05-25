@@ -64,7 +64,7 @@ var deputyParser = function(url, callback) {
           currentSectionItem = null;
         }
       } else if (tagname == "html") {
-        print(parsedItems);
+        // print(parsedItems);
         callback(parsedItems);
       }
     }

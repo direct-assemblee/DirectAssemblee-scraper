@@ -16,6 +16,8 @@ var deputyParser = function(callback) {
         parsedItem.declarationsUrl = attribs.href;
       } else if (tagname === "dt") {
         expectedItem = "jobOrEnd";
+      } else if (tagname === "div" && attribs.dataplace) {
+        parsedItem.seatNumber = attribs.dataplace;
       }
     },
     ontext: function(text) {

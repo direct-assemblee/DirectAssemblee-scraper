@@ -80,6 +80,7 @@ var createDeputyModel = function(deputy, departmentId) {
     "email": deputy.email,
     "job": deputy.job,
     "currentMandateStartDate": startingDate,
+    "seatNumber" : deputy.seatNumber,
     "mandateEndDate": null,
     "mandateEndReason": null
   }
