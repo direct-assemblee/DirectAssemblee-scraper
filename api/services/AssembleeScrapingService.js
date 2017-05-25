@@ -17,7 +17,7 @@ var DeputyHelper = require('./helpers/DeputyHelper')
 const DEBUG = false;
 const EVERY_MINUTE = '* * * * *';
 const SCRAP_TIMES = '0 2,15 * * *';
-const RANGE_STEP = 10;
+const RANGE_STEP = 1;
 
 var self = module.exports = {
   scrapThenStartService: function() {

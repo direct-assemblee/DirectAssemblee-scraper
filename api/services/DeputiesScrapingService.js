@@ -3,7 +3,7 @@ var Constants = require('./Constants.js')
 
 var DeputiesListParser = require('./parsers/DeputiesListParser');
 var DeputyWorkParser = require('./parsers/DeputyWorkParser');
-var DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
+var DeputyWorkThemeParser = require('./parsers/DeputyWorkThemeParser');
 var DeputyInfosParser = require('./parsers/DeputyInfosParser');
 var DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
 var DeputyMandatesParser = require('./parsers/DeputyMandatesParser');
@@ -97,7 +97,7 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
     var worksWithTheme = [];
     for (var i in works) {
       works[i].type = workType;
-      worksWithTheme.push(retrieveThemeIfQuestion(works[i]));
+      worksWithTheme.push(retrieveThemeForWork(works[i]));
     }
     return Promise.all(worksWithTheme)
   })
@@ -119,11 +119,11 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
   })
 }
 
-var retrieveThemeIfQuestion = function(parsedWork) {
+var retrieveThemeForWork = function(parsedWork) {
   if (parsedWork.type === WORK_TYPE_QUESTIONS) {
-    return FetchUrlService.retrieveContent(parsedWork.url)
+    return FetchUrlService.retrieveContent(parsedWork.url, parsedWork.type)
     .then(function(content) {
-      return DeputyQuestionThemeParser.parse(content)
+      return DeputyWorkThemeParser.parse(content, parsedWork.type)
       .then(function(theme) {
         parsedWork.theme = theme;
         return parsedWork;

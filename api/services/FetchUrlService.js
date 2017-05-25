@@ -23,7 +23,12 @@ var httpGet = function(url, isIsoEncoding) {
       }
       var data = "";
       res.on('data', function (chunk) {
-        data += chunk;
+        if (chunk.startsWith("error")) {
+          console.log("--- retry : " + url)
+          return httpGet(url);
+        } else {
+          data += chunk;
+        }
       });
       res.on('end', function () {
         if (this.complete) {

@@ -27,9 +27,12 @@ var deputyParser = function(url, callback) {
           var trimmed = text.trim();
           if (trimmed) {
             currentSectionItem.title = trimmed;
-            var index = trimmed.indexOf("n°");
-            if (index >= 0) {
-              currentSectionItem.id = trimmed[index + 3];
+            trimmed = trimmed.replace("-", " ").replace(/\s+/g, ' ');
+            var splitText = trimmed.split(" ");
+            var index = splitText.indexOf("n°") + 1;
+            if (index > 0) {
+              currentSectionItem.id = splitText[index];
+              // console.log(trimmed + "=> " + currentSectionItem.id)
             }
             expectedItem = "section.date";
           }

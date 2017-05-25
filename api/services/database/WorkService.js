@@ -29,12 +29,16 @@ var createWork = function(deputyId, work) {
 }
 
 var createWorkModel = function(deputyId, work) {
+  var id;
+  if (typeof work.id === "number") {
+    id = work.id;
+  }
   return {
     "title": work.title,
     "theme": work.theme,
     "date": work.date,
     "url": work.url,
-    "officialId": work.id,
+    "officialId": id,
     "description": work.description,
     "deputyId": deputyId,
     "type": work.type
