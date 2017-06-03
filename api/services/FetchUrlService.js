@@ -51,9 +51,7 @@ var self = module.exports = {
     // console.log(url);
     return httpGet(url, isIsoEncoding)
     .then(function(content) {
-      var text = entities.decode(content);
-      var cleaned = text.removeSpecialCharsBetter();
-      return cleaned
+      return clean(content)
     });
   },
 
@@ -73,6 +71,13 @@ var self = module.exports = {
   }
 }
 
+var clean = function(content) {
+  var cleaned = content.replace(/&quot;/g, "\'");
+  cleaned = entities.decode(cleaned);
+  cleaned = cleaned.removeSpecialCharsBetter();
+  return cleaned
+}
+
 String.prototype.removeSpecialCharsBetter = function() {
   return this.replace(/\.\r\n/g, "[dotspace]")
   .replace(/\s+/g, ' ')
@@ -84,6 +89,7 @@ String.prototype.removeSpecialCharsBetter = function() {
   .replace(/\\t/g, "")
   .replace(/\\b/g, "")
   .replace(/\\f/g, "")
+  .replace("&quot;", "")
   .replace("data-place", "dataplace")
   .replace(/\[dotspace\]/g, ".<br>");
 };

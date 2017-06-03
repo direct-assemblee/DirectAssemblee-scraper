@@ -1,5 +1,6 @@
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
+var Constants = require('../Constants.js')
 
 const SECTION_PREFIX = "content-wrap-"
 
@@ -17,7 +18,9 @@ var questionParser = function(callback) {
       if (expectRubrique && text.startsWith("Rubrique")) {
         expectRubriqueValue = true;
       } else if (expectRubriqueValue) {
-        callback(text);
+        text = text.trim();
+        var theme = text.charAt(0).toUpperCase() + text.slice(1);
+        callback(theme);
       }
     },
     onclosetag: function(tagname) {
@@ -26,21 +29,17 @@ var questionParser = function(callback) {
   }, {decodeEntities: true});
 }
 
-var parserForType = function(workType) {
-
-}
-
 module.exports = {
-  parse: function(content, workType) {
+  parse: function(url, content, workType) {
     return new Promise(function(resolve, reject) {
       var callback = function(theme) {
         resolve(theme);
       }
       var parser;
-      if (workType === "Questions") {
+      if (workType === Constants.WORK_TYPE_QUESTIONS) {
         parser = questionParser(callback);
-      } else if (workType === "RapportsParlementaires") {
-
+      } else if (workType === Constants.WORK_TYPE_REPORTS) {
+        resolve();
       }
       if (parser) {
         parser.write(content);

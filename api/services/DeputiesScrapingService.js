@@ -3,24 +3,19 @@ var Constants = require('./Constants.js')
 
 var DeputiesListParser = require('./parsers/DeputiesListParser');
 var DeputyWorkParser = require('./parsers/DeputyWorkParser');
-var DeputyWorkThemeParser = require('./parsers/DeputyWorkThemeParser');
+var DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
+var DeputyWorkExtraInfosParser = require('./parsers/DeputyWorkExtraInfosParser');
 var DeputyInfosParser = require('./parsers/DeputyInfosParser');
 var DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
 var DeputyMandatesParser = require('./parsers/DeputyMandatesParser');
 var DeputyExtraPositionsParser = require('./parsers/DeputyExtraPositionsParser');
 
 const PARAM_WORK_TYPE = "{work_type}";
-const PARAM_DEPUTE_NAME = "{depute_name}";
-const WORK_TYPE_QUESTIONS = "Questions";
-const WORK_TYPE_REPORTS = "RapportsParlementaires";
-const WORK_TYPE_PROPOSITIONS = "PropositionsLoi";
-const WORK_TYPE_COSIGNED_PROPOSITIONS = "PropositionsLoiCoSignataire";
-const WORK_TYPE_COMMISSIONS = "ComptesRendusCommission";
-const WORK_TYPE_PUBLIC_SESSION = "ComptesRendusSeance";
-const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS, WORK_TYPE_COMMISSIONS, WORK_TYPE_PUBLIC_SESSION ]
+const PARAM_DEPUTY_NAME = "{deputy_name}";
+const WORK_TYPES = [ Constants.WORK_TYPE_QUESTIONS, Constants.WORK_TYPE_REPORTS, Constants.WORK_TYPE_PROPOSITIONS, Constants.WORK_TYPE_COSIGNED_PROPOSITIONS, Constants.WORK_TYPE_COMMISSIONS, Constants.WORK_TYPE_PUBLIC_SESSION ]
 const WORK_PAGE_SIZE = 10;
 const DEPUTY_WORK_URL = Constants.BASE_URL + "deputes/documents_parlementaires/(offset)/" + Constants.PARAM_OFFSET + "/(id_omc)/OMC_PA" + Constants.PARAM_DEPUTY_ID + "/(type)/" + PARAM_WORK_TYPE;
-const DEPUTY_DECLARATIONS_URL = "http://www.hatvp.fr/fiche-nominative/?declarant=" + PARAM_DEPUTE_NAME;
+const DEPUTY_DECLARATIONS_URL = "http://www.hatvp.fr/fiche-nominative/?declarant=" + PARAM_DEPUTY_NAME;
 
 module.exports = {
   retrieveDeputiesList: function() {
@@ -94,16 +89,16 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
     return DeputyWorkParser.parse(content, workUrl)
   })
   .then(function(works) {
-    var worksWithTheme = [];
+    var worksWithExtra = [];
     for (var i in works) {
       works[i].type = workType;
-      worksWithTheme.push(retrieveThemeForWork(works[i]));
+      worksWithExtra.push(retrieveExtraForWork(works[i]));
     }
-    return Promise.all(worksWithTheme)
+    return Promise.all(worksWithExtra)
   })
   .then(function(works) {
     for (var i in works) {
-      if (workType == WORK_TYPE_COMMISSIONS) {
+      if (workType == Constants.WORK_TYPE_COMMISSIONS) {
         works[i].title = works[i].title.split('-')[1].trim();
       }
       works[i].type = getTypeName(workType);
@@ -119,15 +114,27 @@ var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWo
   })
 }
 
-var retrieveThemeForWork = function(parsedWork) {
-  if (parsedWork.type === WORK_TYPE_QUESTIONS) {
-    return FetchUrlService.retrieveContent(parsedWork.url, parsedWork.type)
+var retrieveExtraForWork = function(parsedWork) {
+  if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS || parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS
+    || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_REPORTS) {
+    return FetchUrlService.retrieveContent(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
     .then(function(content) {
-      return DeputyWorkThemeParser.parse(content, parsedWork.type)
-      .then(function(theme) {
-        parsedWork.theme = theme;
-        return parsedWork;
-      })
+      if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
+        return DeputyQuestionThemeParser.parse(parsedWork.url, content, parsedWork.type)
+        .then(function(theme) {
+          parsedWork.theme = theme;
+          return parsedWork;
+        })
+      } else {
+        return DeputyWorkExtraInfosParser.parse(parsedWork.url, content, parsedWork.type)
+        .then(function(lawProposal) {
+          parsedWork.id = lawProposal.id;
+          parsedWork.title = lawProposal.title;
+          parsedWork.description = lawProposal.description;
+          parsedWork.theme = lawProposal.theme;
+          return parsedWork;
+        })
+      }
     })
   } else {
     return new Promise(function(resolve, reject) {
@@ -139,22 +146,22 @@ var retrieveThemeForWork = function(parsedWork) {
 var getTypeName = function(workType) {
   var typeName;
   switch (workType) {
-    case WORK_TYPE_QUESTIONS:
+    case Constants.WORK_TYPE_QUESTIONS:
       typeName = "question";
       break;
-    case WORK_TYPE_REPORTS:
+    case Constants.WORK_TYPE_REPORTS:
       typeName = "report";
       break;
-    case WORK_TYPE_PROPOSITIONS:
+    case Constants.WORK_TYPE_PROPOSITIONS:
       typeName = "law_proposal";
       break;
-    case WORK_TYPE_COSIGNED_PROPOSITIONS:
+    case Constants.WORK_TYPE_COSIGNED_PROPOSITIONS:
       typeName = "cosigned_law_proposal";
       break;
-    case WORK_TYPE_COMMISSIONS:
+    case Constants.WORK_TYPE_COMMISSIONS:
       typeName = "commission";
       break;
-    case WORK_TYPE_PUBLIC_SESSION:
+    case Constants.WORK_TYPE_PUBLIC_SESSION:
       typeName = "public_session";
       break;
   }
@@ -206,7 +213,7 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
 var retrieveDeclarationPdfUrl = function(allDeclaUrl) {
   var urlSplit = allDeclaUrl.split('/');
   var name = urlSplit.pop().split('.')[0];
-  var url = DEPUTY_DECLARATIONS_URL.replace(PARAM_DEPUTE_NAME, name);
+  var url = DEPUTY_DECLARATIONS_URL.replace(PARAM_DEPUTY_NAME, name);
   return FetchUrlService.retrieveContent(url)
   .then(function(content) {
     return DeputyDeclarationsParser.parse(content)
