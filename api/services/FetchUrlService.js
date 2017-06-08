@@ -8,7 +8,7 @@ var httpGet = function(url, isIsoEncoding) {
   return new Promise(function(resolve, reject) {
     var retry = function(e) {
       console.log("Got error: " + e.message);
-      return;
+      return httpGet(url);
     }
     var retryAfterTimeout = function() {
       console.log("---- Timeout");
