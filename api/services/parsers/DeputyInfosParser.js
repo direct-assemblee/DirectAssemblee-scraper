@@ -15,7 +15,7 @@ var deputyParser = function(callback) {
       } else if (attribs.href && attribs.href.startsWith("http://www.hatvp.fr")) {
         parsedItem.declarationsUrl = attribs.href;
       } else if (tagname === "dt") {
-        expectedItem = "jobOrEnd";
+        expectedItem = "jobOrEndOrParty";
       } else if (tagname === "div" && attribs.dataplace) {
         parsedItem.seatNumber = attribs.dataplace;
       }
@@ -26,7 +26,7 @@ var deputyParser = function(callback) {
       } else if (expectedItem === "phoneValue") {
         parsedItem.phone = text.replace(/\s+/g, '');
         expectedItem = null;
-      } else if (expectedItem === "jobOrEnd") {
+      } else if (expectedItem === "jobOrEndOrParty") {
         if (text === "Biographie") {
           expectJobTextCount = expectJobTextCount + 1;
         } else if (expectJobTextCount > 0) {
@@ -41,6 +41,8 @@ var deputyParser = function(callback) {
           }
         } else if (text === "Date de fin de mandat") {
           expectedItem = "endOfMandate";
+        } else if (text.startsWith("Rattachement au titre")) {
+          expectedItem = "party";
         }
       } else if (expectedItem === "endOfMandate") {
         var trimmed = text.trim();
@@ -54,6 +56,12 @@ var deputyParser = function(callback) {
             }
             expectedType = null;
           }
+        }
+      } else if (expectedItem === "party") {
+        var trimmed = text.trim();
+        if (trimmed) {
+          parsedItem.party = trimmed;
+          expectedType = null;
         }
       }
     },

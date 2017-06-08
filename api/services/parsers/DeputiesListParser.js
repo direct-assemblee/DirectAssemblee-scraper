@@ -31,7 +31,7 @@ var deputyParser = function(callback) {
           parsedItem.lastname = text;
           break;
         case 3:
-          parsedItem.party = text;
+          parsedItem.parliamentGroup = text;
           break;
         case 4:
           parsedItem.department = text;
@@ -80,6 +80,7 @@ var print = function(parsedItem) {
   console.log("item : " + parsedItem.firstname);
   console.log("item : " + parsedItem.lastname);
   console.log("item : " + parsedItem.party);
+  console.log("item : " + parsedItem.group);
   console.log("item : " + parsedItem.department);
   console.log("item : " + parsedItem.district);
   console.log("item : " + parsedItem.commission);

@@ -23,6 +23,9 @@ module.exports = {
     party: {
       type: 'string'
     },
+    parliamentGroup: {
+      type: 'string'
+    },
     departmentId: {
       type: 'int'
     },
