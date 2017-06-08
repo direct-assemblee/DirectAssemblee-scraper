@@ -8,7 +8,7 @@ module.exports = {
       autoIncrement: true
     },
     title: {
-      type: 'string'
+      type: 'text'
     },
     theme: {
       type: 'string'

@@ -7,6 +7,10 @@ module.exports = {
     .then(function(removedWorks) {
       return createWorks(works, deputyId)
     })
+    .catch(function(err) {
+      sails.log.error(err);
+      sails.log.debug("============== Inserted works threw an error - keep on going");
+    });
   }
 }
 
