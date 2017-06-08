@@ -12,7 +12,7 @@ var DeputyExtraPositionsParser = require('./parsers/DeputyExtraPositionsParser')
 
 const PARAM_WORK_TYPE = "{work_type}";
 const PARAM_DEPUTY_NAME = "{deputy_name}";
-const WORK_TYPES = [ Constants.WORK_TYPE_QUESTIONS, Constants.WORK_TYPE_REPORTS, Constants.WORK_TYPE_PROPOSITIONS, Constants.WORK_TYPE_COSIGNED_PROPOSITIONS, Constants.WORK_TYPE_COMMISSIONS, Constants.WORK_TYPE_PUBLIC_SESSION ]
+const WORK_TYPES = [ Constants.WORK_TYPE_QUESTIONS, Constants.WORK_TYPE_REPORTS, Constants.WORK_TYPE_PROPOSITIONS, Constants.WORK_TYPE_COSIGNED_PROPOSITIONS, Constants.WORK_TYPE_COMMISSIONS, Constants.WORK_TYPE_PUBLIC_SESSIONS ]
 const WORK_PAGE_SIZE = 10;
 const DEPUTY_WORK_URL = Constants.BASE_URL + "deputes/documents_parlementaires/(offset)/" + Constants.PARAM_OFFSET + "/(id_omc)/OMC_PA" + Constants.PARAM_DEPUTY_ID + "/(type)/" + PARAM_WORK_TYPE;
 const DEPUTY_DECLARATIONS_URL = "http://www.hatvp.fr/fiche-nominative/?declarant=" + PARAM_DEPUTY_NAME;
@@ -161,7 +161,7 @@ var getTypeName = function(workType) {
     case Constants.WORK_TYPE_COMMISSIONS:
       typeName = "commission";
       break;
-    case Constants.WORK_TYPE_PUBLIC_SESSION:
+    case Constants.WORK_TYPE_PUBLIC_SESSIONS:
       typeName = "public_session";
       break;
   }
