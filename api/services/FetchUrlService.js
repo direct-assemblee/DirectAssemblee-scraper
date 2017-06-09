@@ -8,11 +8,11 @@ var httpGet = function(url, isIsoEncoding) {
   return new Promise(function(resolve, reject) {
     var retry = function(e) {
       console.log("Got error: " + e.message);
-      return httpGet(url);
+      resolve(httpGet(url));
     }
     var retryAfterTimeout = function() {
       console.log("---- Timeout");
-      return httpGet(url);
+      resolve(httpGet(url));
     }
 
     var req = http.get(url, function(res) {
@@ -25,7 +25,7 @@ var httpGet = function(url, isIsoEncoding) {
       res.on('data', function (chunk) {
         if (chunk.startsWith("error")) {
           console.log("--- retry : " + url)
-          return httpGet(url);
+          resolve(httpGet(url));
         } else {
           data += chunk;
         }
