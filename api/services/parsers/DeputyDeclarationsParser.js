@@ -1,3 +1,5 @@
+'use strict';
+
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 

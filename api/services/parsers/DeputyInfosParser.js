@@ -1,3 +1,5 @@
+'use strict';
+
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
@@ -54,14 +56,14 @@ var deputyParser = function(callback) {
             if (reason && reason.length > 1) {
               parsedItem.endOfMandateReason = reason[1];
             }
-            expectedType = null;
+            // expectedType = null;
           }
         }
       } else if (expectedItem === "party") {
         var trimmed = text.trim();
         if (trimmed) {
           parsedItem.party = trimmed;
-          expectedType = null;
+          // expectedType = null;
         }
       }
     },
@@ -81,6 +83,7 @@ module.exports = {
   parse: function(content) {
     return new Promise(function(resolve, reject) {
       var parser = deputyParser(function(deputy) {
+        // console.log("   parsed infos OK")
         resolve(deputy);
       });
       parser.write(content);

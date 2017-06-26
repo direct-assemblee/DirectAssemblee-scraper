@@ -1,4 +1,6 @@
 // http://www2.assemblee-nationale.fr/deputes/fiche/OMC_PA1012#autres
+'use strict';
+
 var Promise = require("bluebird");
 var htmlparser = require('htmlparser2');
 var DateHelper = require('../helpers/DateHelper.js');

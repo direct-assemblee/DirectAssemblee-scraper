@@ -1,4 +1,5 @@
 // http://www2.assemblee-nationale.fr/deputes/liste/departements/(vue)/tableau
+'use strict';
 
 var htmlparser = require('htmlparser2');
 
