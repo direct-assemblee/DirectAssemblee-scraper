@@ -1,21 +1,13 @@
+'use strict';
+
 var Promise = require("bluebird");
 var http = require('http');
-var fs = require('fs');
 var entities = require('html-entities').AllHtmlEntities;
 var Constants = require('./Constants.js')
 
 var httpGet = function(url, isIsoEncoding) {
   return new Promise(function(resolve, reject) {
-    var retry = function(e) {
-      console.log("Got error: " + e.message);
-      resolve(httpGet(url));
-    }
-    var retryAfterTimeout = function() {
-      console.log("---- Timeout");
-      resolve(httpGet(url));
-    }
-
-    var req = http.get(url, function(res) {
+    return http.get(url, function(res) {
       if (isIsoEncoding) {
         res.setEncoding('binary')
       } else {
@@ -24,8 +16,9 @@ var httpGet = function(url, isIsoEncoding) {
       var data = "";
       res.on('data', function (chunk) {
         if (chunk.startsWith("error")) {
-          console.log("--- retry : " + url)
-          resolve(httpGet(url));
+          console.log("--- error : " + url)
+          resolve();
+          return;
         } else {
           data += chunk;
         }
@@ -33,12 +26,24 @@ var httpGet = function(url, isIsoEncoding) {
       res.on('end', function () {
         if (this.complete) {
           resolve(data);
+          return;
         } else {
-          retry( { message: "Incomplete response" } );
+          console.log("Incomplete response");
+          resolve();
+          return;
         }
       });
-    }).on('error', retry)
-    .setTimeout(30000, retryAfterTimeout);
+    })
+    .on('error', function(e) {
+      console.log("Got error: " + e.message);
+      resolve();
+      return;
+    })
+    .setTimeout(60000, function() {
+      console.log("---- Timeout");
+      resolve();
+      return;
+    });
   })
 }
 
@@ -48,24 +53,43 @@ var self = module.exports = {
   },
 
   retrieveContent: function(url, isIsoEncoding) {
-    // console.log(url);
-    return httpGet(url, isIsoEncoding)
-    .then(function(content) {
-      return clean(content)
-    });
+    return self.retrieveContentWithAttempt(url, isIsoEncoding, 0);
   },
 
-  retrievePhoto: function(url) {
-    var filename = url.split('/').pop();
-    var filepath = Constants.SAVE_PHOTO_PATH + filename;
-    fs.exists(filepath, function(exists) {
-      if (!exists) {
-        // console.log("downloading photo")
-        http.get(url, function(res) {
-          res.pipe(fs.createWriteStream(filepath));
-        });
+  retrieveContentWithAttempt: function(url, isIsoEncoding, attemptNumber) {
+    return httpGet(url, isIsoEncoding)
+    .then(function(content) {
+      if (content) {
+        // console.log("    **** GOT " + content.length + "     " + url);
+        if (content.length < 100) {
+          console.log(content)
+        }
       } else {
-        // console.log("photo already exists")
+        console.log(" ====> NO CONTENT ")
+      }
+      if (content == undefined || content.length < 1000) {
+        console.log(content)
+        if (content && content.startsWith("<head><title>Object moved</title></head>")) {
+          var index = content.indexOf("\"");
+          if (index > 0) {
+            var newUrl = content.substring(index + 1);
+            index = newUrl.indexOf("\"");
+            newUrl = Constants.BASE_URL + newUrl.substring(0, index);
+            return self.retrieveContentWithAttempt(newUrl, isIsoEncoding, 0);
+          }
+        } else if (content > 100) {
+          console.log("--- RETRY : " + url)
+          attemptNumber++;
+          return self.retrieveContentWithAttempt(url, isIsoEncoding, attemptNumber);
+        } else {
+          attemptNumber++;
+            console.log("--- RETRY (no content) : " + url)
+          if (attemptNumber < 3) {
+            return self.retrieveContentWithAttempt(url, isIsoEncoding, attemptNumber);
+          }
+        }
+      } else {
+        return clean(content);
       }
     })
   }

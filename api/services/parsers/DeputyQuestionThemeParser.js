@@ -1,3 +1,5 @@
+'use strict';
+
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 var Constants = require('../Constants.js')
@@ -21,6 +23,8 @@ var questionParser = function(callback) {
         text = text.trim();
         var theme = text.charAt(0).toUpperCase() + text.slice(1);
         callback(theme);
+        expectRubrique = null;
+        expectRubriqueValue = null;
       }
     },
     onclosetag: function(tagname) {
@@ -32,18 +36,14 @@ var questionParser = function(callback) {
 module.exports = {
   parse: function(url, content, workType) {
     return new Promise(function(resolve, reject) {
-      var callback = function(theme) {
-        resolve(theme);
-      }
-      var parser;
       if (workType === Constants.WORK_TYPE_QUESTIONS) {
-        parser = questionParser(callback);
-      } else if (workType === Constants.WORK_TYPE_REPORTS) {
-        resolve();
-      }
-      if (parser) {
+        var parser = questionParser(function(theme) {
+          resolve(theme);
+        });
         parser.write(content);
         parser.end();
+      } else if (workType === Constants.WORK_TYPE_REPORTS) {
+        resolve();
       }
     })
   }

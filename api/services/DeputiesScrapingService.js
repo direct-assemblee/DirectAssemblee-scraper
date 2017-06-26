@@ -1,3 +1,5 @@
+'use strict';
+
 var Promise = require("bluebird");
 var Constants = require('./Constants.js')
 
@@ -26,9 +28,8 @@ module.exports = {
   },
 
   retrieveDeputies: function(deputies) {
-    return retrieveDeputiesForRange(deputies)
-    .then(function(deputies) {
-      return deputies;
+    return Promise.map(deputies, function(deputy) {
+      return retrieveDeputyDetails(deputy)
     })
   },
 
@@ -38,7 +39,9 @@ module.exports = {
     .then(function(content) {
       return DeputyInfosParser.parse(content)
       .then(function(deputyInfos) {
-        console.log("checking mandate for : " + deputy.lastname + " - end of mandate : " + deputyInfos.endOfMandateDate);
+        if (deputyInfos.endOfMandateDate) {
+          console.log("expired mandate for : " + deputy.lastname + " - end of mandate : " + deputyInfos.endOfMandateDate);
+        }
         deputy.endOfMandateDate = deputyInfos.endOfMandateDate;
         deputy.endOfMandateReason = deputyInfos.endOfMandateReason;
         return deputy;
@@ -47,69 +50,89 @@ module.exports = {
   }
 }
 
-var retrieveDeputiesForRange = function(deputies) {
-  var promises = [];
-  for (var i = 0 ; i < deputies.length ; i++) {
-    promises.push(retrieveDeputyDetails(deputies[i], i));
-  }
-  return Promise.all(promises);
-}
-
-var retrieveDeputyDetails = function(deputy, i) {
+var retrieveDeputyDetails = function(deputy) {
   return retrieveDeputyWork(deputy)
-  .then(function(deputyWork) {
-    deputy.works = []
-    for (i in deputyWork) {
-      deputy.works = deputy.works.concat(deputyWork[i])
-    }
+  .then(function(works) {
+    deputy.works = works;
     console.log("retrieved works for : " + deputy.lastname);
-    return deputy;
-  })
-  .then(function(deputy) {
     return retrieveDeputyInfosAndMandates(deputy)
-  })
-  .then(function(deputy) {
-    console.log("retrieved all from deputy " + deputy.lastname)
-    return deputy
+    .then(function(deputy) {
+      if (deputy) {
+        console.log("retrieved all from deputy " + deputy.lastname)
+      }
+      return deputy
+    })
   })
 }
 
 var retrieveDeputyWork = function(deputy) {
-  var promises = [];
+  var allWorks = [];
   for (var i = 0 ; i < WORK_TYPES.length ; i++) {
-    promises.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i], 0, []))
+    allWorks.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i]))
   }
-  return Promise.all(promises);
+  return Promise.filter(allWorks, function(workOfType) {
+    return workOfType.length > 0;
+  });
 }
 
-var retrieveDeputyWorkOfType = function(deputy, workType, pageOffset, previousWork) {
-  var workUrl = DEPUTY_WORK_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId).replace(Constants.PARAM_OFFSET, pageOffset * WORK_PAGE_SIZE).replace(PARAM_WORK_TYPE, workType);
+var retrieveDeputyWorkOfType = function(deputy, workType) {
+  return new Promise(function(resolve, reject) {
+    var results = [];
+    function next(page) {
+      var url = getWorkPageUrl(deputy, workType, page)
+      retrieveDeputyWorkOfTypeWithPage(url, workType)
+      .then(function(works) {
+        var shouldGetNext = false;
+        if (works && works.length > 0) {
+          results.push(works);
+          shouldGetNext = works.length == WORK_PAGE_SIZE && page < 3;
+        }
+        if (shouldGetNext) {
+          next(page + 1);
+        } else {
+          resolve(results);
+        }
+      }, reject);
+    }
+    next(0);
+  });
+}
+
+var getWorkPageUrl = function(deputy, workType, pageOffset) {
+  return DEPUTY_WORK_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId).replace(Constants.PARAM_OFFSET, pageOffset * WORK_PAGE_SIZE).replace(PARAM_WORK_TYPE, workType);
+}
+
+var retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
+  console.log(workUrl)
   return FetchUrlService.retrieveContent(workUrl)
   .then(function(content) {
-    return DeputyWorkParser.parse(content, workUrl)
-  })
-  .then(function(works) {
-    var worksWithExtra = [];
-    for (var i in works) {
-      works[i].type = workType;
-      worksWithExtra.push(retrieveExtraForWork(works[i]));
-    }
-    return Promise.all(worksWithExtra)
-  })
-  .then(function(works) {
-    for (var i in works) {
-      if (workType == Constants.WORK_TYPE_COMMISSIONS) {
-        works[i].title = works[i].title.split('-')[1].trim();
-      }
-      works[i].type = getTypeName(workType);
-      previousWork.push(works[i]);
-    }
-    var lastWork = previousWork[previousWork.length - 1];
-    if (lastWork && works && works.length >= WORK_PAGE_SIZE && pageOffset < 1) {
-      var newOffset = pageOffset + 1;
-      return retrieveDeputyWorkOfType(deputy, workType, newOffset, previousWork);
+    if (content) {
+      return DeputyWorkParser.parse(content, workUrl)
+      .then(function(works) {
+        if (works) {
+          return Promise.filter(works, function(work) {
+            return work != undefined;
+          })
+          .map(function(work) {
+            console.log("work : " + work)
+            work.type = workType;
+            return retrieveExtraForWork(work);
+          })
+          .map(function(work) {
+            if (workType == Constants.WORK_TYPE_COMMISSIONS) {
+              work.title = work.title.split('-')[1].trim();
+            }
+            work.type = getTypeName(workType);
+            return work;
+          })
+        } else {
+          console.log("/!\\ work : no works")
+          return;
+        }
+      })
     } else {
-      return Promise.resolve(previousWork);
+      console.log("/!\\ work : no content")
+      return;
     }
   })
 }
@@ -119,27 +142,30 @@ var retrieveExtraForWork = function(parsedWork) {
     || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_REPORTS) {
     return FetchUrlService.retrieveContent(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
     .then(function(content) {
-      if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
-        return DeputyQuestionThemeParser.parse(parsedWork.url, content, parsedWork.type)
-        .then(function(theme) {
-          parsedWork.theme = theme;
-          return parsedWork;
-        })
+      if (content) {
+        if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
+          return DeputyQuestionThemeParser.parse(parsedWork.url, content, parsedWork.type)
+          .then(function(theme) {
+            parsedWork.theme = theme;
+            return parsedWork;
+          })
+        } else {
+          return DeputyWorkExtraInfosParser.parse(parsedWork.url, content, parsedWork.type)
+          .then(function(lawProposal) {
+            parsedWork.id = lawProposal.id;
+            parsedWork.title = lawProposal.title;
+            parsedWork.description = lawProposal.description;
+            parsedWork.theme = lawProposal.theme;
+            return parsedWork;
+          })
+        }
       } else {
-        return DeputyWorkExtraInfosParser.parse(parsedWork.url, content, parsedWork.type)
-        .then(function(lawProposal) {
-          parsedWork.id = lawProposal.id;
-          parsedWork.title = lawProposal.title;
-          parsedWork.description = lawProposal.description;
-          parsedWork.theme = lawProposal.theme;
-          return parsedWork;
-        })
+        console.log("/!\\ no extra for work")
+        return parsedWork;
       }
     })
   } else {
-    return new Promise(function(resolve, reject) {
-      resolve(parsedWork);
-    })
+    return parsedWork;
   }
 }
 
@@ -172,41 +198,46 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
   var mandatesUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
   return FetchUrlService.retrieveContent(mandatesUrl)
   .then(function(content) {
-    return DeputyMandatesParser.parse(content)
-    .then(function(mandates) {
-      console.log("retrieved mandates for : " + deputy.lastname);
-      deputy.currentMandateStartDate = mandates.currentMandateStartDate;
-      deputy.mandates = mandates;
-      return deputy;
-    })
-    .then(function(deputy) {
-      return DeputyExtraPositionsParser.parse(content)
-      .then(function(extraPositions) {
-        console.log("retrieved extra positions for : " + deputy.lastname);
-        deputy.extraPositions = extraPositions;
+    if (content) {
+      return DeputyMandatesParser.parse(content)
+      .then(function(mandates) {
+        console.log("retrieved mandates for : " + deputy.lastname);
+        deputy.currentMandateStartDate = mandates.currentMandateStartDate;
+        deputy.mandates = mandates;
         return deputy;
       })
-    })
-    .then(function(deputy) {
-      return DeputyInfosParser.parse(content)
-      .then(function(deputyInfos) {
-        console.log("retrieved deputyInfos for : " + deputy.lastname);
-        deputy.phone = deputyInfos.phone;
-        deputy.email = deputyInfos.email;
-        deputy.job = deputyInfos.job;
-        deputy.seatNumber = deputyInfos.seatNumber;
-        if (deputyInfos.declarationsUrl) {
-          return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)
-          .then(function(declarations) {
-            deputy.declarations = declarations;
-            console.log("retrieved declarations for : " + deputy.lastname);
-            return deputy;
-          })
-        } else {
+      .then(function(deputy) {
+        return DeputyExtraPositionsParser.parse(content)
+        .then(function(extraPositions) {
+          console.log("retrieved extra positions for : " + deputy.lastname);
+          deputy.extraPositions = extraPositions;
           return deputy;
-        }
+        })
       })
-    })
+      .then(function(deputy) {
+        return DeputyInfosParser.parse(content)
+        .then(function(deputyInfos) {
+          console.log("retrieved deputyInfos for : " + deputy.lastname);
+          deputy.phone = deputyInfos.phone;
+          deputy.email = deputyInfos.email;
+          deputy.job = deputyInfos.job;
+          deputy.seatNumber = deputyInfos.seatNumber;
+          if (deputyInfos.declarationsUrl) {
+            return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)
+            .then(function(declarations) {
+              deputy.declarations = declarations;
+              console.log("retrieved declarations for : " + deputy.lastname);
+              return deputy;
+            })
+          } else {
+            return deputy;
+          }
+        })
+      })
+    } else {
+      console.log("/!\\ no mandates")
+      return
+    }
   })
 }
 

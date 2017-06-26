@@ -1,3 +1,5 @@
+'use strict';
+
 var DateHelper = require('../helpers/DateHelper.js');
 var htmlparser = require('htmlparser2');
 
@@ -69,6 +71,10 @@ var deputyParser = function(url, callback) {
       } else if (tagname == "html") {
         // print(parsedItems);
         callback(parsedItems);
+        parsedItems = null;
+        expectedItem = null;
+        expectedSection = null;
+        currentSectionItem = null;
       }
     }
   }, {decodeEntities: true});

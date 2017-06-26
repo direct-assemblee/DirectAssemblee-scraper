@@ -1,3 +1,5 @@
+'use strict';
+
 var htmlparser = require('htmlparser2');
 
 var deputyWorkExtraInfosParser = function(callback) {
@@ -45,6 +47,8 @@ var deputyWorkExtraInfosParser = function(callback) {
     onclosetag: function(tagname) {
       if (tagname === "head") {
         callback(parsedItem);
+        parsedItems = null;
+        expectedItem = null;
       }
     }
   }, {decodeEntities: true});
@@ -53,14 +57,11 @@ var deputyWorkExtraInfosParser = function(callback) {
 module.exports = {
   parse: function(url, content, workType) {
     return new Promise(function(resolve, reject) {
-      var callback = function(theme) {
+      var parser = deputyWorkExtraInfosParser(function(theme) {
         resolve(theme);
-      }
-      var parser = deputyWorkExtraInfosParser(callback);
-      if (parser) {
-        parser.write(content);
-        parser.end();
-      }
+      });
+      parser.write(content);
+      parser.end();
     })
   }
 }

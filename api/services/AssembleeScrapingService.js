@@ -1,3 +1,5 @@
+'use strict';
+
 var cron = require('node-cron');
 var Promise = require("bluebird");
 var moment = require('moment');
@@ -16,8 +18,8 @@ var DeputyHelper = require('./helpers/DeputyHelper')
 
 const DEBUG = false;
 const EVERY_MINUTE = '* * * * *';
-const SCRAP_TIMES = '0 2,15 * * *';
-const RANGE_STEP = 1;
+const SCRAP_TIMES = '0 15 * * *';
+const RANGE_STEP = 10;
 
 var self = module.exports = {
   scrapThenStartService: function() {
@@ -38,18 +40,14 @@ var self = module.exports = {
     return DeputiesScrapingService.retrieveDeputiesList()
     .then(function(allDeputies) {
       var deputies = subArrayIfDebug(allDeputies, 0, 10);
-      return retrieveDeputiesRange(deputies, 0)
+      return retrieveAndInsertDeputiesByRange(deputies, 0)
     })
     .then(function() {
-      console.log('start scraping ballots');
+      console.log('==> start scraping ballots');
       return BallotsScrapingService.retrieveBallotsList()
       .then(function(allBallots) {
         var ballots = subArrayIfDebug(allBallots, 0, 10);
-        return retrieveBallotsRange(ballots, 0);
-      })
-      .then(function() {
-        console.log("done scraping ballots")
-        return;
+        return retrieveAndInsertBallotsByRange(ballots, 0);
       })
     })
     .then(function() {
@@ -58,22 +56,22 @@ var self = module.exports = {
       .then(function(nonUpdatedDeputies) {
         console.log('found ' + nonUpdatedDeputies.length + " non updated deputies");
         var promises = [];
-        for (i in nonUpdatedDeputies) {
+        for (var i in nonUpdatedDeputies) {
           promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
         }
         return Promise.all(promises)
-      })
-      .then(function(doneDeputies) {
-        var promises = [];
-        if (doneDeputies) {
-          for (i in doneDeputies) {
-            if (doneDeputies[i].endOfMandateDate) {
-              promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
+        .then(function(doneDeputies) {
+          var promises = [];
+          if (doneDeputies) {
+            for (var i in doneDeputies) {
+              if (doneDeputies[i].endOfMandateDate) {
+                promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
+              }
             }
           }
-        }
-        console.log('updating ' + promises.length + " done deputies");
-        return Promise.all(promises)
+          console.log('updating ' + promises.length + " done deputies");
+          return Promise.all(promises)
+        })
       })
       .then(function() {
         console.log("done updating database !!")
@@ -95,35 +93,35 @@ var subArrayIfDebug = function(array, start, size) {
   }
 }
 
-var retrieveDeputiesRange = function(deputies, start) {
-  var end = start + RANGE_STEP;
-  if (end > deputies.length) {
-    end = deputies.length;
+var retrieveAndInsertDeputiesByRange = function(deputies, start) {
+  var slices = [];
+  for (var i = start ; i < deputies.length ; i = i + RANGE_STEP) {
+    var end = i + RANGE_STEP;
+    if (end > deputies.length) {
+      end = deputies.length;
+    }
+    slices.push(deputies.slice(i, end))
   }
-  console.log("- retrieving deputies range " + start + "-" + end);
-  var deputiesRange = deputies.slice(start, end);
+
+  var i = start;
+  var end;
+  return Promise.each(slices, function(dep) {
+    end = i + RANGE_STEP;
+    console.log("- retrieving deputies range " + i + "-" + end);
+    i += RANGE_STEP;
+    return retrieveAndInsertDeputies(dep)
+  });
+}
+
+var retrieveAndInsertDeputies = function(deputiesRange) {
   return DeputiesScrapingService.retrieveDeputies(deputiesRange)
   .then(function(deputiesRetrieved) {
     console.log("-- retrieved deputies " + deputiesRetrieved.length)
-    return insertDeputies(deputiesRetrieved);
-  })
-  .then(function(insertedDeputies) {
-    console.log("--- inserted deputies " + insertedDeputies.length)
-    var newStart = start + RANGE_STEP
-    if (newStart < deputies.length) {
-      return retrieveDeputiesRange(deputies, newStart)
-    } else {
-      return;
+    for (var i in deputiesRetrieved) {
+      insertDeputy(deputiesRetrieved[i]);
     }
+    return;
   })
-}
-
-var insertDeputies = function(deputies) {
-  var promises = [];
-  for (i in deputies) {
-    promises.push(insertDeputy(deputies[i]));
-  }
-  return Promise.all(promises)
 }
 
 var insertDeputy = function(deputy) {
@@ -148,36 +146,45 @@ var insertDeputy = function(deputy) {
   })
 }
 
-var retrieveBallotsRange = function(ballots, start) {
-  var end = start + RANGE_STEP;
-  if (end > ballots.length) {
-    end = ballots.length;
+var retrieveAndInsertBallotsByRange = function(ballots, start) {
+  var slices = [];
+  for (var i = start ; i < ballots.length ; i = i + RANGE_STEP) {
+    var end = i + RANGE_STEP;
+    if (end > ballots.length) {
+      end = ballots.length;
+    }
+    slices.push(ballots.slice(i, end))
   }
-  console.log("- retrieving ballots range " + start + "-" + end);
-  var ballotsRange = ballots.slice(start, end);
+
+  var i = start;
+  var end;
+  return Promise.each(slices, function(ballotsSlice) {
+    end = i + RANGE_STEP;
+    console.log("- retrieving ballots range " + i + "-" + end);
+    i += RANGE_STEP;
+    return retrieveAndInsertBallots(ballotsSlice)
+  });
+}
+
+var retrieveAndInsertBallots = function(ballotsRange) {
   return BallotsScrapingService.retrieveBallots(ballotsRange)
   .then(function(ballotsRangeRetrieved) {
     console.log("-- retrieved ballotsRange " + ballotsRangeRetrieved.length)
     return insertBallots(ballotsRangeRetrieved, 0)
     .then(function(insertedBallots) {
-      console.log("--- inserted ballots " + insertBallots.length)
+      console.log("--- inserted ballots " + insertedBallots.length)
       return insertVotesForBallots(insertedBallots, ballotsRangeRetrieved)
-    })
-    .then(function(insertedVotes) {
-      console.log("---- inserted votes " + insertedVotes.length)
-      var newStart = start + RANGE_STEP
-      if (newStart < ballots.length) {
-        return retrieveBallotsRange(ballots, newStart)
-      } else {
-        return ballots;
-      }
+      .then(function(insertedVotes) {
+        console.log("---- inserted votes " + insertedVotes.length)
+        return insertedBallots;
+      })
     })
   })
 }
 
 var insertBallots = function(ballots) {
   var promises = [];
-  for (i in ballots) {
+  for (var i in ballots) {
     if (ballots[i]) {
       promises.push(insertBallot(ballots[i]));
     }
@@ -193,7 +200,7 @@ var insertVotesForBallots = function(insertedBallots, ballots) {
   return DeputyService.getDeputiesNames()
   .then(function(deputies) {
     var promises = [];
-    for (i in ballots) {
+    for (var i in ballots) {
       promises.push(insertVotesForBallot(insertedBallots[i].id, ballots[i].votes, deputies))
     }
     return Promise.all(promises)
@@ -202,7 +209,7 @@ var insertVotesForBallots = function(insertedBallots, ballots) {
 
 var insertVotesForBallot = function(ballotId, votes, deputies) {
   var promises = [];
-  for (i in votes) {
+  for (var i in votes) {
     var vote = votes[i]
     var deputyId;
     if (vote.deputy.id) {
