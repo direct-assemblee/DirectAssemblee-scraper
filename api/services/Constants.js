@@ -4,7 +4,7 @@ const PARAM_OFFSET = "{offset}";
 const PARAM_DEPUTY_ID = "{deputy_id}";
 const PARAM_LAW_ID = "{law_id}";
 
-const MANDATE_NUMBER = "14";
+const MANDATE_NUMBER = "15";
 const DEPUTIES_LIST_URL = BASE_URL + "deputes/liste/departements/(vue)/tableau";
 const DEPUTY_INFO_URL = BASE_URL + "deputes/fiche/OMC_PA" + PARAM_DEPUTY_ID;
 const DEPUTE_PHOTO_URL = BASE_URL + "static/tribun/" + MANDATE_NUMBER + "/photos/" + PARAM_DEPUTY_ID + ".jpg"
