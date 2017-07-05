@@ -72,6 +72,15 @@ var retrieveDeputyWork = function(deputy) {
   }
   return Promise.filter(allWorks, function(workOfType) {
     return workOfType.length > 0;
+  })
+  .then(function(works) {
+    var concatWorks = [];
+    for (var i in works) {
+      for (var j in works[i]) {
+        concatWorks.push(works[i][j]);
+      }
+    }
+    return concatWorks;
   });
 }
 
@@ -84,7 +93,9 @@ var retrieveDeputyWorkOfType = function(deputy, workType) {
       .then(function(works) {
         var shouldGetNext = false;
         if (works && works.length > 0) {
-          results.push(works);
+          for (var i in works) {
+            results.push(works[i]);
+          }
           shouldGetNext = works.length == WORK_PAGE_SIZE && page < 3;
         }
         if (shouldGetNext) {
@@ -114,13 +125,15 @@ var retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
             return work != undefined;
           })
           .map(function(work) {
-            console.log("work : " + work)
             work.type = workType;
             return retrieveExtraForWork(work);
           })
           .map(function(work) {
             if (workType == Constants.WORK_TYPE_COMMISSIONS) {
-              work.title = work.title.split('-')[1].trim();
+              var title = work.title.split('-')[1];
+              if (title) {
+                work.title = title.trim();
+              }
             }
             work.type = getTypeName(workType);
             return work;

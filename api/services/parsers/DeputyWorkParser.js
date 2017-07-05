@@ -52,10 +52,6 @@ var deputyParser = function(url, callback) {
           if (text) {
             currentSectionItem.description = currentSectionItem.description ? currentSectionItem.description + " - " : "";
             currentSectionItem.description += text;
-            if (currentSectionItem.id) { // all but public sessions (more lines <li>)
-              expectedSection = null;
-              expectedItem = null;
-            }
           }
         }
       }
@@ -92,8 +88,14 @@ module.exports = {
   }
 }
 
-var print = function(parsedItem) {
-  console.log("------------- ");
-  console.log(parsedItem);
-  console.log("------------- ");
+var print = function(parsedItems) {
+  for (var i in parsedItems) {
+    var parsedItem = parsedItems[i];
+    console.log("------------- WORK ");
+    console.log("id : " + parsedItem.id);
+    console.log("date : " + parsedItem.date);
+    console.log("description : " + parsedItem.description);
+    console.log("url : " + parsedItem.url);
+    console.log("------------- ");
+  }
 }
