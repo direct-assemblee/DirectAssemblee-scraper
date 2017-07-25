@@ -166,7 +166,6 @@ var retrieveExtraForWork = function(parsedWork) {
           return DeputyWorkExtraInfosParser.parse(parsedWork.url, content, parsedWork.type)
           .then(function(lawProposal) {
             parsedWork.id = lawProposal.id;
-            parsedWork.title = lawProposal.title;
             parsedWork.description = lawProposal.description;
             parsedWork.theme = lawProposal.theme;
             return parsedWork;

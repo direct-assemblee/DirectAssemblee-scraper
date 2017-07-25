@@ -23,8 +23,6 @@ var deputyWorkExtraInfosParser = function(callback) {
           } else {
             parsedItem.description = attribs.content;
           }
-        } else if (attribs.name === "TITRE") {
-          parsedItem.title = parsedItem.title.replace(attribs.content.trim(), '');
         }
       }
     },
@@ -33,7 +31,6 @@ var deputyWorkExtraInfosParser = function(callback) {
         var trimmed = text.trim();
         if (trimmed && trimmed.length > 0) {
           var separator = trimmed.indexOf("-");
-          parsedItem.title = trimmed.substring(separator + 2).trim();
           trimmed = trimmed.replace("-", " ").replace(/\s+/g, ' ');
           var splitText = trimmed.split(" ");
           var index = splitText.indexOf("N°") + 1;

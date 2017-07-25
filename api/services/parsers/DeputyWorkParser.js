@@ -26,13 +26,16 @@ var deputyParser = function(url, callback) {
     ontext: function(text) {
       if (currentSectionItem) {
         if (expectedItem === "section.title") {
-          var trimmed = text.trim();
-          if (trimmed) {
-            currentSectionItem.title = trimmed;
-            trimmed = trimmed.replace("-", " ").replace(/\s+/g, ' ');
-            var index = trimmed.indexOf("n°");
+          currentSectionItem.title = text.trim();
+          if (currentSectionItem.title) {
+            currentSectionItem.title = currentSectionItem.title.replace("-", " ").replace(/\s+/g, ' ');
+            var index = currentSectionItem.title.indexOf("de M");
             if (index > 0) {
-              currentSectionItem.title = trimmed.substring(0, index);
+              currentSectionItem.title = currentSectionItem.title.substring(0, index);
+            }
+            index = currentSectionItem.title.indexOf("n°");
+            if (index > 0) {
+              currentSectionItem.title = currentSectionItem.title.substring(0, index);
             }
             expectedItem = "section.date";
           }
