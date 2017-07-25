@@ -13,7 +13,7 @@ var deputyParser = function(url, callback) {
     onopentag: function(tagname, attribs) {
       if (tagname === "h4") {
         currentSectionItem = {}
-        expectedItem = "section.id";
+        expectedItem = "section.title";
       } else if (currentSectionItem) {
         if (attribs.href && !currentSectionItem.url) {
           currentSectionItem.url = attribs.href;
@@ -25,16 +25,14 @@ var deputyParser = function(url, callback) {
     },
     ontext: function(text) {
       if (currentSectionItem) {
-        if (expectedItem === "section.id") {
+        if (expectedItem === "section.title") {
           var trimmed = text.trim();
           if (trimmed) {
             currentSectionItem.title = trimmed;
             trimmed = trimmed.replace("-", " ").replace(/\s+/g, ' ');
-            var splitText = trimmed.split(" ");
-            var index = splitText.indexOf("n°") + 1;
+            var index = trimmed.indexOf("n°");
             if (index > 0) {
-              currentSectionItem.id = splitText[index];
-              // console.log(trimmed + "=> " + currentSectionItem.id)
+              currentSectionItem.title = trimmed.substring(0, index);
             }
             expectedItem = "section.date";
           }
@@ -92,7 +90,7 @@ var print = function(parsedItems) {
   for (var i in parsedItems) {
     var parsedItem = parsedItems[i];
     console.log("------------- WORK ");
-    console.log("id : " + parsedItem.id);
+    console.log("title : " + parsedItem.title);
     console.log("date : " + parsedItem.date);
     console.log("description : " + parsedItem.description);
     console.log("url : " + parsedItem.url);
