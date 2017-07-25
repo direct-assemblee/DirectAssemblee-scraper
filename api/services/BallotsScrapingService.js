@@ -12,7 +12,7 @@ const BALLOT_TYPE_OTHER = "AUT";
 const BALLOT_TYPE_ALL = "TOUS";
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER ];
 const BALLOTS_PAGE_SIZE = 100;
-const BALLOTS_LIST_URL = Constants.BASE_URL + "scrutins/liste/offset/" + Constants.PARAM_OFFSET + "/(type)/" + PARAM_BALLOT_TYPE + "/(idDossier)/TOUS" + "/(legislature)/"; + Constants.MANDATE_NUMBER;
+const BALLOTS_LIST_URL = Constants.BASE_URL + "scrutins/liste/offset/" + Constants.PARAM_OFFSET + "/(type)/" + PARAM_BALLOT_TYPE + "/(idDossier)/TOUS/(legislature)/" + Constants.MANDATE_NUMBER;
 
 module.exports = {
   retrieveBallotsList: function() {
