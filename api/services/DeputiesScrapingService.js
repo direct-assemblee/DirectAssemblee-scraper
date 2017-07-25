@@ -234,6 +234,7 @@ var retrieveDeputyInfosAndMandates = function(deputy) {
           deputy.phone = deputyInfos.phone;
           deputy.email = deputyInfos.email;
           deputy.job = deputyInfos.job;
+          deputy.parliamentGroup = deputyInfos.parliamentGroup;
           deputy.seatNumber = deputyInfos.seatNumber;
           if (deputyInfos.declarationsUrl) {
             return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)

@@ -32,7 +32,6 @@ var deputyParser = function(callback) {
           parsedItem.lastname = text;
           break;
         case 3:
-          parsedItem.parliamentGroup = text;
           break;
         case 4:
           parsedItem.department = text;
@@ -76,14 +75,12 @@ module.exports = {
 
 var print = function(parsedItem) {
   console.log("------------- ");
-  console.log("item : " + parsedItem.officialId);
-  console.log("item : " + parsedItem.civility);
-  console.log("item : " + parsedItem.firstname);
-  console.log("item : " + parsedItem.lastname);
-  console.log("item : " + parsedItem.party);
-  console.log("item : " + parsedItem.group);
-  console.log("item : " + parsedItem.department);
-  console.log("item : " + parsedItem.district);
-  console.log("item : " + parsedItem.commission);
+  console.log("officialId : " + parsedItem.officialId);
+  console.log("civility : " + parsedItem.civility);
+  console.log("firstname : " + parsedItem.firstname);
+  console.log("lastname : " + parsedItem.lastname);
+  console.log("department : " + parsedItem.department);
+  console.log("district : " + parsedItem.district);
+  console.log("commission : " + parsedItem.commission);
   console.log("------------- ");
 }

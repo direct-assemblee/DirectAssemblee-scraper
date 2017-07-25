@@ -104,7 +104,11 @@ module.exports = {
 }
 
 var print = function(parsedItem) {
-  console.log("------------- ");
-  console.log(parsedItem);
+  console.log("------------- MANDATE");
+  console.log("currentMandateStartDate : " + parsedItem.currentMandateStartDate);
+  console.log("otherCurrentMandates : " + parsedItem.otherCurrentMandates);
+  console.log("pastDeputyMandates : " + parsedItem.pastDeputyMandates);
+  console.log("otherPastGouvMissions : " + parsedItem.otherPastGouvMissions);
+  console.log("otherPastInternationalMissions : " + parsedItem.otherPastInternationalMissions);
   console.log("------------- ");
 }

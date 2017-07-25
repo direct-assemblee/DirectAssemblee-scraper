@@ -20,9 +20,6 @@ module.exports = {
     lastname: {
       type: 'string'
     },
-    party: {
-      type: 'string'
-    },
     parliamentGroup: {
       type: 'string'
     },

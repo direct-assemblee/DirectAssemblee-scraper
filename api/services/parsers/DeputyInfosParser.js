@@ -10,14 +10,16 @@ var deputyParser = function(callback) {
 
   return new htmlparser.Parser({
     onopentag: function(tagname, attribs) {
-      if (attribs.class === "tel") {
+      if (tagname === "a" && attribs.title && attribs.title.includes("composition du groupe")) {
+        expectedItem = "parliamentGroup";
+      } else if (attribs.class === "tel") {
         expectedItem = "phone";
       } else if (attribs.class === "email") {
         parsedItem.email = attribs.href.replace("mailto:", '')
       } else if (attribs.href && attribs.href.startsWith("http://www.hatvp.fr")) {
         parsedItem.declarationsUrl = attribs.href;
       } else if (tagname === "dt") {
-        expectedItem = "jobOrEndOrParty";
+        expectedItem = "jobOrEnd";
       } else if (tagname === "div" && attribs.dataplace) {
         parsedItem.seatNumber = attribs.dataplace;
       }
@@ -28,7 +30,7 @@ var deputyParser = function(callback) {
       } else if (expectedItem === "phoneValue") {
         parsedItem.phone = text.replace(/\s+/g, '');
         expectedItem = null;
-      } else if (expectedItem === "jobOrEndOrParty") {
+      } else if (expectedItem === "jobOrEnd") {
         if (text === "Biographie") {
           expectJobTextCount = expectJobTextCount + 1;
         } else if (expectJobTextCount > 0) {
@@ -43,8 +45,6 @@ var deputyParser = function(callback) {
           }
         } else if (text === "Date de fin de mandat") {
           expectedItem = "endOfMandate";
-        } else if (text.startsWith("Rattachement au titre")) {
-          expectedItem = "party";
         }
       } else if (expectedItem === "endOfMandate") {
         var trimmed = text.trim();
@@ -59,10 +59,10 @@ var deputyParser = function(callback) {
             // expectedType = null;
           }
         }
-      } else if (expectedItem === "party") {
+      } else if (expectedItem === "parliamentGroup") {
         var trimmed = text.trim();
         if (trimmed) {
-          parsedItem.party = trimmed;
+          parsedItem.parliamentGroup = trimmed;
           // expectedType = null;
         }
       }
@@ -93,11 +93,15 @@ module.exports = {
 }
 
 var print = function(parsedItem) {
-  console.log("------------- ");
-  console.log(parsedItem.phone);
-  console.log(parsedItem.email);
-  console.log(parsedItem.declarationsUrl);
-  console.log(parsedItem.endOfMandateDate);
-  console.log(parsedItem.endOfMandateReason);
+  console.log("------------- DEPUTY");
+  console.log("phone : " + parsedItem.phone);
+  console.log("email : " + parsedItem.email);
+  console.log("parliamentGroup : " + parsedItem.parliamentGroup);
+  console.log("job : " + parsedItem.job);
+  console.log("seatNumber : " + parsedItem.seatNumber);
+  console.log("declarationsUrl : " + parsedItem.declarationsUrl);
+  console.log("declarationsUrl : " + parsedItem.declarationsUrl);
+  console.log("endOfMandateDate : " + parsedItem.endOfMandateDate);
+  console.log("endOfMandateReason : " + parsedItem.endOfMandateReason);
   console.log("------------- ");
 }

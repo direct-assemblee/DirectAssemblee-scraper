@@ -71,7 +71,6 @@ var createDeputyModel = function(deputy, departmentId) {
     "gender": deputy.civility === "M." ? "M" : "F",
     "firstname": deputy.firstname,
     "lastname": deputy.lastname,
-    "party": deputy.party,
     "parliamentGroup": deputy.parliamentGroup,
     "departmentId": departmentId,
     "district": deputy.district,

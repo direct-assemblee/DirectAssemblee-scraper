@@ -79,8 +79,13 @@ module.exports = {
   }
 }
 
-var print = function(parsedItem) {
-  console.log("------------- ");
-  console.log(parsedItem);
-  console.log("------------- ");
+var print = function(parsedItems) {
+  for (var i in parsedItems) {
+    var parsedItem = parsedItems[i];
+    console.log("------------- EXTRA POSITIONS");
+    console.log("type : " + parsedItem.type);
+    console.log("position : " + parsedItem.position);
+    console.log("office : " + parsedItem.office);
+    console.log("------------- ");
+  }
 }
