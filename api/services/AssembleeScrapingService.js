@@ -18,7 +18,7 @@ var DeputyHelper = require('./helpers/DeputyHelper')
 
 const DEBUG = false;
 const EVERY_MINUTE = '* * * * *';
-const SCRAP_TIMES = '0 15 * * *';
+const SCRAP_TIMES = '0 0,10,15,18 * * *';
 const RANGE_STEP = 10;
 
 var self = module.exports = {
@@ -31,7 +31,7 @@ var self = module.exports = {
 
     startService: function() {
         cron.schedule(SCRAP_TIMES, function() {
-            console.log('start looking for new votes');
+            console.log('=> start looking for new votes');
             self.startScraping()
         });
     },
@@ -40,7 +40,7 @@ var self = module.exports = {
         return DeputiesScrapingService.retrieveDeputiesList()
         .then(function(allDeputies) {
             var deputies = subArrayIfDebug(allDeputies, 0, 10);
-            return retrieveAndInsertDeputiesByRange(deputies, 10)
+            return retrieveAndInsertDeputiesByRange(deputies, 0)
         })
         .then(function() {
             console.log('==> start scraping ballots');
@@ -51,7 +51,7 @@ var self = module.exports = {
             })
         })
         .then(function() {
-            console.log('look for non-updated deputies');
+            console.log('=> look for non-updated deputies');
             return DeputyService.findNonUpdatedDeputies()
             .then(function(nonUpdatedDeputies) {
                 console.log('found ' + nonUpdatedDeputies.length + " non updated deputies");
