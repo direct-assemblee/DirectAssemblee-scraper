@@ -56,6 +56,9 @@ var ballotParser = function(ballotType, callback) {
                     if (parsedItem.title.indexOf("motion de censure") > 0) {
                         parsedItem.type = "motion_of_censure";
                     } else {
+                        if (ballotType === "TOUS") {
+                            ballotType = "SOR"; // default value
+                        }
                         parsedItem.type = ballotType;
                     }
                     resultItems.push(parsedItem);

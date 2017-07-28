@@ -68,7 +68,7 @@ var self = module.exports = {
                 console.log(" ====> NO CONTENT ")
             }
             if (content == undefined || content.length < 1000) {
-                console.log(content)
+                console.log("content : " + content);
                 if (content && content.startsWith("<head><title>Object moved</title></head>")) {
                     var index = content.indexOf("\"");
                     if (index > 0) {
