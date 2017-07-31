@@ -201,7 +201,9 @@ var insertVotesForBallots = function(insertedBallots, ballots) {
     .then(function(deputies) {
         var promises = [];
         for (var i in ballots) {
-            promises.push(insertVotesForBallot(insertedBallots[i].id, ballots[i].votes, deputies))
+            if (insertedBallots[i]) {
+                promises.push(insertVotesForBallot(insertedBallots[i].id, ballots[i].votes, deputies))
+            }
         }
         return Promise.all(promises)
     })

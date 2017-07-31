@@ -18,7 +18,7 @@ module.exports = {
     retrieveBallotsList: function() {
         var promises = [];
         for (var i = 0 ; i < BALLOT_TYPES.length ; i++) {
-            promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i], 0, []))
+            promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i]))
         }
         return Promise.all(promises)
         .then(function(ballots) {
@@ -33,28 +33,51 @@ module.exports = {
     retrieveBallots: function(ballots) {
         var promises = [];
         for (var i = 0 ; i < ballots.length ; i++) {
-            promises.push(retrieveBallotDetails(ballots[i], 0));
+            if (ballots[i]) {
+                promises.push(retrieveBallotDetails(ballots[i], 0));
+            }
         }
         return Promise.all(promises);
     }
 }
 
-var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots) {
-    var ballotsUrl = BALLOTS_LIST_URL.replace(Constants.PARAM_OFFSET, pageOffset * BALLOTS_PAGE_SIZE).replace(PARAM_BALLOT_TYPE, ballotType);
-    return FetchUrlService.retrieveContent(ballotsUrl)
-    .then(function(content) {
-        return BallotsListParser.parse(content, ballotType)
-    })
-    .then(function(ballots) {
-        for (var i in ballots) {
-            previousBallots.push(ballots[i]);
+var retrieveBallotsListOfType = function(ballotType) {
+    return new Promise(function(resolve, reject) {
+        var results = [];
+        function next(page) {
+            var url = getBallotsListPageUrl(ballotType, page);
+            retrieveBallotsListOfTypeWithPage(url, ballotType)
+            .then(function(ballots) {
+                var shouldGetNext = false;
+                if (ballots && ballots.length > 0) {
+                    for (var i in ballots) {
+                        results.push(ballots[i]);
+                    }
+                    shouldGetNext = ballots.length == BALLOTS_PAGE_SIZE;
+                }
+                if (shouldGetNext) {
+                    next(page + 1);
+                } else {
+                    resolve(results);
+                }
+            }, reject);
         }
-        var lastBallot = previousBallots[previousBallots.length - 1];
-        if (lastBallot && ballots && ballots.length >= BALLOTS_PAGE_SIZE) {
-            var newOffset = pageOffset + 1;
-            return retrieveBallotsListOfType(ballotType, newOffset, previousBallots);
+        next(0);
+    });
+}
+
+var getBallotsListPageUrl = function(ballotType, pageOffset) {
+    return BALLOTS_LIST_URL.replace(Constants.PARAM_OFFSET, pageOffset * BALLOTS_PAGE_SIZE).replace(PARAM_BALLOT_TYPE, ballotType);
+}
+
+var retrieveBallotsListOfTypeWithPage = function(url, ballotType) {
+    return FetchUrlService.retrieveContent(url)
+    .then(function(content) {
+        if (content) {
+            return BallotsListParser.parse(content, ballotType)
         } else {
-            return Promise.resolve(previousBallots);
+            console.log("/!\\ ballot list : no content")
+            return;
         }
     })
 }
@@ -62,26 +85,31 @@ var retrieveBallotsListOfType = function(ballotType, pageOffset, previousBallots
 retrieveBallotDetails = function(ballot, attempts) {
     return FetchUrlService.retrieveContent(ballot.analysisUrl)
     .then(function(content) {
-        if (content.indexOf("503 Service Unavailable") > 0) {
-            attempts++;
-            if (attempts < 3) {
-                return retrieveBallotDetails(ballot, attempts);
+        if (content) {
+            if (content.indexOf("503 Service Unavailable") > 0) {
+                attempts++;
+                if (attempts < 3) {
+                    return retrieveBallotDetails(ballot, attempts);
+                } else {
+                    return;
+                }
             } else {
-                return;
+                return BallotParser.parse(ballot.analysisUrl, content)
+                .then(function(ballotAnalysis) {
+                    ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)
+                    return ballot;
+                })
+                .then(function(ballot) {
+                    if (ballot.fileUrl) {
+                        return retrieveBallotTheme(ballot);
+                    } else {
+                        return ballot;
+                    }
+                })
             }
         } else {
-            return BallotParser.parse(ballot.analysisUrl, content)
-        }
-    })
-    .then(function(ballotAnalysis) {
-        ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)
-        return ballot;
-    })
-    .then(function(ballot) {
-        if (ballot.fileUrl) {
-            return retrieveBallotTheme(ballot);
-        } else {
-            return ballot;
+            console.log("/!\\ ballot : no content")
+            return;
         }
     })
 }
@@ -89,11 +117,16 @@ retrieveBallotDetails = function(ballot, attempts) {
 retrieveBallotTheme = function(ballot) {
     return FetchUrlService.retrieveContent(ballot.fileUrl, true)
     .then(function(content) {
-        return BallotThemeParser.parse(content)
-        .then(function(theme) {
-            ballot.theme = theme;
-            return ballot;
-        })
+        if (content) {
+            return BallotThemeParser.parse(content)
+            .then(function(theme) {
+                ballot.theme = theme;
+                return ballot;
+            })
+        } else {
+            console.log("/!\\ ballot theme : no content")
+            return;
+        }
     })
 }
 

@@ -20,6 +20,9 @@ var ballotParser = function(ballotType, callback) {
         },
         ontext: function(text) {
             if (expectedData === "id") {
+                if (text.includes('*')) {
+                    parsedItem.type = "SSO";
+                }
                 parsedItem.officialId = text.replace('*', '');
                 expectedData = "date";
             } else if (expectedData === "date") {
@@ -55,12 +58,13 @@ var ballotParser = function(ballotType, callback) {
                 if (parsedItem.officialId) {
                     if (parsedItem.title.indexOf("motion de censure") > 0) {
                         parsedItem.type = "motion_of_censure";
-                    } else {
+                    } else if (!parsedItem.type) {
                         if (ballotType === "TOUS") {
                             ballotType = "SOR"; // default value
                         }
                         parsedItem.type = ballotType;
                     }
+                    // print(parsedItem)
                     resultItems.push(parsedItem);
                 }
                 // print(parsedItem)
