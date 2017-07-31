@@ -7,31 +7,33 @@ var ballotParser = function(url, callback) {
     var parsedItem = {};
     parsedItem.votes = [];
     var expectedItem;
-    var currentVoteDepute;
+    var currentVoteDeputy;
     var currentVoteValue;
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
             if (tagname === "title") {
                 expectedItem = "date";
-            } else if (attribs.class === "president-title") {
-                expectedItem = "title";
-            } else if (attribs.class === "synthese") {
-                expectedItem = "synthese";
-            } else if (attribs.class === "annoncevote") {
-                expectedItem = "annoncevote";
-            } else if (attribs.class === "Pour") {
-                currentVoteValue = "for";
-            } else if (attribs.class === "Contre") {
-                currentVoteValue = "against";
-            } else if (attribs.class === "Abstention") {
-                currentVoteValue = "blank";
-            } else if (attribs.class && attribs.class.startsWith("Non-votant")) {
-                currentVoteValue = "non-voting";
-            } else if (attribs.class === "deputes") {
-                currentVoteDepute = {};
-                expectedItem = "vote.firstname";
-            } else if (tagname === "li" && currentVoteDepute) {
+            } else if (attribs.class) {
+                if (attribs.class === "president-title") {
+                    expectedItem = "title";
+                } else if (attribs.class === "synthese") {
+                    expectedItem = "synthese";
+                } else if (attribs.class === "annoncevote") {
+                    expectedItem = "annoncevote";
+                } else if (attribs.class.startsWith("Pour")) {
+                    currentVoteValue = "for";
+                } else if (attribs.class.startsWith("Contre")) {
+                    currentVoteValue = "against";
+                } else if (attribs.class.startsWith("Abstention")) {
+                    currentVoteValue = "blank";
+                } else if (attribs.class.startsWith("Non-votant")) {
+                    currentVoteValue = "non-voting";
+                } else if (attribs.class === "deputes") {
+                    currentVoteDeputy = {};
+                    expectedItem = "vote.firstname";
+                }
+            } else if (tagname === "li" && currentVoteDeputy) {
                 expectedItem = "vote.firstname";
             } else if (tagname === "b" && expectedItem === "vote.firstname") {
                 expectedItem = "vote.lastname";
@@ -57,20 +59,20 @@ var ballotParser = function(url, callback) {
                     var firstname = textTrimmed;
                     if (firstname.endsWith(" de")) {
                         firstname = firstname.substring(0, firstname.length - 3);
-                        currentVoteDepute.lastname = "de ";
+                        currentVoteDeputy.lastname = "de ";
                     }
-                    currentVoteDepute.firstname = firstname.trim();
+                    currentVoteDeputy.firstname = firstname.trim();
                 }
             } else if (expectedItem === "vote.lastname") {
                 var textTrimmed = text.trim();
                 if (textTrimmed) {
                     var lastname = text;
-                    if (!currentVoteDepute.lastname) {
-                        currentVoteDepute.lastname = ""
+                    if (!currentVoteDeputy.lastname) {
+                        currentVoteDeputy.lastname = ""
                     }
-                    currentVoteDepute.lastname = currentVoteDepute.lastname + lastname;
-                    parsedItem.votes.push({ "deputy": currentVoteDepute, "value" : currentVoteValue })
-                    currentVoteDepute = {}
+                    currentVoteDeputy.lastname = currentVoteDeputy.lastname + lastname;
+                    parsedItem.votes.push({ "deputy": currentVoteDeputy, "value" : currentVoteValue })
+                    currentVoteDeputy = {}
                     expectedItem = "vote.firstname";
                 }
             } else if (expectedItem === "date") {
@@ -105,7 +107,7 @@ var ballotParser = function(url, callback) {
         },
         onclosetag: function(tagname) {
             if (tagname === "ul") {
-                currentVoteDepute = null;
+                currentVoteDeputy = null;
             }
             if (tagname === "div") {
                 expectedItem = null;
