@@ -19,7 +19,7 @@ var self = module.exports = {
             var simplifiedDeputies = [];
             for (i in deputies) {
                 var deputy = deputies[i];
-                simplifiedDeputies.push({ id: deputy.id, firstname: deputy.firstname, lastname: deputy.lastname });
+                simplifiedDeputies.push({ officialId: deputy.officialId, firstname: deputy.firstname, lastname: deputy.lastname });
             }
             return simplifiedDeputies;
         })

@@ -2,13 +2,9 @@ module.exports = {
     autoCreatedAt: true,
     autoUpdatedAt: true,
     attributes: {
-        id: {
-            type: 'int',
-            primaryKey: true,
-            autoIncrement: true
-        },
         officialId: {
             type: 'int',
+            primaryKey: true,
             unique: true
         },
         gender: {

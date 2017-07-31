@@ -127,16 +127,16 @@ var retrieveAndInsertDeputies = function(deputiesRange) {
 var insertDeputy = function(deputy) {
     return DeputyService.insertDeputy(deputy, true)
     .then(function(insertedDeputy) {
-        return MandateService.insertMandates(deputy.mandates, insertedDeputy.id)
+        return MandateService.insertMandates(deputy.mandates, insertedDeputy.officialId)
         .then(function(insertedMandates) {
             console.log("inserted " + insertedMandates.length + " mandates for deputy : " + deputy.lastname)
-            return ExtraPositionService.insertExtraPositions(deputy.extraPositions, insertedDeputy.id)
+            return ExtraPositionService.insertExtraPositions(deputy.extraPositions, insertedDeputy.officialId)
             .then(function(insertedExtraPositions) {
                 console.log("inserted " + insertedExtraPositions.length + " extra positions for deputy : " + deputy.lastname)
-                return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.id)
+                return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.officialId)
                 .then(function(insertedDeclarations) {
                     console.log("inserted " + insertedDeclarations.length + " declarations for deputy : " + deputy.lastname)
-                    return WorkService.insertWorks(deputy.works, insertedDeputy.id)
+                    return WorkService.insertWorks(deputy.works, insertedDeputy.officialId)
                     .then(function(insertedWorks) {
                         console.log("inserted " + insertedWorks.length + " works for deputy : " + deputy.lastname)
                     })
@@ -214,8 +214,8 @@ var insertVotesForBallot = function(ballotId, votes, deputies) {
     for (var i in votes) {
         var vote = votes[i]
         var deputyId;
-        if (vote.deputy.id) {
-            deputyId = DeputyService.findDeputyWithOfficialId(vote.deputy.id);
+        if (vote.deputy.officialId) {
+            deputyId = DeputyService.findDeputyWithOfficialId(vote.deputy.officialId);
         } else {
             deputyId = DeputyHelper.getDeputyIdForVoteInBallot(deputies, vote);
         }

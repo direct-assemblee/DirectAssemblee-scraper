@@ -26,7 +26,7 @@ var self = module.exports = {
                 // console.log("found almost same name for  " +  "." + voteFirstname + "." + voteLastname + "." + "/" + iterFirstname + "." + iterLastname + ".");
             }
             if (lastnameMatch && firstnameMatch) {
-                deputyId = iterDeputy.id;
+                deputyId = iterDeputy.officialId;
                 break;
             }
         }
