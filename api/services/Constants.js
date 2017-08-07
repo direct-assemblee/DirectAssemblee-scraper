@@ -1,26 +1,26 @@
-const BASE_URL = 'http://www2.assemblee-nationale.fr/'
+const BASE_URL = "http://www2.assemblee-nationale.fr/";
 
-const PARAM_OFFSET = '{offset}'
-const PARAM_DEPUTY_ID = '{deputy_id}'
-const PARAM_LAW_ID = '{law_id}'
+const PARAM_OFFSET = "{offset}";
+const PARAM_DEPUTY_ID = "{deputy_id}";
+const PARAM_LAW_ID = "{law_id}";
 
-const MANDATE_NUMBER = '15'
-const DEPUTIES_LIST_URL = BASE_URL + 'deputes/liste/departements/(vue)/tableau'
-const DEPUTY_INFO_URL = BASE_URL + 'deputes/fiche/OMC_PA' + PARAM_DEPUTY_ID
-const DEPUTE_PHOTO_URL = BASE_URL + 'static/tribun/' + MANDATE_NUMBER + '/photos/' + PARAM_DEPUTY_ID + '.jpg'
-const DEPUTE_VOTES_URL = BASE_URL + 'deputes/votes/(offset)/' + PARAM_OFFSET + '/(id_omc)/OMC_PA' + PARAM_DEPUTY_ID + '/(legislature)/' + MANDATE_NUMBER
-const LAW_URL = BASE_URL + 'scrutins/detail/(legislature)/' + MANDATE_NUMBER + '/(num)/' + PARAM_LAW_ID
+const MANDATE_NUMBER = "15";
+const DEPUTIES_LIST_URL = BASE_URL + "deputes/liste/departements/(vue)/tableau";
+const DEPUTY_INFO_URL = BASE_URL + "deputes/fiche/OMC_PA" + PARAM_DEPUTY_ID;
+const DEPUTE_PHOTO_URL = BASE_URL + "static/tribun/" + MANDATE_NUMBER + "/photos/" + PARAM_DEPUTY_ID + ".jpg"
+const DEPUTE_VOTES_URL = BASE_URL + "deputes/votes/(offset)/" + PARAM_OFFSET + "/(id_omc)/OMC_PA" + PARAM_DEPUTY_ID + "/(legislature)/" + MANDATE_NUMBER;
+const LAW_URL = BASE_URL + "scrutins/detail/(legislature)/" + MANDATE_NUMBER + "/(num)/" + PARAM_LAW_ID;
 
-const ALL_DEPUTES_URL = 'http://www.nosdeputes.fr/deputes/enmandat/json'
+const ALL_DEPUTES_URL = "http://www.nosdeputes.fr/deputes/enmandat/json";
 
 const SAVE_PHOTO_PATH = './assets/images/deputes/'
 
-const WORK_TYPE_QUESTIONS = 'Questions'
-const WORK_TYPE_REPORTS = 'RapportsParlementaires'
-const WORK_TYPE_PROPOSITIONS = 'PropositionsLoi'
-const WORK_TYPE_COSIGNED_PROPOSITIONS = 'PropositionsLoiCoSignataire'
-const WORK_TYPE_COMMISSIONS = 'ComptesRendusCommission'
-const WORK_TYPE_PUBLIC_SESSIONS = 'ComptesRendusSeance'
+const WORK_TYPE_QUESTIONS = "Questions";
+const WORK_TYPE_REPORTS = "RapportsParlementaires";
+const WORK_TYPE_PROPOSITIONS = "PropositionsLoi";
+const WORK_TYPE_COSIGNED_PROPOSITIONS = "PropositionsLoiCoSignataire";
+const WORK_TYPE_COMMISSIONS = "ComptesRendusCommission";
+const WORK_TYPE_PUBLIC_SESSIONS = "ComptesRendusSeance";
 
 module.exports = {
     BASE_URL: BASE_URL,

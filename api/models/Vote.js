@@ -19,4 +19,4 @@ module.exports = {
             model: 'Deputy'
         }
     }
-}
+};
