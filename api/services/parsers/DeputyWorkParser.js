@@ -18,8 +18,12 @@ var deputyParser = function(url, callback) {
                 if (attribs.href && !currentSectionItem.url) {
                     currentSectionItem.url = attribs.href;
                     expectedSection = "description";
-                } else if (expectedSection === "description" && (tagname === "p" || tagname === "li") && !attribs.class) {
-                    expectedItem = "section.description";
+                } else if (expectedSection === "description") {
+                    if ((tagname === "p" || tagname === "li") && !attribs.class) {
+                        expectedItem = "section.description";
+                    } else {
+                        expectedItem = null;
+                    }
                 }
             }
         },
