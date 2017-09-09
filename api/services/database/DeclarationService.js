@@ -1,39 +1,41 @@
-var Promise = require("bluebird");
-var DateHelper = require('../helpers/DateHelper.js');
+let Promise = require('bluebird');
+let DateHelper = require('../helpers/DateHelper.js');
 
 module.exports = {
     insertDeclarations: function(declarations, deputyId) {
         return clearDeclarationsForDeputy(deputyId)
         .then(function(removedDeclarations) {
-            return createDeclarations(declarations, deputyId)
+            let number = removedDeclarations ? removedDeclarations.length : 0;
+            console.log('removed ' + number + ' declarations');
+            return createDeclarations(declarations, deputyId);
         })
     }
 }
 
-var clearDeclarationsForDeputy = function(deputyId) {
+let clearDeclarationsForDeputy = function(deputyId) {
     return Declaration.destroy()
     .where({ deputyId: deputyId });
 }
 
-var createDeclarations = function(declarations, deputyId) {
-    var promises = [];
-    for (i in declarations) {
+let createDeclarations = function(declarations, deputyId) {
+    let promises = [];
+    for (let i in declarations) {
         promises.push(createDeclaration(deputyId, declarations[i]));
     }
     return Promise.all(promises)
 }
 
-var createDeclaration = function(deputyId, declaration) {
-    var declarationToInsert = createDeclarationModel(deputyId, declaration)
+let createDeclaration = function(deputyId, declaration) {
+    let declarationToInsert = createDeclarationModel(deputyId, declaration)
     return Declaration.create(declarationToInsert)
 }
 
-var createDeclarationModel = function(deputyId, declaration) {
-    var date = DateHelper.formatWrittenDate(declaration.date)
+let createDeclarationModel = function(deputyId, declaration) {
+    let date = DateHelper.formatWrittenDate(declaration.date)
     return {
-        "title": declaration.title,
-        "date": date,
-        "url": declaration.url,
-        "deputyId": deputyId
+        'title': declaration.title,
+        'date': date,
+        'url': declaration.url,
+        'deputyId': deputyId
     }
 }

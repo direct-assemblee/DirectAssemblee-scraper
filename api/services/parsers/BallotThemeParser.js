@@ -1,23 +1,23 @@
-var htmlparser = require('htmlparser2');
+let htmlparser = require('htmlparser2');
 
-var ballotThemeParser = function(callback) {
-    var parsedItem;
-    var expectedItem;
+let ballotThemeParser = function(callback) {
+    let parsedItem;
+    let expectedItem;
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
-            if (tagname === "title") {
-                expectedItem = "title";
+            if (tagname === 'title') {
+                expectedItem = 'title';
             }
         },
         ontext: function(text) {
-            if (expectedItem === "title") {
-                var wholeTitle = text.substring(text.indexOf('-') + 2);
+            if (expectedItem === 'title') {
+                let wholeTitle = text.substring(text.indexOf('-') + 2);
                 parsedItem = wholeTitle.split(':')[0].trim();
             }
         },
         onclosetag: function(tagname) {
-            if (tagname === "title") {
+            if (tagname === 'title') {
                 callback(parsedItem);
             }
         }
@@ -27,7 +27,7 @@ var ballotThemeParser = function(callback) {
 module.exports = {
     parse: function(content) {
         return new Promise(function(resolve, reject) {
-            var parser = ballotThemeParser(function(theme) {
+            let parser = ballotThemeParser(function(theme) {
                 resolve(theme);
             });
             parser.write(content);
@@ -36,8 +36,8 @@ module.exports = {
     }
 }
 
-var print = function(parsedItem) {
-    console.log("------------- ");
+let print = function(parsedItem) {
+    console.log('------------- ');
     console.log(parsedItem)
-    console.log("------------- ");
+    console.log('------------- ');
 }

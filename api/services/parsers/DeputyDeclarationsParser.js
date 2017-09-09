@@ -1,35 +1,34 @@
 'use strict';
 
-var DateHelper = require('../helpers/DateHelper.js');
-var htmlparser = require('htmlparser2');
+let htmlparser = require('htmlparser2');
 
-var declarationsParser = function(callback) {
-    var parsedItems = [];
-    var expectedItem;
-    var currentDecla;
+let declarationsParser = function(callback) {
+    let parsedItems = [];
+    let expectedItem;
+    let currentDecla;
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
-            if (attribs.class === "type") {
-                expectedItem = "title";
+            if (attribs.class === 'type') {
+                expectedItem = 'title';
                 currentDecla = {};
-            } else if (tagname === "time") {
-                expectedItem = "date";
-            } else if (attribs.class === "button button--6") {
+            } else if (tagname === 'time') {
+                expectedItem = 'date';
+            } else if (attribs.class === 'button button--6') {
                 currentDecla.url = attribs.href;
                 parsedItems.push(currentDecla);
             }
         },
         ontext: function(text) {
-            if (expectedItem === "title") {
+            if (expectedItem === 'title') {
                 currentDecla.title = text;
-            } else if (expectedItem === "date") {
+            } else if (expectedItem === 'date') {
                 currentDecla.date = text;
                 expectedItem = null;
             }
         },
         onclosetag: function(tagname) {
-            if (tagname == "html") {
+            if (tagname == 'html') {
                 // print(parsedItems);
                 callback(parsedItems);
             }
@@ -40,7 +39,7 @@ var declarationsParser = function(callback) {
 module.exports = {
     parse: function(content) {
         return new Promise(function(resolve, reject) {
-            var parser = declarationsParser(function(declarations) {
+            let parser = declarationsParser(function(declarations) {
                 resolve(declarations);
             });
             parser.write(content);
@@ -49,8 +48,8 @@ module.exports = {
     }
 }
 
-var print = function(parsedItems) {
-    console.log("------------- ");
+let print = function(parsedItems) {
+    console.log('------------- ');
     console.log(parsedItems);
-    console.log("------------- ");
+    console.log('------------- ');
 }

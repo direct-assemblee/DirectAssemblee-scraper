@@ -1,33 +1,31 @@
-var Promise = require("bluebird");
+let Promise = require('bluebird');
 
-var self = module.exports = {
+module.exports = {
     insertExtraPositions: function(extraPositions, deputyId) {
         return clearExtraPositionsForDeputy(deputyId)
-        .then(function(removedMandates) {
+        .then(function(removedExtraPositions) {
+            let number = removedExtraPositions ? removedExtraPositions.length : 0;
+            console.log('removed ' + number + ' extra positions');
             return createExtraPositions(extraPositions, deputyId);
         })
     }
 }
 
-var clearExtraPositionsForDeputy = function(deputyId) {
+let clearExtraPositionsForDeputy = function(deputyId) {
     return ExtraPosition.destroy()
     .where({ deputyId: deputyId });
 }
 
-var createExtraPositions = function(extraPositions, deputyId) {
-    var promises = [];
-    for (i in extraPositions) {
-        var positionToInsert;
+let createExtraPositions = function(extraPositions, deputyId) {
+    let promises = [];
+    for (let i in extraPositions) {
+        let positionToInsert;
         positionToInsert = { position: extraPositions[i].position, office: extraPositions[i].office, type: extraPositions[i].type, deputyId: deputyId };
         promises.push(createExtraPosition(positionToInsert));
     }
     return Promise.all(promises)
 }
 
-var createExtraPosition = function(extraPositionToInsert) {
-    return ExtraPosition.create(extraPositionToInsert)
-    .then(function(insertedExtraPosition) {
-        // console.log("created extra position : " + insertedExtraPosition.position + " - " + insertedExtraPosition.office + " for " + insertedExtraPosition.deputyId);
-        return insertedExtraPosition;
-    });
+let createExtraPosition = function(extraPositionToInsert) {
+    return ExtraPosition.create(extraPositionToInsert);
 }

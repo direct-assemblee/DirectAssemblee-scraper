@@ -1,6 +1,6 @@
 var moment = require('moment');
 
-const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/g;
+const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[012])[/-]\d{4})/g;
 const DATE_WRITTEN_REGEX = /((0?[1-9]|[12][0-9]|3[01]|1er)\s.*\s\d{4})/g;
 
 var self = module.exports = {
@@ -27,17 +27,17 @@ var self = module.exports = {
     },
 
     formatDate: function(dateString) {
-        return self.formatDateWithTemplate(dateString, "DD/MM/YYYY");
+        return self.formatDateWithTemplate(dateString, 'DD/MM/YYYY');
     },
 
     formatWrittenDate: function(dateString) {
-        return self.formatDateWithTemplate(dateString, "DD MMMM YYYY");
+        return self.formatDateWithTemplate(dateString, 'DD MMMM YYYY');
     },
 
     formatDateWithTemplate: function(dateString, formatTemplate) {
         moment.locale('fr')
         var parsedDate = moment(dateString, formatTemplate);
-        return moment(parsedDate).format("YYYY-MM-DD");
+        return moment(parsedDate).format('YYYY-MM-DD');
     },
 
     getDurationInDays: function(start, end) {
@@ -53,7 +53,7 @@ var self = module.exports = {
     },
 
     yesterday: function() {
-        var yesterday = moment().subtract(1, "days");
-        return yesterday.format("DD/MM/YYYY");
+        var yesterday = moment().subtract(1, 'days');
+        return yesterday.format('DD/MM/YYYY');
     }
 }

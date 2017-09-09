@@ -1,66 +1,64 @@
-// http://www2.assemblee-nationale.fr/scrutins/liste/(offset)/100/(legislature)/14/(type)/TOUS/(idDossier)/TOUS
+let htmlparser = require('htmlparser2');
 
-var htmlparser = require('htmlparser2');
+let ballotParser = function(ballotType, callback) {
+    let resultItems = [];
+    let parsedItem = {};
 
-var ballotParser = function(ballotType, callback) {
-    var resultItems = [];
-    var parsedItem = {};
-
-    var expectedData;
-    var currentUrl;
+    let expectedData;
+    let currentUrl;
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
-            if (tagname === "td" && attribs.class === "denom") {
-                expectedData = "id";
-            } else if (expectedData === "url") {
+            if (tagname === 'td' && attribs.class === 'denom') {
+                expectedData = 'id';
+            } else if (expectedData === 'url') {
                 currentUrl = attribs.href;
-                expectedData = "urlType";
+                expectedData = 'urlType';
             }
         },
         ontext: function(text) {
-            if (expectedData === "id") {
+            if (expectedData === 'id') {
                 if (text.includes('*')) {
-                    parsedItem.type = "SSO";
+                    parsedItem.type = 'SSO';
                 }
                 parsedItem.officialId = text.replace('*', '');
-                expectedData = "date";
-            } else if (expectedData === "date") {
+                expectedData = 'date';
+            } else if (expectedData === 'date') {
                 if (text.trim()) {
                     parsedItem.date = text;
-                    expectedData = "description";
+                    expectedData = 'description';
                 }
-            } else if (expectedData === "description") {
+            } else if (expectedData === 'description') {
                 if (text.trim()) {
                     parsedItem.title = text.replace('[', '').trim();
-                    expectedData = "url";
+                    expectedData = 'url';
                 }
-            } else if (expectedData === "urlType") {
-                if (text === "dossier") {
-                    expectedData = "fileUrl";
-                } else if (text === "analyse du scrutin") {
-                    expectedData = "analysisUrl";
+            } else if (expectedData === 'urlType') {
+                if (text === 'dossier') {
+                    expectedData = 'fileUrl';
+                } else if (text === 'analyse du scrutin') {
+                    expectedData = 'analysisUrl';
                 }
             }
         },
         onclosetag: function(tagname) {
-            if (tagname === "a") {
-                if (expectedData === "fileUrl") {
+            if (tagname === 'a') {
+                if (expectedData === 'fileUrl') {
                     parsedItem.fileUrl = currentUrl;
                     currentUrl = null;
-                    expectedData = "url";
-                } else if (expectedData == "analysisUrl") {
+                    expectedData = 'url';
+                } else if (expectedData == 'analysisUrl') {
                     parsedItem.analysisUrl = Constants.BASE_URL + currentUrl;
                     currentUrl = null;
-                    expectedData = "url";
+                    expectedData = 'url';
                 }
-            } else if (tagname === "tr") {
+            } else if (tagname === 'tr') {
                 if (parsedItem.officialId) {
-                    if (parsedItem.title.indexOf("motion de censure") > 0) {
-                        parsedItem.type = "motion_of_censure";
+                    if (parsedItem.title.indexOf('motion de censure') > 0) {
+                        parsedItem.type = 'motion_of_censure';
                     } else if (!parsedItem.type) {
-                        if (ballotType === "TOUS") {
-                            ballotType = "SOR"; // default value
+                        if (ballotType === 'TOUS') {
+                            ballotType = 'SOR'; // default value
                         }
                         parsedItem.type = ballotType;
                     }
@@ -69,7 +67,7 @@ var ballotParser = function(ballotType, callback) {
                 }
                 // print(parsedItem)
                 parsedItem = {}
-            } else if (tagname === "html") {
+            } else if (tagname === 'html') {
                 callback(resultItems);
             }
         }
@@ -79,7 +77,7 @@ var ballotParser = function(ballotType, callback) {
 module.exports = {
     parse: function(content, ballotType) {
         return new Promise(function(resolve, reject) {
-            var parser = ballotParser(ballotType, function(resultItems) {
+            let parser = ballotParser(ballotType, function(resultItems) {
                 resolve(resultItems);
             });
             parser.write(content);
@@ -88,8 +86,8 @@ module.exports = {
     }
 }
 
-var print = function(parsedItem) {
-    console.log("------------- ");
+let print = function(parsedItem) {
+    console.log('------------- ');
     console.log(parsedItem);
-    console.log("------------- ");
+    console.log('------------- ');
 }

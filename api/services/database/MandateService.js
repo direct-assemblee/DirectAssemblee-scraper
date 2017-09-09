@@ -1,63 +1,58 @@
-var Promise = require("bluebird");
-var DateHelper = require('../helpers/DateHelper.js');
+let DateHelper = require('../helpers/DateHelper.js');
 
-const START_DATE_REGEX = /du\s((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/i;
-const END_DATE_REGEX = /au\s((0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4})/i;
+const START_DATE_REGEX = /du\s((0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[012])[/-]\d{4})/i;
+const END_DATE_REGEX = /au\s((0?[1-9]|[12][0-9]|3[01]|1er)[/-](0?[1-9]|1[012])[/-]\d{4})/i;
 
 module.exports = {
     insertMandates: function(mandates, deputyId) {
         return clearMandatesForDeputy(deputyId)
         .then(function(removedMandates) {
+            let number = removedMandates ? removedMandates.length : 0;
+            console.log('removed ' + number + ' mandates');
             return createMandates(mandates, deputyId);
         })
     }
 }
 
-var clearMandatesForDeputy = function(deputyId) {
+let clearMandatesForDeputy = function(deputyId) {
     return Mandate.destroy()
     .where({ deputyId: deputyId });
 }
 
-var createMandates = function(mandates, deputyId) {
-    var mandatesToInsert = createMandatesModels(mandates, deputyId)
-    return Mandate.create(mandatesToInsert)
-    .then(function(insertedMandates) {
-        for (i in insertedMandates) {
-            // console.log("created mandate : " + insertedMandates[i].name + " from " + insertedMandates[i].startingDate + " to " + insertedMandates[i].endingDate + " for " + insertedMandates[i].deputyId);
-        }
-        return insertedMandates;
-    });
+let createMandates = function(mandates, deputyId) {
+    let mandatesToInsert = createMandatesModels(mandates, deputyId)
+    return Mandate.create(mandatesToInsert);
 }
 
-var createMandatesModels = function(mandates, deputyId) {
-    var mandatesToInsert = [];
-    var otherCurrentMandates = mandates.otherCurrentMandates;
-    for (j in otherCurrentMandates) {
+let createMandatesModels = function(mandates, deputyId) {
+    let mandatesToInsert = [];
+    let otherCurrentMandates = mandates.otherCurrentMandates;
+    for (let j in otherCurrentMandates) {
         mandatesToInsert.push(createMandateModel(deputyId, otherCurrentMandates[j]));
     }
 
-    var pastDeputyMandates = parsePastMandates(deputyId, mandates.pastDeputyMandates);
+    let pastDeputyMandates = parsePastMandates(deputyId, mandates.pastDeputyMandates);
     mandatesToInsert = mandatesToInsert.concat(pastDeputyMandates)
-    var otherPastGouvMissions = parsePastMandates(deputyId, mandates.otherPastGouvMissions);
+    let otherPastGouvMissions = parsePastMandates(deputyId, mandates.otherPastGouvMissions);
     mandatesToInsert = mandatesToInsert.concat(otherPastGouvMissions)
-    var otherPastInternationalMissions = parsePastMandates(deputyId, mandates.otherPastInternationalMissions);
+    let otherPastInternationalMissions = parsePastMandates(deputyId, mandates.otherPastInternationalMissions);
     mandatesToInsert = mandatesToInsert.concat(otherPastInternationalMissions)
     return mandatesToInsert;
 }
 
-var parsePastMandates = function(deputyId, pastMandates) {
-    var mandatesToInsert = [];
-    var name = "";
-    var previousName = "";
-    for (k in pastMandates) {
-        var text = pastMandates[k];
-        var startingDateMatched = text.match(START_DATE_REGEX);
-        var endingDateMatched = text.match(END_DATE_REGEX);
-        var startingDate = "";
+let parsePastMandates = function(deputyId, pastMandates) {
+    let mandatesToInsert = [];
+    let name = '';
+    let previousName = '';
+    for (let k in pastMandates) {
+        let text = pastMandates[k];
+        let startingDateMatched = text.match(START_DATE_REGEX);
+        let endingDateMatched = text.match(END_DATE_REGEX);
+        let startingDate = '';
         if (startingDateMatched) {
             startingDate = startingDateMatched[1];
         }
-        var endingDate = "";
+        let endingDate = '';
         if (endingDateMatched) {
             endingDate = endingDateMatched[1];
         }
@@ -66,7 +61,7 @@ var parsePastMandates = function(deputyId, pastMandates) {
         if (!startingDateMatched && !endingDateMatched) {
             previousName = name;
         }
-        if (name.startsWith("du") && (startingDateMatched || endingDateMatched)) {
+        if (name.startsWith('du') && (startingDateMatched || endingDateMatched)) {
             name = previousName;
         }
 
@@ -81,18 +76,18 @@ var parsePastMandates = function(deputyId, pastMandates) {
     return mandatesToInsert;
 }
 
-var createMandateModel = function(deputyId, name, startingDate, endingDate) {
+let createMandateModel = function(deputyId, name, startingDate, endingDate) {
     return {
-        "name": removeUnwantedCharacters(name),
-        "startingDate": startingDate ? DateHelper.formatDate(startingDate) : null,
-        "endingDate": endingDate ? DateHelper.formatDate(endingDate) : null,
-        "deputyId": deputyId
+        'name': removeUnwantedCharacters(name),
+        'startingDate': startingDate ? DateHelper.formatDate(startingDate) : null,
+        'endingDate': endingDate ? DateHelper.formatDate(endingDate) : null,
+        'deputyId': deputyId
     }
 }
 
-var removeUnwantedCharacters = function(str) {
-    var formattedStr = str.trim() ;
-    if (formattedStr.endsWith(":")) {
+let removeUnwantedCharacters = function(str) {
+    let formattedStr = str.trim() ;
+    if (formattedStr.endsWith(':')) {
         formattedStr = formattedStr.substring(0, formattedStr.length - 1);
         formattedStr = formattedStr.trim();
     }
