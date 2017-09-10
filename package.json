@@ -38,7 +38,8 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "mocha test"
   },
   "main": "app.js",
   "repository": {
@@ -46,5 +47,11 @@
     "url": "git://github.com/mplat/dbbuilder-directassemblee.git"
   },
   "author": "mplat",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.1",
+    "supertest": "^3.0.0"
+  }
 }
