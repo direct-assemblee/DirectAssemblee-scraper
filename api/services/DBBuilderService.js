@@ -18,6 +18,7 @@ const TABLE_DEPUTY_INFOS = 'DeputyInfos';
 const TABLE_DECLARATION = 'Declaration';
 const TABLE_WORK = 'Work';
 const TABLE_BALLOT = 'Ballot';
+const TABLE_BALLOT_THEME = 'BallotTheme';
 const TABLE_VOTE = 'Vote';
 const TABLE_MANDATE = 'Mandate';
 const TABLE_EXTRA_POSITION = 'ExtraPosition';
@@ -83,7 +84,7 @@ let dropTables = function(client) {
     makeQuery(client, query);
     query = 'DROP TABLE IF EXISTS ' + TABLE_EXTRA_POSITION + ', ' + TABLE_WORK + ', ' + TABLE_DECLARATION + ', ' + TABLE_VOTE + ', ' + TABLE_MANDATE;
     makeQuery(client, query);
-    query = 'DROP TABLE IF EXISTS ' + TABLE_BALLOT + ', ' + TABLE_DEPUTY + ', ' + TABLE_DEPUTY_INFOS;
+    query = 'DROP TABLE IF EXISTS ' + TABLE_BALLOT_THEME + ', ' + TABLE_BALLOT + ', ' + TABLE_DEPUTY + ', ' + TABLE_DEPUTY_INFOS;
     makeQuery(client, query);
     query = 'DROP TABLE IF EXISTS ' + TABLE_DEPARTMENT;
     makeQuery(client, query);

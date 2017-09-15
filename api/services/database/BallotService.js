@@ -22,7 +22,7 @@ let createBallotModel = function(ballot) {
     return {
         'officialId': ballot.officialId,
         'title': ballot.title,
-        'theme': ballot.theme,
+        'ballotThemeId': ballot.theme.id,
         'date': date,
         'dateDetailed': ballot.dateDetailed,
         'type': ballot.type,

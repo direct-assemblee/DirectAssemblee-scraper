@@ -26,7 +26,8 @@ module.exports = {
 
        'AssembleeScrapingService': true,
        'FetchUrlService': true,
-       'DBBuilderService': true
+       'DBBuilderService': true,
+       'BallotThemeHelper': true
     },
     "rules": {
         "no-console":0,

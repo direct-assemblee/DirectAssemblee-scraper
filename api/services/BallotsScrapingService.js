@@ -4,6 +4,7 @@ let Constants = require('./Constants.js')
 let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
+let BallotThemeHelper = require('./helpers/BallotThemeHelper')
 
 const PARAM_BALLOT_TYPE = '{ballot_type}';
 const BALLOT_TYPE_ORDINARY = 'SOR';
@@ -119,9 +120,12 @@ let retrieveBallotTheme = function(ballot) {
     .then(function(content) {
         if (content) {
             return BallotThemeParser.parse(content)
-            .then(function(theme) {
-                ballot.theme = theme;
-                return ballot;
+            .then(function(parsedTheme) {
+                return BallotThemeHelper.findTheme(parsedTheme)
+                .then(function(theme) {
+                    ballot.theme = theme;
+                    return ballot;
+                })
             })
         } else {
             console.log('/!\\ ballot theme : no content')
