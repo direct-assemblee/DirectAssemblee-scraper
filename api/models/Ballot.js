@@ -14,9 +14,9 @@ module.exports = {
         title: {
             type: 'text'
         },
-        ballotThemeId: {
+        themeId: {
             type: 'int',
-            model: 'BallotTheme'
+            model: 'Theme'
         },
         date: {
             type: 'date'

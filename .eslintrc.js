@@ -27,7 +27,7 @@ module.exports = {
        'AssembleeScrapingService': true,
        'FetchUrlService': true,
        'DBBuilderService': true,
-       'BallotThemeHelper': true
+       'ThemeHelper': true
     },
     "rules": {
         "no-console":0,
@@ -39,6 +39,7 @@ module.exports = {
         "quotes": [
             "warn",
             "single"
-        ]
+        ],
+        "no-unused-vars":0
     }
 };

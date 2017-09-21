@@ -10,9 +10,11 @@ module.exports = {
         title: {
             type: 'text'
         },
-        theme: {
-            type: 'string'
+        themeId: {
+            type: 'int',
+            model: 'Theme'
         },
+        tempTheme: 'string',
         officialId: {
             type: 'int',
         },

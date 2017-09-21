@@ -6,14 +6,14 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-CREATE TABLE IF NOT EXISTS ballotTheme (
+CREATE TABLE IF NOT EXISTS theme (
   `id` int(3) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `typeName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
 
-INSERT IGNORE `ballotTheme` (`id`, `name`, `typeName`) VALUES
+INSERT IGNORE `theme` (`id`, `name`, `typeName`) VALUES
 (1, 'Affaires étrangères', 'AFFAIRES_ETRANGERES'),
 (2, 'Agriculture', 'AGRICULTURE'),
 (3, 'Aménagement du territoire', 'AMENAGEMENT_TERRITOIRE'),

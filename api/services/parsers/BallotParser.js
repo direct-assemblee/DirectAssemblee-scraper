@@ -45,7 +45,7 @@ let ballotParser = function(url, callback) {
                 if (votesRegexResult) {
                     let votesData = votesRegexResult[1];
                     let votes = JSON.parse(votesData);
-                    for (i in votes) {
+                    for (let i in votes) {
                         let voteValue = votes[i].RECTIFICATION ? votes[i].RECTIFICATION : votes[i].POSITION;
                         parsedItem.votes.push({ 'deputy' : { officialId: votes[i].ID_ACTEUR }, 'value' : voteValue })
                     }

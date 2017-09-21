@@ -4,7 +4,7 @@ let Constants = require('./Constants.js')
 let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
-let BallotThemeHelper = require('./helpers/BallotThemeHelper')
+let ThemeHelper = require('./helpers/ThemeHelper')
 
 const PARAM_BALLOT_TYPE = '{ballot_type}';
 const BALLOT_TYPE_ORDINARY = 'SOR';
@@ -116,16 +116,24 @@ let retrieveBallotDetails = function(ballot, attempts) {
 }
 
 let retrieveBallotTheme = function(ballot) {
-    return FetchUrlService.retrieveContent(ballot.fileUrl, true)
+    return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true)
     .then(function(content) {
         if (content) {
             return BallotThemeParser.parse(content)
             .then(function(parsedTheme) {
-                return BallotThemeHelper.findTheme(parsedTheme)
-                .then(function(theme) {
-                    ballot.theme = theme;
+                if (parsedTheme) {
+                    return ThemeHelper.findTheme(parsedTheme)
+                    .then(function(foundTheme) {
+                        if (foundTheme) {
+                            ballot.theme = foundTheme;
+                        } else {
+                            console.log("/!\\ new theme not recognized : " + parsedTheme);
+                        }
+                        return ballot;
+                    })
+                } else {
                     return ballot;
-                })
+                }
             })
         } else {
             console.log('/!\\ ballot theme : no content')

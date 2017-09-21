@@ -49,10 +49,10 @@ let httpGet = function(url, isIsoEncoding) {
 
 let self = module.exports = {
     retrieveContent: function(url) {
-        return self.retrieveContent(url, false);
+        return self.retrieveContentWithIsoEncoding(url, false);
     },
 
-    retrieveContent: function(url, isIsoEncoding) {
+    retrieveContentWithIsoEncoding: function(url, isIsoEncoding) {
         return self.retrieveContentWithAttempt(url, isIsoEncoding, 0);
     },
 

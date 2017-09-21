@@ -40,7 +40,8 @@ let createWorkModel = function(deputyId, work) {
     }
     return {
         'title': work.title,
-        'theme': work.theme,
+        'themeId': work.theme && work.theme.id ? work.theme.id : null,
+        'tempTheme': work.theme && !work.theme.id ? work.theme : null,
         'date': work.date,
         'url': work.url,
         'officialId': id,

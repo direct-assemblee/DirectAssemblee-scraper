@@ -26,6 +26,7 @@
     "htmlparser2": "^3.9.2",
     "include-all": "^1.0.0",
     "latinize": "^0.4.0",
+    "mailgun.js": "^2.0.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.17.1",
     "mysql": "^2.13.0",
@@ -34,6 +35,7 @@
     "rc": "1.0.1",
     "sails": "~0.12.11",
     "sails-disk": "~0.10.9",
+    "sails-hook-email": "^0.12.1",
     "sails-mysql": "^0.11.5"
   },
   "scripts": {

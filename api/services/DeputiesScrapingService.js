@@ -6,6 +6,7 @@ let Constants = require('./Constants.js')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
 let DeputyWorkParser = require('./parsers/DeputyWorkParser');
 let DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
+let ThemeHelper = require('./helpers/ThemeHelper')
 let DeputyWorkExtraInfosParser = require('./parsers/DeputyWorkExtraInfosParser');
 let DeputyInfosParser = require('./parsers/DeputyInfosParser');
 let DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
@@ -114,7 +115,6 @@ let getWorkPageUrl = function(deputy, workType, pageOffset) {
 }
 
 let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
-    console.log(workUrl)
     return FetchUrlService.retrieveContent(workUrl)
     .then(function(content) {
         if (content) {
@@ -136,7 +136,19 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
                             }
                         }
                         work.type = getTypeName(workType);
-                        return work;
+                        if (work.theme) {
+                            return ThemeHelper.findTheme(work.theme)
+                            .then(function(foundTheme) {
+                                if (foundTheme) {
+                                    work.theme = foundTheme;
+                                } else {
+                                    console.log("/!\\ new theme not recognized : " + work.theme);
+                                }
+                                return work;
+                            })
+                        } else {
+                            return work;
+                        }
                     })
                 } else {
                     console.log('/!\\ work : no works')
@@ -153,13 +165,13 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
 let retrieveExtraForWork = function(parsedWork) {
     if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS || parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS
         || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_REPORTS) {
-            return FetchUrlService.retrieveContent(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
+            return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
             .then(function(content) {
                 if (content) {
                     if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
                         return DeputyQuestionThemeParser.parse(parsedWork.url, content, parsedWork.type)
-                        .then(function(theme) {
-                            parsedWork.theme = theme;
+                        .then(function(parsedTheme) {
+                            parsedWork.theme = parsedTheme;
                             return parsedWork;
                         })
                     } else {
