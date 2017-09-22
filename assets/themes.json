@@ -9,7 +9,8 @@
                 "Français de l'étranger",
                 "Organisations internationales",
                 "Politique extérieure",
-                "Relations internationales"
+                "Relations internationales",
+                "Ambassades et consulats"
             ]
         },
         {
@@ -31,7 +32,9 @@
                 "Communes",
                 "Coopération intercommunale",
                 "Départements",
-                "Régions"
+                "Régions",
+                "Intercommunalité",
+                "Ruralité"
             ]
         },
         {
@@ -89,6 +92,7 @@
                 "Donations et successions",
                 "Economie",
                 "Économie sociale",
+                "Économie sociale et solidaire",
                 "Enregistrement et timbre",
                 "Impôt de solidarité sur la fortune",
                 "Impôt sur le revenu",
@@ -100,7 +104,8 @@
                 "Marchés publics",
                 "Moyens de paiement",
                 "Plus-values : imposition",
-                "TVA"
+                "TVA",
+                "Taxe sur la valeur ajoutée"
             ]
         },
         {
@@ -153,9 +158,12 @@
                 "Environnement",
                 "Bois et forêts",
                 "Chasse et pêche",
+                "Climat",
                 "Cours d'eau, étangs et lacs",
                 "De la biomasse à la bioéconomie",
+                "Déchets",
                 "Déchets, pollution et nuisances",
+                "Développement durable",
                 "Eau",
                 "Evènements climatiques extrêmes",
                 "Innovation et changement climatique",
@@ -164,7 +172,11 @@
                 "Mer et littoral",
                 "Nouvelles mobilités sereines et durables",
                 "Produits dangereux",
-                "Techniques alternatives à la fracturation hydraulique pour l'exploration et l'exploitation des hydrocarbures non conventionnels"
+                "Techniques alternatives à la fracturation hydraulique pour l'exploration et l'exploitation des hydrocarbures non conventionnels",
+                "Catastrophes naturelles",
+                "Eau et assainissement",
+                "Pollution",
+                "Montagne"
             ]
         },
         {
@@ -192,7 +204,8 @@
                 "Fonction publique territoriale",
                 "Fonctionnaires et agents publics",
                 "Papiers d'identité",
-                "Services"
+                "Services",
+                "Services publics"
             ]
         },
         {
@@ -203,7 +216,9 @@
                 "Droit pénal",
                 "Saisies et sûretés",
                 "Système pénitentiaire ",
-                "Traitement pénal de l'évasion fiscale"
+                "Traitement pénal de l'évasion fiscale",
+                "Crimes, délits et contraventions",
+                "Lieux de privation de liberté"
             ]
         },
         {
@@ -233,7 +248,8 @@
             "subthemes" : [
                 "Commerce et artisanat",
                 "Commerce extérieur",
-                "Ventes et échanges"
+                "Ventes et échanges",
+                "PME et artisanat"
             ]
         },
         {
@@ -248,7 +264,10 @@
                 "Police",
                 "Sécurité numérique et risque",
                 "Sécurité publique",
-                "Sécurité routière"
+                "Sécurité routière",
+                "Sécurité des biens et des personnes",
+                "Terrorisme",
+                "Nuisances"
             ]
         },
         {
@@ -265,7 +284,10 @@
                 "Nationalité",
                 "Parlement",
                 "Règles applicables à l'élection présidentielle",
-                "Secteur public"
+                "Secteur public",
+                "Élus",
+                "Gouvernement",
+                "Laïcité"
             ]
         },
         {
@@ -276,6 +298,7 @@
                 "Assurances",
                 "Avortement",
                 "Bioéthique",
+                "Chômage",
                 "Chômage : indemnisation",
                 "Drogue",
                 "Établissements de santé",
@@ -287,7 +310,16 @@
                 "Sang et organes humains",
                 "Santé",
                 "Santé mentale et avenir de la psychiatrie",
-                "Adjuvants vaccinaux"
+                "Adjuvants vaccinaux",
+                "Aide aux victimes",
+                "Assurance complémentaire",
+                "Dépendance",
+                "Maladies",
+                "Médecine",
+                "Pauvreté",
+                "Personnes handicapées",
+                "Régime social des indépendants",
+                "Alcools et boissons alcoolisées"
             ]
         },
         {
@@ -297,7 +329,9 @@
                 "Recherche, sciences et techniques",
                 "Espace",
                 "Faire connaître et partager les cultures scientifiques, techniques et industrielles",
-                "Recherche"
+                "Recherche",
+                "Espace et politique spatiale",
+                "Recherche et innovation"
             ]
         },
         {
@@ -306,9 +340,11 @@
             "subthemes" : [
                 "Sécurité sociale",
                 "Assurance invalidité décès",
+                "Assurance maladie maternité",
                 "Assurance maladie maternité : généralités",
                 "Assurance maladie maternité : prestations",
-                "Prestations familiales"
+                "Prestations familiales",
+                "Assurance maladie maternité"
             ]
         },
         {
@@ -319,6 +355,7 @@
                 "Associations",
                 "Cérémonies publiques et fêtes légales",
                 "Démographie",
+                "Droits fondamentaux",
                 "Droits de l'Homme et libertés publiques",
                 "Consommation",
                 "Cultes",
@@ -327,6 +364,7 @@
                 "Femmes",
                 "Frontaliers",
                 "Gens du voyage",
+                "Immigration",
                 "Jeunes",
                 "Jeux et paris",
                 "Matières premières",
@@ -345,7 +383,14 @@
                 "Retraites : régime général",
                 "Retraites : régimes autonomes et spéciaux",
                 "Société",
-                "Télécommunications"
+                "Télécommunications",
+                "Associations et fondations",
+                "Égalité des sexes et parité",
+                "Internet",
+                "Mort et décès",
+                "Numérique",
+                "Réfugiés et apatrides",
+                "Religions et cultes"
             ]
         },
         {
@@ -374,7 +419,11 @@
                 "Transports par eau",
                 "Transports ferroviaires",
                 "Transports aériens",
-                "Automobiles et cycles"
+                "Automobiles",
+                "Automobiles et cycles",
+                "Cycles et motocycles",
+                "Cycles et motocycles",
+                "Automobiles"
             ]
         },
         {
@@ -392,7 +441,11 @@
                 "Syndicats",
                 "Taxis",
                 "Travail",
-                "Travail et emploi"
+                "Travailleurs indépendants et autoentrepreneur",
+                "Travail et emploi",
+                "Emploi et activité",
+                "Formation professionnelle et apprentissage",
+                "Professions et activités immobilières"
             ]
         },
         {
