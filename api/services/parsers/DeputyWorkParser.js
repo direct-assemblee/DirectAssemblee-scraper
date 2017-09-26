@@ -46,7 +46,7 @@ let deputyParser = function(url, callback) {
                 } else if (expectedItem === 'section.date') {
                     let trimmed = text.trim();
                     if (trimmed) {
-                        let dateMatched = DateHelper.findDateInString(trimmed);
+                        let dateMatched = DateHelper.findAndFormatDateInString(trimmed);
                         if (dateMatched) {
                             currentSectionItem.date = dateMatched;
                             expectedItem = null;

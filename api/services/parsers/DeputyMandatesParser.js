@@ -49,7 +49,7 @@ let currentMandatesParser = function(callback) {
             if (expectedType === TAG_CURRENT_MANDATE) {
                 let trimmed = text.trim()
                 if (trimmed) {
-                    let startingDateMatched = DateHelper.findDateInString(trimmed);
+                    let startingDateMatched = DateHelper.findAndFormatDateInString(trimmed);
                     if (startingDateMatched) {
                         parsedItem.currentMandateStartDate = startingDateMatched;
                         expectedType = null;

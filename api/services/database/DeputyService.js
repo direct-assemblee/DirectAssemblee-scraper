@@ -64,11 +64,13 @@ let self = module.exports = {
 
 let createDeputyModel = function(deputy, departmentId) {
     let startingDate = deputy.currentMandateStartDate ? DateHelper.formatDate(deputy.currentMandateStartDate) : null;
+    let birthDate = deputy.birthDate ? DateHelper.formatDateWithTemplate(deputy.birthDate, 'YYYY-MM-DD') : null;
     return {
         'officialId': deputy.officialId,
         'gender': deputy.civility === 'M.' ? 'M' : 'F',
         'firstname': deputy.firstname,
         'lastname': deputy.lastname,
+        'birthDate': deputy.birthDate,
         'parliamentGroup': deputy.parliamentGroup,
         'departmentId': departmentId,
         'district': deputy.district,

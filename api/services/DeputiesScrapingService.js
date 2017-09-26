@@ -245,6 +245,7 @@ let retrieveExtraForWork = function(parsedWork) {
                         deputy.phone = deputyInfos.phone;
                         deputy.email = deputyInfos.email;
                         deputy.job = deputyInfos.job;
+                        deputy.birthDate = deputyInfos.birthDate;
                         deputy.parliamentGroup = deputyInfos.parliamentGroup;
                         deputy.seatNumber = deputyInfos.seatNumber;
                         if (deputyInfos.declarationsUrl) {

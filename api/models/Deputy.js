@@ -16,6 +16,9 @@ module.exports = {
         lastname: {
             type: 'string'
         },
+        birthDate: {
+            type: 'date'
+        },
         parliamentGroup: {
             type: 'string'
         },

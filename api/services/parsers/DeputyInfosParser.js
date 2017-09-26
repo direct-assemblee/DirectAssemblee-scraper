@@ -6,7 +6,6 @@ let htmlparser = require('htmlparser2');
 let deputyParser = function(callback) {
     let parsedItem = {};
     let expectedItem;
-    let expectJobTextCount = 0;
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
@@ -19,7 +18,7 @@ let deputyParser = function(callback) {
             } else if (attribs.href && attribs.href.startsWith('http://www.hatvp.fr')) {
                 parsedItem.declarationsUrl = attribs.href;
             } else if (tagname === 'dt') {
-                expectedItem = 'jobOrEnd';
+                expectedItem = 'birthdateOrJob';
             } else if (tagname === 'div' && attribs.dataplace) {
                 parsedItem.seatNumber = attribs.dataplace;
             }
@@ -30,21 +29,26 @@ let deputyParser = function(callback) {
             } else if (expectedItem === 'phoneValue') {
                 parsedItem.phone = text.replace(/\s+/g, '');
                 expectedItem = null;
-            } else if (expectedItem === 'jobOrEnd') {
+            } else if (expectedItem === 'birthdateOrJob') {
                 if (text === 'Biographie') {
-                    expectJobTextCount = expectJobTextCount + 1;
-                } else if (expectJobTextCount > 0) {
-                    let trimmed = text.trim();
-                    if (trimmed) {
-                        expectJobTextCount = expectJobTextCount + 1;
-                        if (expectJobTextCount === 3) {
-                            parsedItem.job = trimmed;
-                            expectedItem = null;
-                            expectJobTextCount = 0;
-                        }
-                    }
+                    expectedItem = 'birthdate';
                 } else if (text === 'Date de fin de mandat') {
                     expectedItem = 'endOfMandate';
+                }
+            } else if (expectedItem === 'birthdate') {
+                let trimmed = text.trim();
+                if (trimmed) {
+                    let dateMatched = DateHelper.findAndFormatDateInString(trimmed, DateHelper.BIRTHDATE_REGEX, 'DD MMMM YYYY');
+                    if (dateMatched) {
+                        parsedItem.birthDate = dateMatched;
+                        expectedItem = 'job';
+                    }
+                }
+            } else if (expectedItem === 'job') {
+                let trimmed = text.trim();
+                if (trimmed) {
+                    parsedItem.job = trimmed;
+                    expectedItem = null;
                 }
             } else if (expectedItem === 'endOfMandate') {
                 let trimmed = text.trim();
@@ -56,21 +60,18 @@ let deputyParser = function(callback) {
                         if (reason && reason.length > 1) {
                             parsedItem.endOfMandateReason = reason[1];
                         }
-                        // expectedType = null;
                     }
                 }
             } else if (expectedItem === 'parliamentGroup') {
                 let trimmed = text.trim();
                 if (trimmed) {
                     parsedItem.parliamentGroup = trimmed;
-                    // expectedType = null;
                 }
             }
         },
         onclosetag: function(tagname) {
             if (tagname === 'ul') {
                 expectedItem = null;
-                expectJobTextCount = 0;
             } else if (tagname == 'html') {
                 // print(parsedItem);
                 callback(parsedItem);
@@ -83,7 +84,6 @@ module.exports = {
     parse: function(content) {
         return new Promise(function(resolve, reject) {
             let parser = deputyParser(function(deputy) {
-                // console.log('   parsed infos OK')
                 resolve(deputy);
             });
             parser.write(content);
@@ -98,8 +98,8 @@ let print = function(parsedItem) {
     console.log('email : ' + parsedItem.email);
     console.log('parliamentGroup : ' + parsedItem.parliamentGroup);
     console.log('job : ' + parsedItem.job);
+    console.log('birthdate : ' + parsedItem.birthDate);
     console.log('seatNumber : ' + parsedItem.seatNumber);
-    console.log('declarationsUrl : ' + parsedItem.declarationsUrl);
     console.log('declarationsUrl : ' + parsedItem.declarationsUrl);
     console.log('endOfMandateDate : ' + parsedItem.endOfMandateDate);
     console.log('endOfMandateReason : ' + parsedItem.endOfMandateReason);
