@@ -1,6 +1,26 @@
 let Promise = require('bluebird');
+let ThemeHelper = require('../helpers/ThemeHelper')
 
 module.exports = {
+    classifyUnclassifiedQuestions: function() {
+        return findUnclassifiedQuestions()
+        .then(function(unclassifiedQuestions) {
+            return Promise.map(unclassifiedQuestions, function(question) {
+                return ThemeHelper.findTheme(question.tempTheme)
+                .then(function(foundTheme) {
+                    if (foundTheme) {
+                        question.theme = foundTheme;
+                        question.tempTheme = null;
+                        return saveWork(question);
+                    } else {
+                        console.log('/!\\ new theme not recognized : ' + question.theme);
+                        return question;
+                    }
+                })
+            })
+        })
+    },
+
     insertWorks: function(works, deputyId) {
         return clearWorksForDeputy(deputyId)
         .then(function(removedWorks) {
@@ -13,6 +33,20 @@ module.exports = {
             sails.log.debug('============== Inserted works threw an error - keep on going');
         });
     }
+}
+
+let findUnclassifiedQuestions = function() {
+    return Work.find()
+    .where({ type: 'question', temptheme: {'!': null} })
+}
+
+let saveWork = function(work) {
+    return Work.update({
+        id: work.id
+    }, work)
+    .then(function(updatedWork) {
+        return updatedWork[0];
+    })
 }
 
 let clearWorksForDeputy = function(deputyId) {

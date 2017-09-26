@@ -34,10 +34,15 @@ let self = module.exports = {
     },
 
     startScraping: function() {
-        return DeputiesScrapingService.retrieveDeputiesList()
-        .then(function(allDeputies) {
-            let deputies = subArrayIfDebug(allDeputies, 0, 10);
-            return retrieveAndInsertDeputiesByRange(deputies, 0)
+        console.log('==> start classifying unclassified questions');
+        return WorkService.classifyUnclassifiedQuestions()
+        .then(function() {
+            console.log('==> start scraping deputies');
+            return DeputiesScrapingService.retrieveDeputiesList()
+            .then(function(allDeputies) {
+                let deputies = subArrayIfDebug(allDeputies, 0, 10);
+                return retrieveAndInsertDeputiesByRange(deputies, 0)
+            })
         })
         .then(function() {
             console.log('==> start scraping ballots');

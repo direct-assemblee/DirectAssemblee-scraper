@@ -142,7 +142,7 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
                                 if (foundTheme) {
                                     work.theme = foundTheme;
                                 } else {
-                                    console.log("/!\\ new theme not recognized : " + work.theme);
+                                    console.log('/!\\ new theme not recognized : ' + work.theme);
                                 }
                                 return work;
                             })
