@@ -101,11 +101,7 @@ let retrieveBallotDetails = function(ballot, attempts) {
                     return ballot;
                 })
                 .then(function(ballot) {
-                    if (ballot.fileUrl) {
-                        return retrieveBallotTheme(ballot);
-                    } else {
-                        return ballot;
-                    }
+                    return retrieveBallotTheme(ballot);
                 })
             }
         } else {
@@ -116,30 +112,44 @@ let retrieveBallotDetails = function(ballot, attempts) {
 }
 
 let retrieveBallotTheme = function(ballot) {
-    return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true)
-    .then(function(content) {
-        if (content) {
-            return BallotThemeParser.parse(content)
-            .then(function(parsedTheme) {
-                if (parsedTheme) {
-                    return ThemeHelper.findTheme(parsedTheme)
-                    .then(function(foundTheme) {
-                        if (foundTheme) {
-                            ballot.theme = foundTheme;
-                        } else {
-                            console.log("/!\\ new theme not recognized : " + parsedTheme);
-                        }
+    if (ballot.fileUrl) {
+        return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true)
+        .then(function(content) {
+            if (content) {
+                return BallotThemeParser.parse(content)
+                .then(function(parsedTheme) {
+                    if (parsedTheme) {
+                        return ThemeHelper.findTheme(parsedTheme)
+                        .then(function(foundTheme) {
+                            if (foundTheme) {
+                                ballot.theme = foundTheme;
+                            } else {
+                                console.log('/!\\ new theme not recognized : ' + parsedTheme);
+                            }
+                            return ballot;
+                        })
+                    } else {
                         return ballot;
-                    })
-                } else {
-                    return ballot;
+                    }
+                })
+            } else {
+                console.log('/!\\ ballot theme : no content')
+                return;
+            }
+        })
+    } else {
+        if (ballot.title.indexOf('politique générale' > 0)) {
+            return ThemeHelper.findTheme('Politique générale')
+            .then(function(foundTheme) {
+                if (foundTheme) {
+                    ballot.theme = foundTheme;
                 }
+                return ballot;
             })
         } else {
-            console.log('/!\\ ballot theme : no content')
-            return;
+            return ballot;
         }
-    })
+    }
 }
 
 let mergeBallotWithAnalysis = function(ballot, ballotAnalysis) {
