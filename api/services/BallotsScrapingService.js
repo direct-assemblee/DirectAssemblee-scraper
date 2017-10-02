@@ -138,7 +138,8 @@ let retrieveBallotTheme = function(ballot) {
             }
         })
     } else {
-        if (ballot.title.indexOf('politique générale' > 0)) {
+        if (ballot.title.indexOf('politique générale') > 0) {
+            console.log('title : ' + ballot.title)
             return ThemeHelper.findTheme('Politique générale')
             .then(function(foundTheme) {
                 if (foundTheme) {

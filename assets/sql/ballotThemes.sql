@@ -43,7 +43,8 @@ INSERT IGNORE `theme` (`id`, `name`, `typeName`) VALUES
 (27, 'Traités et conventions', 'TRAITES_CONVENTIONS'),
 (28, 'Transports', 'TRANSPORTS'),
 (29, 'Travail', 'TRAVAIL'),
-(30, 'Union européenne', 'UNION_EUROPEENNE');
+(30, 'Union européenne', 'UNION_EUROPEENNE'),
+(31, 'Politique générale', 'POLITIQUE_GENERALE');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
