@@ -124,7 +124,8 @@
                 "Enseignement supérieur",
                 "Enseignement technique et professionnel",
                 "Enseignements artistiques",
-                "Grandes écoles"
+                "Grandes écoles",
+                "Examens, concours et diplômes"
             ]
         },
         {
@@ -306,6 +307,7 @@
                 "Greffes d'organes",
                 "Handicapés",
                 "Institutions sociales et médico-sociales",
+                "Institutions sociales et médico sociales",
                 "Pharmacie et médicaments",
                 "Politique sociale",
                 "Sang et organes humains",
@@ -360,6 +362,7 @@
                 "Droits de l'Homme et libertés publiques",
                 "Consommation",
                 "Cultes",
+                "Discriminations",
                 "Ésotérisme",
                 "Étrangers",
                 "Femmes",
