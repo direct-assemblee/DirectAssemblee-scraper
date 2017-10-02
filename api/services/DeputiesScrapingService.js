@@ -181,7 +181,7 @@ let retrieveExtraForWork = function(parsedWork) {
                             parsedWork.id = work.id;
                             parsedWork.description = work.description;
                             parsedWork.theme = work.theme;
-                            parsedWork.extraInfo = work.extraInfo;
+                            parsedWork.extraInfos = work.extraInfos;
                             return parsedWork;
                         })
                     } else {

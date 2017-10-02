@@ -21,17 +21,14 @@ module.exports = {
         })
     },
 
-    insertWorks: function(works, deputyId) {
-        return clearWorksForDeputy(deputyId)
-        .then(function(removedWorks) {
-            let number = removedWorks ? removedWorks.length : 0;
-            console.log('removed ' + number + ' works');
-            return createWorks(works, deputyId)
-        })
-        .catch(function(err) {
-            sails.log.error(err);
-            sails.log.debug('============== Inserted works threw an error - keep on going');
-        });
+    clearWorksForDeputy: function(deputyId) {
+        return Work.destroy()
+        .where({ deputyId: deputyId });
+    },
+
+    insertWork: function(work, deputyId) {
+        let workToInsert = createWorkModel(work, deputyId)
+        return Work.create(workToInsert)
     }
 }
 
@@ -49,25 +46,7 @@ let saveWork = function(work) {
     })
 }
 
-let clearWorksForDeputy = function(deputyId) {
-    return Work.destroy()
-    .where({ deputyId: deputyId });
-}
-
-let createWorks = function(works, deputyId) {
-    let promises = [];
-    for (let i in works) {
-        promises.push(createWork(deputyId, works[i]));
-    }
-    return Promise.all(promises)
-}
-
-let createWork = function(deputyId, work) {
-    let workToInsert = createWorkModel(deputyId, work)
-    return Work.create(workToInsert)
-}
-
-let createWorkModel = function(deputyId, work) {
+let createWorkModel = function(work, deputyId) {
     let id;
     if (typeof work.id === 'number') {
         id = work.id;
@@ -81,7 +60,6 @@ let createWorkModel = function(deputyId, work) {
         'officialId': id,
         'description': work.description,
         'deputyId': deputyId,
-        'type': work.type,
-        'extraInfo': work.extraInfo
+        'type': work.type
     }
 }

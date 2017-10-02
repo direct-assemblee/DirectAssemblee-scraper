@@ -5,6 +5,7 @@ let htmlparser = require('htmlparser2');
 let lawProposalExtraInfosParser = function(callback) {
     let parsedItem = {};
     let expectedItem;
+    let extraInfo;
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
@@ -25,8 +26,8 @@ let lawProposalExtraInfosParser = function(callback) {
                     }
                     expectedItem = 'motives';
                 }
-            } else if (tagname === 'table' && expectedItem === 'motives_text' && parsedItem.extraInfo) {
-                parsedItem.extraInfo += '\nVeuillez consulter la suite sur le site officiel de l\'Assemblée Nationale';
+            } else if (tagname === 'table' && expectedItem === 'motives_text' && extraInfo) {
+                extraInfo += '\nVeuillez consulter la suite sur le site officiel de l\'Assemblée Nationale';
                 expectedItem = null;
             }
         },
@@ -45,15 +46,15 @@ let lawProposalExtraInfosParser = function(callback) {
                     } else if (expectedItem === 'motives') {
                         if (trimmed === 'EXPOSÉ DES MOTIFS') {
                             expectedItem = 'motives_text';
-                            parsedItem.extraInfo = '';
+                            extraInfo = '';
                         } else if (trimmed.startsWith('Ce document qui a fait l\'objet d\'un dépôt officiel')) {
-                            parsedItem.extraInfo = 'Informations bientôt disponibles.'
+                            extraInfo = 'Informations bientôt disponibles.'
                         }
                     } else if (expectedItem === 'motives_text') {
-                        if (parsedItem.extraInfo && parsedItem.extraInfo.length > 0 && (trimmed.startsWith('PROPOSITION DE LOI') || trimmed.startsWith('PROPOSITION DE RÉSOLUTION'))) {
+                        if (extraInfo && extraInfo.length > 0 && (trimmed.startsWith('PROPOSITION DE LOI') || trimmed.startsWith('PROPOSITION DE RÉSOLUTION'))) {
                             expectedItem = null;
                         } else {
-                            parsedItem.extraInfo += trimmed + ' ';
+                            extraInfo += trimmed + ' ';
                         }
                     }
                 }
@@ -62,9 +63,11 @@ let lawProposalExtraInfosParser = function(callback) {
         onclosetag: function(tagname) {
             if (tagname === 'html') {
                 expectedItem = null;
+                parsedItem.extraInfos = [];
+                parsedItem.extraInfos.push({ 'label': 'Exposé des motifs', 'text': extraInfo });
                 callback(parsedItem);
-            } else if (tagname === 'p' && expectedItem && parsedItem.extraInfo) {
-                parsedItem.extraInfo += '\n';
+            } else if (tagname === 'p' && expectedItem && extraInfo) {
+                extraInfo += '\n';
             }
         }
     }, {decodeEntities: true});

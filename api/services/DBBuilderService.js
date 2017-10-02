@@ -22,6 +22,7 @@ const TABLE_THEME = 'Theme';
 const TABLE_VOTE = 'Vote';
 const TABLE_MANDATE = 'Mandate';
 const TABLE_EXTRA_POSITION = 'ExtraPosition';
+const TABLE_EXTRA_INFO = 'ExtraInfo';
 const TABLE_SUBSCRIBER = 'Subscriber';
 const TABLE_DEPUTIES_SUBSCRIBERS = 'deputy_subscribers__subscriber_followeddeputiesids'
 
@@ -82,7 +83,7 @@ let executeSQLFile = function(client, sqlFile) {
 let dropTables = function(client) {
     let query = 'DROP TABLE IF EXISTS ' + TABLE_DEPUTY_INFOS + ', ' + TABLE_SUBSCRIBER + ', ' + TABLE_DEPUTIES_SUBSCRIBERS;
     makeQuery(client, query);
-    query = 'DROP TABLE IF EXISTS ' + TABLE_THEME + ', ' + TABLE_EXTRA_POSITION + ', ' + TABLE_WORK + ', ' + TABLE_DECLARATION + ', ' + TABLE_VOTE + ', ' + TABLE_MANDATE;
+    query = 'DROP TABLE IF EXISTS ' + TABLE_THEME + ', ' + TABLE_EXTRA_POSITION + ', ' + TABLE_EXTRA_INFO + ', ' + TABLE_WORK + ', ' + TABLE_DECLARATION + ', ' + TABLE_VOTE + ', ' + TABLE_MANDATE;
     makeQuery(client, query);
     query = 'DROP TABLE IF EXISTS ' + TABLE_BALLOT + ', ' + TABLE_DEPUTY + ', ' + TABLE_DEPUTY_INFOS;
     makeQuery(client, query);

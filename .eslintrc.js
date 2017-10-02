@@ -19,6 +19,7 @@ module.exports = {
        'Department': true,
        'Deputy': true,
        'ExtraPosition': true,
+       'ExtraInfo': true,
        'Mandate': true,
        'Subscriber': true,
        'Vote': true,

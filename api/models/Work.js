@@ -27,9 +27,6 @@ module.exports = {
         description: {
             type: 'text'
         },
-        extraInfo: {
-            type: 'text'
-        },
         type: {
             type: 'string'
         },

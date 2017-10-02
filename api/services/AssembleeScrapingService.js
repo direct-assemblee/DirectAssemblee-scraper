@@ -10,6 +10,7 @@ let MandateService = require('./database/MandateService.js');
 let ExtraPositionService = require('./database/ExtraPositionService.js');
 let DeclarationService = require('./database/DeclarationService.js');
 let WorkService = require('./database/WorkService.js');
+let ExtraInfoService = require('./database/ExtraInfoService');
 let BallotsScrapingService = require('./BallotsScrapingService');
 let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
@@ -48,7 +49,7 @@ let self = module.exports = {
             console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, 10);
+                let ballots = subArrayIfDebug(allBallots, 0, 50);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
         })
@@ -138,14 +139,39 @@ let insertDeputy = function(deputy) {
                 return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.officialId)
                 .then(function(insertedDeclarations) {
                     console.log('inserted ' + insertedDeclarations.length + ' declarations for deputy : ' + deputy.lastname)
-                    return WorkService.insertWorks(deputy.works, insertedDeputy.officialId)
+                    return insertWorks(deputy.works, insertedDeputy.officialId)
                     .then(function(insertedWorks) {
                         console.log('inserted ' + insertedWorks.length + ' works for deputy : ' + deputy.lastname)
+                        return;
                     })
                 })
             })
         })
     })
+}
+
+let insertWorks = function(works, deputyId) {
+    return WorkService.clearWorksForDeputy(deputyId)
+    .then(function(removedWorks) {
+        let number = removedWorks ? removedWorks.length : 0;
+        // console.log('removed ' + number + ' works');
+        let promises = [];
+        for (let i in works) {
+            promises.push(insertWork(works[i], deputyId));
+        }
+        return Promise.all(promises);
+    })
+}
+
+let insertWork = function(work, deputyId) {
+    return WorkService.insertWork(work, deputyId)
+    .then(function(insertedWork) {
+        return insertExtraInfos(work.extraInfos, insertedWork.id)
+    })
+}
+
+let insertExtraInfos = function(extraInfos, workId) {
+    return ExtraInfoService.insertExtraInfos(extraInfos, workId);
 }
 
 let retrieveAndInsertBallotsByRange = function(ballots, start) {
