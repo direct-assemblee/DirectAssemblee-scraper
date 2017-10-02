@@ -81,6 +81,7 @@ let createWorkModel = function(deputyId, work) {
         'officialId': id,
         'description': work.description,
         'deputyId': deputyId,
-        'type': work.type
+        'type': work.type,
+        'extraInfo': work.extraInfo
     }
 }

@@ -8,6 +8,7 @@ let DeputyWorkParser = require('./parsers/DeputyWorkParser');
 let DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
 let ThemeHelper = require('./helpers/ThemeHelper')
 let DeputyWorkExtraInfosParser = require('./parsers/DeputyWorkExtraInfosParser');
+let LawProposalExtraInfosParser = require('./parsers/LawProposalExtraInfosParser')
 let DeputyInfosParser = require('./parsers/DeputyInfosParser');
 let DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
 let DeputyMandatesParser = require('./parsers/DeputyMandatesParser');
@@ -174,12 +175,21 @@ let retrieveExtraForWork = function(parsedWork) {
                             parsedWork.theme = parsedTheme;
                             return parsedWork;
                         })
+                    } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS) {
+                        return LawProposalExtraInfosParser.parse(parsedWork.url, content)
+                        .then(function(work) {
+                            parsedWork.id = work.id;
+                            parsedWork.description = work.description;
+                            parsedWork.theme = work.theme;
+                            parsedWork.extraInfo = work.extraInfo;
+                            return parsedWork;
+                        })
                     } else {
                         return DeputyWorkExtraInfosParser.parse(parsedWork.url, content)
-                        .then(function(lawProposal) {
-                            parsedWork.id = lawProposal.id;
-                            parsedWork.description = lawProposal.description;
-                            parsedWork.theme = lawProposal.theme;
+                        .then(function(work) {
+                            parsedWork.id = work.id;
+                            parsedWork.description = work.description;
+                            parsedWork.theme = work.theme;
                             return parsedWork;
                         })
                     }
