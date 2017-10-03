@@ -3,12 +3,14 @@
 let Promise = require('bluebird');
 let Constants = require('./Constants.js')
 
+let WorkHelper = require('./helpers/WorkHelper')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
 let DeputyWorkParser = require('./parsers/DeputyWorkParser');
 let DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
 let ThemeHelper = require('./helpers/ThemeHelper')
 let DeputyWorkExtraInfosParser = require('./parsers/DeputyWorkExtraInfosParser');
-let LawProposalExtraInfosParser = require('./parsers/LawProposalExtraInfosParser')
+let ExtraInfosLawProposalParser = require('./parsers/ExtraInfosLawProposalParser')
+let ExtraInfosCommissionParser = require('./parsers/ExtraInfosCommissionParser')
 let DeputyInfosParser = require('./parsers/DeputyInfosParser');
 let DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser');
 let DeputyMandatesParser = require('./parsers/DeputyMandatesParser');
@@ -136,7 +138,7 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
                                 work.title = title.trim();
                             }
                         }
-                        work.type = getTypeName(workType);
+                        work.type = WorkHelper.getWorkTypeName(workType);
                         if (work.theme) {
                             return ThemeHelper.findTheme(work.theme)
                             .then(function(foundTheme) {
@@ -165,7 +167,8 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
 
 let retrieveExtraForWork = function(parsedWork) {
     if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS || parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS
-        || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_REPORTS) {
+        || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_REPORTS
+        || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
             return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
             .then(function(content) {
                 if (content) {
@@ -175,11 +178,14 @@ let retrieveExtraForWork = function(parsedWork) {
                             parsedWork.theme = parsedTheme;
                             return parsedWork;
                         })
-                    } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS) {
-                        return LawProposalExtraInfosParser.parse(parsedWork.url, content)
+                    } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
+                        let parser = parsedWork.type === Constants.WORK_TYPE_COMMISSIONS ? ExtraInfosCommissionParser : ExtraInfosLawProposalParser;
+                        return parser.parse(parsedWork.url, content)
                         .then(function(work) {
                             parsedWork.id = work.id;
-                            parsedWork.description = work.description;
+                            if (work.description) {
+                                parsedWork.description = work.description;
+                            }
                             parsedWork.theme = work.theme;
                             parsedWork.extraInfos = work.extraInfos;
                             return parsedWork;
@@ -201,31 +207,6 @@ let retrieveExtraForWork = function(parsedWork) {
         } else {
             return parsedWork;
         }
-    }
-
-    let getTypeName = function(workType) {
-        let typeName;
-        switch (workType) {
-            case Constants.WORK_TYPE_QUESTIONS:
-            typeName = 'question';
-            break;
-            case Constants.WORK_TYPE_REPORTS:
-            typeName = 'report';
-            break;
-            case Constants.WORK_TYPE_PROPOSITIONS:
-            typeName = 'law_proposal';
-            break;
-            case Constants.WORK_TYPE_COSIGNED_PROPOSITIONS:
-            typeName = 'cosigned_law_proposal';
-            break;
-            case Constants.WORK_TYPE_COMMISSIONS:
-            typeName = 'commission';
-            break;
-            case Constants.WORK_TYPE_PUBLIC_SESSIONS:
-            typeName = 'public_session';
-            break;
-        }
-        return typeName;
     }
 
     let retrieveDeputyInfosAndMandates = function(deputy) {

@@ -2,10 +2,10 @@
 
 let htmlparser = require('htmlparser2');
 
-let lawProposalExtraInfosParser = function(callback) {
-    let parsedItem = {};
+let extraInfosCommissionParser = function(callback) {
     let expectedItem;
-    let extraInfo;
+    let parsedItem = {};
+    parsedItem.extraInfos = [];
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
@@ -24,15 +24,17 @@ let lawProposalExtraInfosParser = function(callback) {
                     } else {
                         parsedItem.description = attribs.content;
                     }
-                    expectedItem = 'motives';
                 }
-            } else if (tagname === 'table' && expectedItem === 'motives_text' && extraInfo) {
-                extraInfo += '\nVeuillez consulter la suite sur le site officiel de l\'Assemblée Nationale';
-                expectedItem = null;
+            } else if (attribs.class === 'nomcommission') {
+                expectedItem = 'commission_name';
+            } else if (attribs.class === 'SOMdate') {
+                expectedItem = 'commission_date';
+            } else if (attribs.class === 'SOMseance') {
+                expectedItem = 'commission_time';
             }
         },
         ontext: function(text) {
-            if (expectedItem === 'title' || expectedItem === 'motives' || expectedItem === 'motives_text') {
+            if (expectedItem === 'title' || (expectedItem && expectedItem.startsWith('commission_'))) {
                 let trimmed = text.trim();
                 if (trimmed && trimmed.length > 0) {
                     if (expectedItem === 'title') {
@@ -43,31 +45,21 @@ let lawProposalExtraInfosParser = function(callback) {
                         if (index > 0) {
                             parsedItem.id = splitText[index];
                         }
-                    } else if (expectedItem === 'motives') {
-                        if (trimmed === 'EXPOSÉ DES MOTIFS') {
-                            expectedItem = 'motives_text';
-                            extraInfo = '';
-                        } else if (trimmed.startsWith('Ce document qui a fait l\'objet d\'un dépôt officiel')) {
-                            extraInfo = 'Informations bientôt disponibles.'
-                        }
-                    } else if (expectedItem === 'motives_text') {
-                        if (extraInfo && extraInfo.length > 0 && (trimmed.startsWith('PROPOSITION DE LOI') || trimmed.startsWith('PROPOSITION DE RÉSOLUTION'))) {
-                            expectedItem = null;
-                        } else {
-                            extraInfo += trimmed + ' ';
-                        }
+                    } else if (expectedItem === 'commission_name') {
+                        parsedItem.extraInfos.push({ label: 'Nom de la commission', text: trimmed });
+                    } else if (expectedItem === 'commission_date') {
+                        parsedItem.extraInfos.push({ label: '', text: trimmed });
+                    } else if (expectedItem === 'commission_time') {
+                        parsedItem.extraInfos.push({ label: '', text: trimmed });
                     }
+                    expectedItem = null;
                 }
             }
         },
         onclosetag: function(tagname) {
             if (tagname === 'html') {
-                expectedItem = null;
-                parsedItem.extraInfos = [];
-                parsedItem.extraInfos.push({ 'label': 'Exposé des motifs', 'text': extraInfo });
                 callback(parsedItem);
-            } else if (tagname === 'p' && expectedItem && extraInfo) {
-                extraInfo += '\n';
+                expectedItem = null;
             }
         }
     }, {decodeEntities: true});
@@ -76,7 +68,7 @@ let lawProposalExtraInfosParser = function(callback) {
 module.exports = {
     parse: function(url, content) {
         return new Promise(function(resolve, reject) {
-            let parser = lawProposalExtraInfosParser(function(theme) {
+            let parser = extraInfosCommissionParser(function(theme) {
                 resolve(theme);
             });
             parser.write(content);

@@ -5,7 +5,7 @@ module.exports = {
         return clearExtraPositionsForWork(workId)
         .then(function(removedExtraInfos) {
             let number = removedExtraInfos ? removedExtraInfos.length : 0;
-            console.log('removed ' + number + ' extra infos');
+            // console.log('removed ' + number + ' extra infos');
             return createExtraInfos(extraInfos, workId);
         })
     }
