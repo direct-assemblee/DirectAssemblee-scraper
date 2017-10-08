@@ -54,6 +54,7 @@ let self = module.exports = {
             })
         })
         .then(function() {
+            RequestService.sendBallotsUpdateNotif();
             console.log('=> look for non-updated deputies');
             return DeputyService.findNonUpdatedDeputies()
             .then(function(nonUpdatedDeputies) {
@@ -142,6 +143,7 @@ let insertDeputy = function(deputy) {
                     return insertWorks(deputy.works, insertedDeputy.officialId)
                     .then(function(insertedWorks) {
                         console.log('inserted ' + insertedWorks.length + ' works for deputy : ' + deputy.lastname)
+                        RequestService.sendDeputyUpdateNotif(deputy.officialId)
                         return;
                     })
                 })

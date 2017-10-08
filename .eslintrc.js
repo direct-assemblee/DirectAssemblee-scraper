@@ -28,6 +28,7 @@ module.exports = {
        'AssembleeScrapingService': true,
        'FetchUrlService': true,
        'DBBuilderService': true,
+       'RequestService': true,
        'ThemeHelper': true
     },
     "rules": {

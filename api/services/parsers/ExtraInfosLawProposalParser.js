@@ -64,7 +64,7 @@ let extraInfosLawProposalParser = function(callback) {
             if (tagname === 'html') {
                 expectedItem = null;
                 parsedItem.extraInfos = [];
-                parsedItem.extraInfos.push({ 'label': 'Exposé des motifs', 'text': extraInfo });
+                parsedItem.extraInfos.push({ info: 'lawMotives', value: extraInfo });
                 callback(parsedItem);
             } else if (tagname === 'p' && expectedItem && extraInfo) {
                 extraInfo += '\n';
