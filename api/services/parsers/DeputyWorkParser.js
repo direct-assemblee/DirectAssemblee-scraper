@@ -55,7 +55,7 @@ let deputyParser = function(url, callback) {
                 } else if (expectedItem === 'section.description') {
                     let trimmed = text.trim();
                     if (trimmed) {
-                        currentSectionItem.description = currentSectionItem.description ? currentSectionItem.description + '\n- ' : '';
+                        currentSectionItem.description = currentSectionItem.description ? currentSectionItem.description + '\n' : '';
                         currentSectionItem.description += trimmed;
                     }
                 }

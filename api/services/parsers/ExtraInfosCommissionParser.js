@@ -26,15 +26,13 @@ let extraInfosCommissionParser = function(callback) {
                     }
                 }
             } else if (attribs.class === 'nomcommission') {
-                expectedItem = 'commission_name';
-            } else if (attribs.class === 'SOMdate') {
-                expectedItem = 'commission_date';
+                expectedItem = 'commissionName';
             } else if (attribs.class === 'SOMseance') {
-                expectedItem = 'commission_time';
+                expectedItem = 'commissionTime';
             }
         },
         ontext: function(text) {
-            if (expectedItem === 'title' || (expectedItem && expectedItem.startsWith('commission_'))) {
+            if (expectedItem === 'title' || (expectedItem && expectedItem.startsWith('commission'))) {
                 let trimmed = text.trim();
                 if (trimmed && trimmed.length > 0) {
                     if (expectedItem === 'title') {
@@ -45,12 +43,10 @@ let extraInfosCommissionParser = function(callback) {
                         if (index > 0) {
                             parsedItem.id = splitText[index];
                         }
-                    } else if (expectedItem === 'commission_name') {
-                        parsedItem.extraInfos.push({ label: 'Nom de la commission', text: trimmed });
-                    } else if (expectedItem === 'commission_date') {
-                        parsedItem.extraInfos.push({ label: '', text: trimmed });
-                    } else if (expectedItem === 'commission_time') {
-                        parsedItem.extraInfos.push({ label: '', text: trimmed });
+                    } else if (expectedItem === 'commissionName') {
+                        parsedItem.extraInfos.push({ info: expectedItem, value: trimmed });
+                    } else if (expectedItem === 'commissionTime') {
+                        parsedItem.extraInfos.push({ info: expectedItem, value: trimmed });
                     }
                     expectedItem = null;
                 }

@@ -27,7 +27,7 @@ let extraInfosLawProposalParser = function(callback) {
                     expectedItem = 'motives';
                 }
             } else if (tagname === 'table' && expectedItem === 'motives_text' && extraInfo) {
-                extraInfo += '\nVeuillez consulter la suite sur le site officiel de l\'Assemblée Nationale';
+                extraInfo += 'Vous pouvez consulter la suite sur le site officiel de l\'Assemblée Nationale';
                 expectedItem = null;
             }
         },
