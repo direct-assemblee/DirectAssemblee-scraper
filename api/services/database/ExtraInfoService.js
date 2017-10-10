@@ -19,7 +19,7 @@ let clearExtraPositionsForWork = function(workId) {
 let createExtraInfos = function(extraInfos, workId) {
     let promises = [];
     for (let i in extraInfos) {
-        let infoToInsert = { label: extraInfos[i].label, text: extraInfos[i].text, workId: workId };
+        let infoToInsert = { info: extraInfos[i].info, value: extraInfos[i].value, workId: workId };
         promises.push(createExtraInfo(infoToInsert));
     }
     return Promise.all(promises)

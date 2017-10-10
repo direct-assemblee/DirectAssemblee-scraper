@@ -7,10 +7,10 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
         },
-        label: {
+        info: {
             type: 'string'
         },
-        text: 'text',
+        value: 'text',
         workId: {
             type: 'int',
             model: 'Work'
