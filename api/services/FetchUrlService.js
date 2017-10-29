@@ -2,8 +2,8 @@
 
 let Promise = require('bluebird');
 let http = require('http');
-let entities = require('html-entities').AllHtmlEntities;
 let Constants = require('./Constants.js')
+let StringHelper = require('./helpers/StringHelper.js')
 
 let httpGet = function(url, isIsoEncoding) {
     return new Promise(function(resolve, reject) {
@@ -89,31 +89,8 @@ let self = module.exports = {
                     }
                 }
             } else {
-                return clean(content);
+                return StringHelper.cleanHtml(content);
             }
         })
     }
 }
-
-let clean = function(content) {
-    let cleaned = content.replace(/&quot;/g, '\'');
-    cleaned = entities.decode(cleaned);
-    cleaned = cleaned.removeSpecialCharsBetter();
-    return cleaned
-}
-
-String.prototype.removeSpecialCharsBetter = function() {
-    return this.replace(/\.\r\n/g, '[dotspace]')
-    .replace(/\s+/g, ' ')
-    .replace(/\\n/g, ' ')
-    .replace(/\\'/g, '\'')
-    .replace(/\\'/g, '\'')
-    .replace(/\\&/g, '')
-    .replace(/\\r/g, '')
-    .replace(/\\t/g, '')
-    .replace(/\\b/g, '')
-    .replace(/\\f/g, '')
-    .replace('&quot;', '')
-    .replace('data-place', 'dataplace')
-    .replace(/\[dotspace\]/g, '.<br>');
-};

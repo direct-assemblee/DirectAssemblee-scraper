@@ -9,22 +9,25 @@ let declarationsParser = function(callback) {
 
     return new htmlparser.Parser({
         onopentag: function(tagname, attribs) {
-            if (attribs.class === 'type') {
+            if (attribs.class === 'rubrique-depot') {
                 expectedItem = 'title';
+            } else if (attribs.class && attribs.class.startsWith('button button--6') && attribs.href && attribs.href.endsWith('pdf')) {
                 currentDecla = {};
-            } else if (tagname === 'time') {
-                expectedItem = 'date';
-            } else if (attribs.class === 'button button--6') {
                 currentDecla.url = attribs.href;
-                parsedItems.push(currentDecla);
             }
         },
         ontext: function(text) {
             if (expectedItem === 'title') {
-                currentDecla.title = text;
-            } else if (expectedItem === 'date') {
-                currentDecla.date = text;
-                expectedItem = null;
+                let trimmed = text.trim();
+                if (trimmed.length > 0) {
+                    if (expectedItem === 'title') {
+                        let info = trimmed.split(' déposée le ');
+                        currentDecla.title = info[0];
+                        currentDecla.date = info[1];
+                        parsedItems.push(currentDecla);
+                        expectedItem = null;
+                    }
+                }
             }
         },
         onclosetag: function(tagname) {

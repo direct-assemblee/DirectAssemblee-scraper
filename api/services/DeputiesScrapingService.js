@@ -2,9 +2,11 @@
 
 let Promise = require('bluebird');
 let Constants = require('./Constants.js')
+let StringHelper = require('./helpers/StringHelper')
 
 let WorkHelper = require('./helpers/WorkHelper')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
+let DeclarationScrapingService = require('./DeclarationScrapingService');
 let DeputyWorkParser = require('./parsers/DeputyWorkParser');
 let DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
 let ThemeHelper = require('./helpers/ThemeHelper')
@@ -22,6 +24,8 @@ const WORK_TYPES = [ Constants.WORK_TYPE_QUESTIONS, Constants.WORK_TYPE_REPORTS,
 const WORK_PAGE_SIZE = 10;
 const DEPUTY_WORK_URL = Constants.BASE_URL + 'deputes/documents_parlementaires/(offset)/' + Constants.PARAM_OFFSET + '/(id_omc)/OMC_PA' + Constants.PARAM_DEPUTY_ID + '/(type)/' + PARAM_WORK_TYPE;
 const DEPUTY_DECLARATIONS_URL = 'http://www.hatvp.fr/fiche-nominative/?declarant=' + PARAM_DEPUTY_NAME;
+const HATVP_DEPUTIES_LIST = 'http://www.hatvp.fr/resultat-de-recherche-avancee/?document=&mandat=depute&region=0&dep=';
+const HATVP_DEPUTY_URL_START = 'http://www.hatvp.fr/fiche-nominative/?declarant=';
 
 module.exports = {
     retrieveDeputiesList: function() {
@@ -55,16 +59,24 @@ module.exports = {
 }
 
 let retrieveDeputyDetails = function(deputy) {
-    return retrieveDeputyWork(deputy)
-    .then(function(works) {
-        deputy.works = works;
-        console.log('retrieved works for : ' + deputy.lastname);
-        return retrieveDeputyInfosAndMandates(deputy)
-        .then(function(deputy) {
-            if (deputy) {
-                console.log('retrieved all from deputy ' + deputy.lastname)
-            }
-            return deputy
+    return DeclarationScrapingService.retrieveDeclarationPdfUrl(deputy.firstname, deputy.lastname)
+    .then(function(declarations) {
+        deputy.declarations = declarations;
+        console.log('retrieved declarations for : ' + deputy.lastname);
+        return deputy;
+    })
+    .then(function(declarations) {
+        return retrieveDeputyWork(deputy)
+        .then(function(works) {
+            deputy.works = works;
+            console.log('retrieved works for : ' + deputy.lastname);
+            return retrieveDeputyInfosAndMandates(deputy)
+            .then(function(deputy) {
+                if (deputy) {
+                    console.log('retrieved all from deputy ' + deputy.lastname)
+                }
+                return deputy
+            })
         })
     })
 }
@@ -169,101 +181,82 @@ let retrieveExtraForWork = function(parsedWork) {
     if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS || parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS
         || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_REPORTS
         || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
-            return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
-            .then(function(content) {
-                if (content) {
-                    if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
-                        return DeputyQuestionThemeParser.parse(parsedWork.url, content, parsedWork.type)
-                        .then(function(parsedTheme) {
-                            parsedWork.theme = parsedTheme;
-                            return parsedWork;
-                        })
-                    } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
-                        let parser = parsedWork.type === Constants.WORK_TYPE_COMMISSIONS ? ExtraInfosCommissionParser : ExtraInfosLawProposalParser;
-                        return parser.parse(parsedWork.url, content)
-                        .then(function(work) {
-                            parsedWork.id = work.id;
-                            if (work.description) {
-                                parsedWork.description = work.description;
-                            }
-                            parsedWork.theme = work.theme;
-                            parsedWork.extraInfos = work.extraInfos;
-                            return parsedWork;
-                        })
-                    } else {
-                        return DeputyWorkExtraInfosParser.parse(parsedWork.url, content)
-                        .then(function(work) {
-                            parsedWork.id = work.id;
-                            parsedWork.description = work.description;
-                            parsedWork.theme = work.theme;
-                            return parsedWork;
-                        })
-                    }
-                } else {
-                    console.log('/!\\ no extra for work')
-                    return parsedWork;
-                }
-            })
-        } else {
-            return parsedWork;
-        }
-    }
-
-    let retrieveDeputyInfosAndMandates = function(deputy) {
-        let mandatesUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
-        return FetchUrlService.retrieveContent(mandatesUrl)
+        return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS)
         .then(function(content) {
             if (content) {
-                return DeputyMandatesParser.parse(content)
-                .then(function(mandates) {
-                    console.log('retrieved mandates for : ' + deputy.lastname);
-                    deputy.currentMandateStartDate = mandates.currentMandateStartDate;
-                    deputy.mandates = mandates;
-                    return deputy;
-                })
-                .then(function(deputy) {
-                    return DeputyExtraPositionsParser.parse(content)
-                    .then(function(extraPositions) {
-                        console.log('retrieved extra positions for : ' + deputy.lastname);
-                        deputy.extraPositions = extraPositions;
-                        return deputy;
+                if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
+                    return DeputyQuestionThemeParser.parse(parsedWork.url, content, parsedWork.type)
+                    .then(function(parsedTheme) {
+                        parsedWork.theme = parsedTheme;
+                        return parsedWork;
                     })
-                })
-                .then(function(deputy) {
-                    return DeputyInfosParser.parse(content)
-                    .then(function(deputyInfos) {
-                        console.log('retrieved deputyInfos for : ' + deputy.lastname);
-                        deputy.phone = deputyInfos.phone;
-                        deputy.email = deputyInfos.email;
-                        deputy.job = deputyInfos.job;
-                        deputy.birthDate = deputyInfos.birthDate;
-                        deputy.parliamentGroup = deputyInfos.parliamentGroup;
-                        deputy.seatNumber = deputyInfos.seatNumber;
-                        if (deputyInfos.declarationsUrl) {
-                            return retrieveDeclarationPdfUrl(deputyInfos.declarationsUrl)
-                            .then(function(declarations) {
-                                deputy.declarations = declarations;
-                                console.log('retrieved declarations for : ' + deputy.lastname);
-                                return deputy;
-                            })
-                        } else {
-                            return deputy;
+                } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
+                    let parser = parsedWork.type === Constants.WORK_TYPE_COMMISSIONS ? ExtraInfosCommissionParser : ExtraInfosLawProposalParser;
+                    return parser.parse(parsedWork.url, content)
+                    .then(function(work) {
+                        parsedWork.id = work.id;
+                        if (work.description) {
+                            parsedWork.description = work.description;
                         }
+                        parsedWork.theme = work.theme;
+                        parsedWork.extraInfos = work.extraInfos;
+                        return parsedWork;
                     })
-                })
+                } else {
+                    return DeputyWorkExtraInfosParser.parse(parsedWork.url, content)
+                    .then(function(work) {
+                        parsedWork.id = work.id;
+                        parsedWork.description = work.description;
+                        parsedWork.theme = work.theme;
+                        return parsedWork;
+                    })
+                }
             } else {
-                console.log('/!\\ no mandates')
-                return
+                console.log('/!\\ no extra for work')
+                return parsedWork;
             }
         })
+    } else {
+        return parsedWork;
     }
+}
 
-    let retrieveDeclarationPdfUrl = function(allDeclaUrl) {
-        let urlSplit = allDeclaUrl.split('/');
-        let name = urlSplit.pop().split('.')[0];
-        let url = DEPUTY_DECLARATIONS_URL.replace(PARAM_DEPUTY_NAME, name);
-        return FetchUrlService.retrieveContent(url)
-        .then(function(content) {
-            return DeputyDeclarationsParser.parse(content)
-        });
-    }
+let retrieveDeputyInfosAndMandates = function(deputy) {
+    let mandatesUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
+    return FetchUrlService.retrieveContent(mandatesUrl)
+    .then(function(content) {
+        if (content) {
+            return DeputyMandatesParser.parse(content)
+            .then(function(mandates) {
+                console.log('retrieved mandates for : ' + deputy.lastname);
+                deputy.currentMandateStartDate = mandates.currentMandateStartDate;
+                deputy.mandates = mandates;
+                return deputy;
+            })
+            .then(function(deputy) {
+                return DeputyExtraPositionsParser.parse(content)
+                .then(function(extraPositions) {
+                    console.log('retrieved extra positions for : ' + deputy.lastname);
+                    deputy.extraPositions = extraPositions;
+                    return deputy;
+                })
+            })
+            .then(function(deputy) {
+                return DeputyInfosParser.parse(content)
+                .then(function(deputyInfos) {
+                    console.log('retrieved deputyInfos for : ' + deputy.lastname);
+                    deputy.phone = deputyInfos.phone;
+                    deputy.email = deputyInfos.email;
+                    deputy.job = deputyInfos.job;
+                    deputy.birthDate = deputyInfos.birthDate;
+                    deputy.parliamentGroup = deputyInfos.parliamentGroup;
+                    deputy.seatNumber = deputyInfos.seatNumber;
+                    return deputy;
+                })
+            })
+        } else {
+            console.log('/!\\ no mandates')
+            return
+        }
+    })
+}

@@ -14,6 +14,7 @@ let ExtraInfoService = require('./database/ExtraInfoService');
 let BallotsScrapingService = require('./BallotsScrapingService');
 let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
+let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
 const SCRAP_TIMES = '0 0,10,15,18 * * *';
@@ -37,6 +38,10 @@ let self = module.exports = {
     startScraping: function() {
         console.log('==> start classifying unclassified questions');
         return WorkService.classifyUnclassifiedQuestions()
+        .then(function() {
+            console.log('==> retrieves declarations urls');
+            return DeclarationScrapingService.retrieveAllDeputiesDeclarationsUrls();
+        })
         .then(function() {
             console.log('==> start scraping deputies');
             return DeputiesScrapingService.retrieveDeputiesList()
