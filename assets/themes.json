@@ -251,7 +251,8 @@
                 "Commerce et artisanat",
                 "Commerce extérieur",
                 "Ventes et échanges",
-                "PME et artisanat"
+                "PME et artisanat",
+                "PME, commerce et artisanat"
             ]
         },
         {
@@ -269,7 +270,8 @@
                 "Sécurité routière",
                 "Sécurité des biens et des personnes",
                 "Terrorisme",
-                "Nuisances"
+                "Nuisances",
+                "Sécurité civile"
             ]
         },
         {
@@ -322,7 +324,9 @@
                 "Pauvreté",
                 "Personnes handicapées",
                 "Régime social des indépendants",
-                "Alcools et boissons alcoolisées"
+                "Alcools et boissons alcoolisées",
+                "Fin de vie et soins palliatifs",
+                "Interruption volontaire de grossesse"
             ]
         },
         {
