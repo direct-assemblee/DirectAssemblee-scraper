@@ -28,6 +28,7 @@ let createDeclarations = function(declarations, deputyId) {
 let createDeclaration = function(deputyId, declaration) {
     let declarationToInsert = createDeclarationModel(deputyId, declaration)
     return Declaration.create(declarationToInsert)
+    .meta({fetch: true});
 }
 
 let createDeclarationModel = function(deputyId, declaration) {

@@ -54,7 +54,7 @@ let self = module.exports = {
             console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, 50);
+                let ballots = subArrayIfDebug(allBallots, 0, 10);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
         })
@@ -119,6 +119,9 @@ let retrieveAndInsertDeputiesByRange = function(deputies, start) {
         console.log('- retrieving deputies range ' + i + '-' + end);
         i += RANGE_STEP;
         return retrieveAndInsertDeputies(dep)
+        .then(function(inserted) {
+            return;
+        })
     });
 }
 
@@ -126,10 +129,13 @@ let retrieveAndInsertDeputies = function(deputiesRange) {
     return DeputiesScrapingService.retrieveDeputies(deputiesRange)
     .then(function(deputiesRetrieved) {
         console.log('-- retrieved deputies ' + deputiesRetrieved.length)
+        let promises = [];
         for (let i in deputiesRetrieved) {
-            insertDeputy(deputiesRetrieved[i]);
+            if (deputiesRetrieved[i]) {
+                promises.push(insertDeputy(deputiesRetrieved[i]));
+            }
         }
-        return;
+        return Promise.all(promises);
     })
 }
 

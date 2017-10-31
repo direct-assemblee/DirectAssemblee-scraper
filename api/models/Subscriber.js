@@ -1,10 +1,7 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
     attributes: {
         id: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
             autoIncrement: true
         },
         token: {

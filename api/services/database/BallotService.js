@@ -36,14 +36,16 @@ let createBallotModel = function(ballot) {
 }
 
 let createBallot = function(ballotToInsert) {
-    return Ballot.create(ballotToInsert);
+    return Ballot.create(ballotToInsert)
+    .meta({fetch: true});
 }
 
 let updateBallot = function(foundBallot, ballotToUpdate) {
     return Ballot.update({
         id: foundBallot.id
     }, ballotToUpdate)
-    .then(function(updatedBallot) {
-        return updatedBallot[0];
-    })
+    .meta({fetch: true})
+    .then(function(updatedBallots) {
+        return updatedBallots[0];
+    });
 }

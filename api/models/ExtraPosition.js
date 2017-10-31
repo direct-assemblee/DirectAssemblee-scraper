@@ -1,10 +1,7 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
     attributes: {
         id: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
             autoIncrement: true
         },
         position: {
@@ -17,7 +14,6 @@ module.exports = {
             type: 'string'
         },
         deputyId: {
-            type: 'int',
             model: 'Deputy'
         }
     }

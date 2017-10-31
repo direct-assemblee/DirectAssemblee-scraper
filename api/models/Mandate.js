@@ -1,23 +1,19 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
     attributes: {
         id: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
             autoIncrement: true
         },
         name: {
-            type: 'text'
+            type: 'string'
         },
         startingDate: {
-            type: 'date'
+            type: 'string'
         },
         endingDate: {
-            type: 'date'
+            type: 'string'
         },
         deputyId: {
-            type: 'int',
             model: 'Deputy'
         }
     }

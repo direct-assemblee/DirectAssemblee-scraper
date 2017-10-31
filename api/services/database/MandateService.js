@@ -21,7 +21,8 @@ let clearMandatesForDeputy = function(deputyId) {
 
 let createMandates = function(mandates, deputyId) {
     let mandatesToInsert = createMandatesModels(mandates, deputyId)
-    return Mandate.create(mandatesToInsert);
+    return Mandate.createEach(mandatesToInsert)
+    .meta({fetch: true});
 }
 
 let createMandatesModels = function(mandates, deputyId) {
@@ -67,10 +68,10 @@ let parsePastMandates = function(deputyId, pastMandates) {
 
         if (name && startingDate && endingDate) {
             mandatesToInsert.push(createMandateModel(deputyId, name, startingDate, endingDate));
-            startingDate = null;
-            endingDate = null;
+            startingDate = '';
+            endingDate = '';
             previousName = name;
-            name = null;
+            name = '';
         }
     }
     return mandatesToInsert;
@@ -79,8 +80,8 @@ let parsePastMandates = function(deputyId, pastMandates) {
 let createMandateModel = function(deputyId, name, startingDate, endingDate) {
     return {
         'name': removeUnwantedCharacters(name),
-        'startingDate': startingDate ? DateHelper.formatDate(startingDate) : null,
-        'endingDate': endingDate ? DateHelper.formatDate(endingDate) : null,
+        'startingDate': startingDate ? DateHelper.formatDate(startingDate) : '',
+        'endingDate': endingDate ? DateHelper.formatDate(endingDate) : '',
         'deputyId': deputyId
     }
 }

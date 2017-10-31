@@ -1,25 +1,21 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
     attributes: {
         id: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
             autoIncrement: true
         },
         officialId: {
-            type: 'int',
+            type: 'number',
             unique: true
         },
         title: {
-            type: 'text'
+            type: 'string'
         },
         themeId: {
-            type: 'int',
             model: 'Theme'
         },
         date: {
-            type: 'date'
+            type: 'string'
         },
         dateDetailed: {
             type: 'string'
@@ -28,13 +24,13 @@ module.exports = {
             type: 'string'
         },
         totalVotes: {
-            type: 'int'
+            type: 'number'
         },
         yesVotes: {
-            type: 'int'
+            type: 'number'
         },
         noVotes: {
-            type: 'int'
+            type: 'number'
         },
         isAdopted: {
             type: 'boolean'

@@ -49,7 +49,7 @@ let self = module.exports = {
     saveEndOfMandate: function(deputy) {
         let endingDate = deputy.endOfMandateDate ? DateHelper.formatDate(deputy.endOfMandateDate) : null;
         let toUpdate = {
-            'currentMandateStartDate': null,
+            'currentMandateStartDate': '',
             'mandateEndDate': endingDate,
             'mandateEndReason': deputy.endOfMandateReason
         };
@@ -63,8 +63,6 @@ let self = module.exports = {
 }
 
 let createDeputyModel = function(deputy, departmentId) {
-    let startingDate = deputy.currentMandateStartDate ? DateHelper.formatDate(deputy.currentMandateStartDate) : null;
-    let birthDate = deputy.birthDate ? DateHelper.formatDateWithTemplate(deputy.birthDate, 'YYYY-MM-DD') : null;
     return {
         'officialId': deputy.officialId,
         'gender': deputy.civility === 'M.' ? 'M' : 'F',
@@ -78,23 +76,25 @@ let createDeputyModel = function(deputy, departmentId) {
         'phone': deputy.phone,
         'email': deputy.email,
         'job': deputy.job,
-        'currentMandateStartDate': startingDate,
+        'currentMandateStartDate': deputy.currentMandateStartDate,
         'seatNumber' : deputy.seatNumber,
-        'mandateEndDate': null,
-        'mandateEndReason': null
+        'mandateEndDate': '',
+        'mandateEndReason': ''
     }
 }
 
 let createDeputy = function(deputyToInsert) {
-    return Deputy.create(deputyToInsert);
+    return Deputy.create(deputyToInsert)
+    .meta({fetch: true});
 }
 
 let updateDeputy = function(deputyToUpdate) {
     return Deputy.update({
         officialId: deputyToUpdate.officialId
     }, deputyToUpdate)
-    .then(function(updatedDeputy) {
+    .meta({fetch: true})
+    .then(function(updatedDeputies) {
         // console.log('updated deputy : ' + updatedDeputy[0].lastname);
-        return updatedDeputy[0];
-    })
+        return updatedDeputies[0];
+    });
 }

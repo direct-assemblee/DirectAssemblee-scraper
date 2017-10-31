@@ -1,18 +1,14 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
     attributes: {
         id: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
             autoIncrement: true
         },
         info: {
             type: 'string'
         },
-        value: 'text',
+        value: 'string',
         workId: {
-            type: 'int',
             model: 'Work'
         }
     }

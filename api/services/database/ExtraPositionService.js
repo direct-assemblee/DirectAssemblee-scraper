@@ -27,5 +27,9 @@ let createExtraPositions = function(extraPositions, deputyId) {
 }
 
 let createExtraPosition = function(extraPositionToInsert) {
-    return ExtraPosition.create(extraPositionToInsert);
+    return ExtraPosition.create(extraPositionToInsert)
+    .meta({fetch: true})
+    .then(function(createdExtraPosition) {
+        return createdExtraPosition;
+    });
 }

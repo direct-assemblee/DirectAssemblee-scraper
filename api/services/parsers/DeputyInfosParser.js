@@ -38,7 +38,7 @@ let deputyParser = function(callback) {
             } else if (expectedItem === 'birthdate') {
                 let trimmed = text.trim();
                 if (trimmed) {
-                    let dateMatched = DateHelper.findAndFormatDateInString(trimmed, DateHelper.BIRTHDATE_REGEX, 'DD MMMM YYYY');
+                    let dateMatched = DateHelper.findAndFormatDateInString(trimmed);
                     if (dateMatched) {
                         parsedItem.birthDate = dateMatched;
                         expectedItem = 'job';
@@ -53,7 +53,7 @@ let deputyParser = function(callback) {
             } else if (expectedItem === 'endOfMandate') {
                 let trimmed = text.trim();
                 if (trimmed) {
-                    let dateMatched = trimmed.match(DateHelper.DATE_REGEX);
+                    let dateMatched = DateHelper.findAndFormatDateInString(trimmed);
                     if (dateMatched && dateMatched.length > 0) {
                         parsedItem.endOfMandateDate = dateMatched[dateMatched.length - 1];
                         let reason = trimmed.match(/\((.*)\)/i);

@@ -26,5 +26,9 @@ let createExtraInfos = function(extraInfos, workId) {
 }
 
 let createExtraInfo = function(infoToInsert) {
-    return ExtraInfo.create(infoToInsert);
+    return ExtraInfo.create(infoToInsert)
+    .meta({fetch: true})
+    .then(function(createdExtraInfo) {
+        return createdExtraInfo;
+    });
 }

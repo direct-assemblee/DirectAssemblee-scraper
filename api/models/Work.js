@@ -1,37 +1,29 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
     attributes: {
         id: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
             autoIncrement: true
         },
         title: {
-            type: 'text'
+            type: 'string'
         },
         themeId: {
-            type: 'int',
             model: 'Theme'
         },
         tempTheme: 'string',
-        officialId: {
-            type: 'int',
-        },
         date: {
-            type: 'date'
+            type: 'string'
         },
         url: {
             type: 'string'
         },
         description: {
-            type: 'text'
+            type: 'string'
         },
         type: {
             type: 'string'
         },
         deputyId: {
-            type: 'int',
             model: 'Deputy'
         }
     }

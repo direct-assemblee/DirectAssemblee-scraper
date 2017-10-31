@@ -26,7 +26,7 @@
  *
  */
 
-module.exports.cors = {
+// module.exports.security.cors = {
 
   /***************************************************************************
   *                                                                          *
@@ -75,4 +75,4 @@ module.exports.cors = {
 
   // headers: 'content-type'
 
-};
+// };
