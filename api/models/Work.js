@@ -5,7 +5,7 @@ module.exports = {
             autoIncrement: true
         },
         title: {
-            type: 'string'
+            type: 'json'
         },
         themeId: {
             model: 'Theme'
@@ -18,7 +18,7 @@ module.exports = {
             type: 'string'
         },
         description: {
-            type: 'string'
+            type: 'json'
         },
         type: {
             type: 'string'

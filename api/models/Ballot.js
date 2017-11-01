@@ -9,7 +9,7 @@ module.exports = {
             unique: true
         },
         title: {
-            type: 'string'
+            type: 'json'
         },
         themeId: {
             model: 'Theme'

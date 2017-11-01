@@ -7,7 +7,7 @@ module.exports = {
         info: {
             type: 'string'
         },
-        value: 'string',
+        value: 'json',
         workId: {
             model: 'Work'
         }

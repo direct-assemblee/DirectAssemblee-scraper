@@ -5,7 +5,7 @@ module.exports = {
             autoIncrement: true
         },
         name: {
-            type: 'string'
+            type: 'json'
         },
         startingDate: {
             type: 'string'
