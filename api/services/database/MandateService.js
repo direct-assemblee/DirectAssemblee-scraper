@@ -8,7 +8,6 @@ module.exports = {
         return clearMandatesForDeputy(deputyId)
         .then(function(removedMandates) {
             let number = removedMandates ? removedMandates.length : 0;
-            console.log('removed ' + number + ' mandates');
             return createMandates(mandates, deputyId);
         })
     }
@@ -21,8 +20,7 @@ let clearMandatesForDeputy = function(deputyId) {
 
 let createMandates = function(mandates, deputyId) {
     let mandatesToInsert = createMandatesModels(mandates, deputyId)
-    return Mandate.createEach(mandatesToInsert)
-    .meta({fetch: true});
+    return Mandate.createEach(mandatesToInsert);
 }
 
 let createMandatesModels = function(mandates, deputyId) {

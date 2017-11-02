@@ -29,7 +29,20 @@ module.exports = {
     insertWork: function(work, deputyId) {
         let workToInsert = createWorkModel(work, deputyId)
         return Work.create(workToInsert)
-        .meta({fetch: true});
+        .then(function() {
+            return true;
+        });
+    },
+
+    insertWorks: function(works, deputyId) {
+        if (works && works.length > 0) {
+            let worksToInsert = [];
+            for (let i in works) {
+                worksToInsert.push(createWorkModel(works[i], deputyId))
+            }
+            return Work.createEach(worksToInsert)
+            .meta({fetch: true});
+        }
     }
 }
 

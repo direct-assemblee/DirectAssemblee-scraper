@@ -42,29 +42,25 @@ module.exports = {
     }
 }
 
-let retrieveBallotsListOfType = function(ballotType) {
-    return new Promise(function(resolve, reject) {
-        let results = [];
-        function next(page) {
-            let url = getBallotsListPageUrl(ballotType, page);
-            retrieveBallotsListOfTypeWithPage(url, ballotType)
-            .then(function(ballots) {
-                let shouldGetNext = false;
-                if (ballots && ballots.length > 0) {
-                    for (let i in ballots) {
-                        results.push(ballots[i]);
-                    }
-                    shouldGetNext = ballots.length == BALLOTS_PAGE_SIZE;
-                }
-                if (shouldGetNext) {
-                    next(page + 1);
-                } else {
-                    resolve(results);
-                }
-            }, reject);
+let retrieveBallotsListOfType = async function(ballotType) {
+    let results = [];
+    let page = 0;
+
+    let shouldGetNext = true;
+    while (shouldGetNext) {
+        let url = getBallotsListPageUrl(ballotType, page);
+        let ballots = await retrieveBallotsListOfTypeWithPage(url, ballotType);
+
+        shouldGetNext = false;
+        if (ballots && ballots.length > 0) {
+            for (let i in ballots) {
+                results.push(ballots[i]);
+            }
+            shouldGetNext = ballots.length == BALLOTS_PAGE_SIZE;
         }
-        next(0);
-    });
+        page++;
+    }
+    return results;
 }
 
 let getBallotsListPageUrl = function(ballotType, pageOffset) {
@@ -72,84 +68,67 @@ let getBallotsListPageUrl = function(ballotType, pageOffset) {
 }
 
 let retrieveBallotsListOfTypeWithPage = function(url, ballotType) {
-    return FetchUrlService.retrieveContent(url)
-    .then(function(content) {
-        if (content) {
-            return BallotsListParser.parse(content, ballotType)
+    if (ballotType === 'TOUS') {
+        ballotType = 'SOR'; // default value
+    }
+    return FetchUrlService.retrieveContent(url, BallotsListParser)
+    .then(function(results) {
+        if (results) {
+            for (let i in results) {
+                if (results[i].title.indexOf('motion de censure') > 0) {
+                    results[i].type = 'motion_of_censure';
+                } else if (!results[i].type) {
+                    results[i].type = ballotType;
+                }
+            }
+            return results;
         } else {
             console.log('/!\\ ballot list : no content')
             return;
         }
-    })
+    });
 }
 
 let retrieveBallotDetails = function(ballot, attempts) {
-    return FetchUrlService.retrieveContent(ballot.analysisUrl)
-    .then(function(content) {
-        if (content) {
-            if (content.indexOf('503 Service Unavailable') > 0) {
-                attempts++;
-                if (attempts < 3) {
-                    return retrieveBallotDetails(ballot, attempts);
-                } else {
-                    return;
-                }
-            } else {
-                return BallotParser.parse(ballot.analysisUrl, content)
-                .then(function(ballotAnalysis) {
-                    ballot = mergeBallotWithAnalysis(ballot, ballotAnalysis)
-                    return ballot;
-                })
-                .then(function(ballot) {
-                    return retrieveBallotTheme(ballot);
-                })
-            }
-        } else {
-            console.log('/!\\ ballot : no content')
-            return;
-        }
-    })
+    return FetchUrlService.retrieveContent(ballot.analysisUrl, BallotParser)
+    .then(function(ballotAnalysis) {
+        let fullBallot = mergeBallotWithAnalysis(ballot, ballotAnalysis);
+        return retrieveBallotTheme(fullBallot);
+    });
 }
 
 let retrieveBallotTheme = function(ballot) {
     if (ballot.fileUrl) {
-        return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true)
-        .then(function(content) {
-            if (content) {
-                return BallotThemeParser.parse(content)
-                .then(function(parsedTheme) {
-                    if (parsedTheme) {
-                        return ThemeHelper.findTheme(parsedTheme)
-                        .then(function(foundTheme) {
-                            if (foundTheme) {
-                                ballot.theme = foundTheme;
-                            } else {
-                                console.log('/!\\ new theme not recognized : ' + parsedTheme);
-                            }
-                            return ballot;
-                        })
+        return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true, BallotThemeParser)
+        .then(function(parsedTheme) {
+            if (parsedTheme) {
+                return ThemeHelper.findTheme(parsedTheme)
+                .then(function(foundTheme) {
+                    if (foundTheme) {
+                        ballot.theme = foundTheme;
                     } else {
-                        return ballot;
+                        console.log('/!\\ new theme not recognized : ' + parsedTheme);
                     }
+                    return ballot;
                 })
             } else {
-                console.log('/!\\ ballot theme : no content')
-                return;
+                return ballot;
             }
         })
     } else {
-        if (ballot.title.indexOf('politique générale') > 0) {
-            console.log('title : ' + ballot.title)
-            return ThemeHelper.findTheme('Politique générale')
-            .then(function(foundTheme) {
-                if (foundTheme) {
-                    ballot.theme = foundTheme;
-                }
-                return ballot;
-            })
-        } else {
-            return ballot;
-        }
+        return new Promise(function(resolve, reject) {
+            if (ballot.title.indexOf('politique générale') > 0) {
+                return ThemeHelper.findTheme('Politique générale')
+                .then(function(foundTheme) {
+                    if (foundTheme) {
+                        ballot.theme = foundTheme;
+                    }
+                    resolve(ballot);
+                })
+            } else {
+                resolve(ballot);
+            }
+        })
     }
 }
 

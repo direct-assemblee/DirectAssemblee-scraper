@@ -40,8 +40,9 @@ let makeRequest = function(options) {
     Request(options)
     .then(function (parsedBody) {
         // POST succeeded...
+        parsedBody = null;
     })
-    .catch(function (err) {
+    .catch(function(err) {
         // POST failed...
     });
 }

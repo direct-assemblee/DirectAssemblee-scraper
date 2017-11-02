@@ -1,89 +1,76 @@
 let htmlparser = require('htmlparser2');
-
-let ballotParser = function(ballotType, callback) {
-    let resultItems = [];
-    let parsedItem = {};
-
-    let expectedData;
-    let currentUrl;
-
-    return new htmlparser.Parser({
-        onopentag: function(tagname, attribs) {
-            if (tagname === 'td' && attribs.class === 'denom') {
-                expectedData = 'id';
-            } else if (expectedData === 'url') {
-                currentUrl = attribs.href;
-                expectedData = 'urlType';
-            }
-        },
-        ontext: function(text) {
-            if (expectedData === 'id') {
-                if (text.includes('*')) {
-                    parsedItem.type = 'SSO';
-                }
-                parsedItem.officialId = text.replace('*', '');
-                expectedData = 'date';
-            } else if (expectedData === 'date') {
-                if (text.trim()) {
-                    parsedItem.date = text;
-                    expectedData = 'description';
-                }
-            } else if (expectedData === 'description') {
-                if (text.trim()) {
-                    parsedItem.title = text.replace('[', '').trim();
-                    expectedData = 'url';
-                }
-            } else if (expectedData === 'urlType') {
-                if (text === 'dossier') {
-                    expectedData = 'fileUrl';
-                } else if (text === 'analyse du scrutin') {
-                    expectedData = 'analysisUrl';
-                }
-            }
-        },
-        onclosetag: function(tagname) {
-            if (tagname === 'a') {
-                if (expectedData === 'fileUrl') {
-                    parsedItem.fileUrl = currentUrl;
-                    currentUrl = null;
-                    expectedData = 'url';
-                } else if (expectedData == 'analysisUrl') {
-                    parsedItem.analysisUrl = Constants.BASE_URL + currentUrl;
-                    currentUrl = null;
-                    expectedData = 'url';
-                }
-            } else if (tagname === 'tr') {
-                if (parsedItem.officialId) {
-                    if (parsedItem.title.indexOf('motion de censure') > 0) {
-                        parsedItem.type = 'motion_of_censure';
-                    } else if (!parsedItem.type) {
-                        if (ballotType === 'TOUS') {
-                            ballotType = 'SOR'; // default value
-                        }
-                        parsedItem.type = ballotType;
-                    }
-                    // print(parsedItem)
-                    resultItems.push(parsedItem);
-                }
-                // print(parsedItem)
-                parsedItem = {}
-            } else if (tagname === 'html') {
-                callback(resultItems);
-            }
-        }
-    }, {decodeEntities: true});
-}
+let StringHelper = require('../helpers/StringHelper');
 
 module.exports = {
-    parse: function(content, ballotType) {
-        return new Promise(function(resolve, reject) {
-            let parser = ballotParser(ballotType, function(resultItems) {
-                resolve(resultItems);
-            });
-            parser.write(content);
-            parser.end();
-        })
+    getParser: function(callback) {
+        let resultItems = [];
+        let parsedItem = {};
+
+        let expectedData;
+        let currentUrl;
+
+        return new htmlparser.Parser({
+            onopentag: function(tagname, attribs) {
+                if (tagname === 'td' && attribs.class === 'denom') {
+                    expectedData = 'id';
+                } else if (expectedData === 'url') {
+                    currentUrl = StringHelper.removeParentReference(attribs.href);
+                    expectedData = 'urlType';
+                }
+            },
+            ontext: function(text) {
+                if (isInteresting(expectedData, text)) {
+                    let lightText = StringHelper.removeParentReference(text);
+                    if (lightText && lightText.length > 0) {
+                        if (expectedData === 'id') {
+                            if (lightText.includes('*')) {
+                                parsedItem.type = 'SSO';
+                            }
+                            parsedItem.officialId = lightText.replace('*', '');
+                            expectedData = 'date';
+                        } else if (expectedData === 'date') {
+                            parsedItem.date = lightText;
+                            expectedData = 'description';
+                        } else if (expectedData === 'description') {
+                            parsedItem.title = lightText.replace('[', '').trim();
+                            expectedData = 'url';
+                        } else if (expectedData === 'urlType') {
+                            if (text === 'dossier') {
+                                expectedData = 'fileUrl';
+                            } else if (text === 'analyse du scrutin') {
+                                expectedData = 'analysisUrl';
+                            }
+                        }
+                    }
+                }
+            },
+            onclosetag: function(tagname) {
+                if (tagname === 'a') {
+                    if (expectedData === 'fileUrl') {
+                        parsedItem.fileUrl = currentUrl;
+                        currentUrl = null;
+                        expectedData = 'url';
+                    } else if (expectedData == 'analysisUrl') {
+                        parsedItem.analysisUrl = Constants.BASE_URL + currentUrl;
+                        currentUrl = null;
+                        expectedData = 'url';
+                    }
+                } else if (tagname === 'tr') {
+                    if (parsedItem.officialId) {
+                        // print(parsedItem)
+                        resultItems.push(parsedItem);
+                    }
+                    parsedItem = {}
+                } else if (tagname === 'html') {
+                    callback(resultItems);
+                }
+            }
+        }, {decodeEntities: true});
     }
+}
+
+let isInteresting = function(expectedData, text) {
+    return expectedData === 'id' || expectedData === 'date' || expectedData === 'description' || expectedData === 'urlType';
 }
 
 let print = function(parsedItem) {

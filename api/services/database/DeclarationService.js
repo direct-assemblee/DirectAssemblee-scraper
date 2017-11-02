@@ -6,7 +6,6 @@ module.exports = {
         return clearDeclarationsForDeputy(deputyId)
         .then(function(removedDeclarations) {
             let number = removedDeclarations ? removedDeclarations.length : 0;
-            console.log('removed ' + number + ' declarations');
             return createDeclarations(declarations, deputyId);
         })
     }
@@ -27,12 +26,11 @@ let createDeclarations = function(declarations, deputyId) {
 
 let createDeclaration = function(deputyId, declaration) {
     let declarationToInsert = createDeclarationModel(deputyId, declaration)
-    return Declaration.create(declarationToInsert)
-    .meta({fetch: true});
+    return Declaration.create(declarationToInsert);
 }
 
 let createDeclarationModel = function(deputyId, declaration) {
-    let date = DateHelper.formatWrittenDate(declaration.date)
+    let date = DateHelper.formatDate(declaration.date)
     return {
         'title': declaration.title,
         'date': date,

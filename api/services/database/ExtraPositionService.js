@@ -5,7 +5,6 @@ module.exports = {
         return clearExtraPositionsForDeputy(deputyId)
         .then(function(removedExtraPositions) {
             let number = removedExtraPositions ? removedExtraPositions.length : 0;
-            console.log('removed ' + number + ' extra positions');
             return createExtraPositions(extraPositions, deputyId);
         })
     }
@@ -28,7 +27,6 @@ let createExtraPositions = function(extraPositions, deputyId) {
 
 let createExtraPosition = function(extraPositionToInsert) {
     return ExtraPosition.create(extraPositionToInsert)
-    .meta({fetch: true})
     .then(function(createdExtraPosition) {
         return createdExtraPosition;
     });

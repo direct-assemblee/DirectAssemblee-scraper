@@ -1,13 +1,22 @@
 let Promise = require('bluebird');
 
 module.exports = {
-    insertExtraInfos: function(extraInfos, workId) {
-        return clearExtraPositionsForWork(workId)
-        .then(function(removedExtraInfos) {
-            let number = removedExtraInfos ? removedExtraInfos.length : 0;
-            // console.log('removed ' + number + ' extra infos');
-            return createExtraInfos(extraInfos, workId);
-        })
+    clearExtraPositionsForWorks: function(workIds) {
+        let promises = [];
+        for (let i in workIds) {
+            promises.push(clearExtraPositionsForWork[workIds[i]]);
+        }
+        return Promise.all(promises);
+    },
+
+    insertExtraInfos: function(extraInfosArray, workIds) {
+        let extraInfosToInsert = [];
+        for (let i in workIds) {
+            for (let j in extraInfosArray[i]) {
+                extraInfosToInsert.push({ info: extraInfosArray[i][j].info, value: extraInfosArray[i][j].value, workId: workIds[i] });
+            }
+        }
+        return ExtraInfo.create(extraInfosToInsert);
     }
 }
 

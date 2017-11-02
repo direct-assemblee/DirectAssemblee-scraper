@@ -11,31 +11,39 @@ for (var i = 0; i < defaultDiacriticsRemovalMap .length; i++) {
 
 let self = module.exports = {
     cleanHtml: function(content) {
-        let cleaned = content.replace(/&quot;/g, '\'');
+        let cleaned = self.removeParentReference(content);
+        cleaned = cleaned.replace(/&quot;/g, '\'');
         cleaned = entities.decode(cleaned);
-        cleaned = self.removeSpecialChars(cleaned);
+        cleaned = removeSpecialChars(cleaned);
         return cleaned
-    },
-
-    removeSpecialChars: function(str) {
-        return str.replace(/\.\r\n/g, '[dotspace]')
-        .replace(/\s+/g, ' ')
-        .replace(/\\n/g, ' ')
-        .replace(/\\'/g, '\'')
-        .replace(/\\'/g, '\'')
-        .replace(/\\&/g, '')
-        .replace(/\\r/g, '')
-        .replace(/\\t/g, '')
-        .replace(/\\b/g, '')
-        .replace(/\\f/g, '')
-        .replace('&quot;', '')
-        .replace('data-place', 'dataplace')
-        .replace(/\[dotspace\]/g, '.<br>');
     },
 
     replaceAccents: function(str) {
         return str.replace(/[^\u0000-\u007E]/g, function(a){
             return diacriticsMap[a] || a;
         });
+    },
+
+    removeParentReference: function(str) {
+        if (str) {
+            return (' ' + str.trim()).substr(1);
+        }
+        return str;
     }
+}
+
+let removeSpecialChars = function(str) {
+    return str.replace(/\.\r\n/g, '[dotspace]')
+    .replace(/\s+/g, ' ')
+    .replace(/\\n/g, ' ')
+    .replace(/\\'/g, '\'')
+    .replace(/\\'/g, '\'')
+    .replace(/\\&/g, '')
+    .replace(/\\r/g, '')
+    .replace(/\\t/g, '')
+    .replace(/\\b/g, '')
+    .replace(/\\f/g, '')
+    .replace('&quot;', '')
+    .replace('data-place', 'dataplace')
+    .replace(/\[dotspace\]/g, '.<br>');
 }
