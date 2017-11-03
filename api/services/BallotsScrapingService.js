@@ -133,12 +133,14 @@ let retrieveBallotTheme = function(ballot) {
 }
 
 let mergeBallotWithAnalysis = function(ballot, ballotAnalysis) {
-    ballot.title = ballotAnalysis.title;
-    ballot.dateDetailed = ballotAnalysis.dateDetailed;
-    ballot.totalVotes = ballotAnalysis.totalVotes;
-    ballot.yesVotes = ballotAnalysis.yesVotes;
-    ballot.noVotes = ballotAnalysis.noVotes;
-    ballot.votes = ballotAnalysis.votes
-    ballot.isAdopted = ballotAnalysis.isAdopted;
+    if (ballotAnalysis) {
+        ballot.title = ballotAnalysis.title;
+        ballot.dateDetailed = ballotAnalysis.dateDetailed;
+        ballot.totalVotes = ballotAnalysis.totalVotes;
+        ballot.yesVotes = ballotAnalysis.yesVotes;
+        ballot.noVotes = ballotAnalysis.noVotes;
+        ballot.votes = ballotAnalysis.votes
+        ballot.isAdopted = ballotAnalysis.isAdopted;
+    }
     return ballot
 }

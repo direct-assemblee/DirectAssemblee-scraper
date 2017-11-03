@@ -56,6 +56,7 @@ let self = module.exports = {
         return Deputy.update({
             officialId: deputy.officialId
         }, toUpdate)
+        .meta({fetch: true})
         .then(function(updatedDeputy) {
             return updatedDeputy[0];
         })

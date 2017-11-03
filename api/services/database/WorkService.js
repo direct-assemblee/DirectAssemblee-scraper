@@ -9,9 +9,9 @@ module.exports = {
                 return ThemeHelper.findTheme(question.tempTheme)
                 .then(function(foundTheme) {
                     if (foundTheme) {
-                        question.theme = foundTheme;
+                        question.themeId = foundTheme.id;
                         question.tempTheme = '';
-                        return saveWork(question);
+                        return saveWork(Object.assign({}, question));
                     } else {
                         console.log('/!\\ new theme not recognized : ' + question.theme);
                         return question;
@@ -52,12 +52,17 @@ let findUnclassifiedQuestions = function() {
 }
 
 let saveWork = function(work) {
-    return Work.update({
+    return Work.update()
+    .where({
         id: work.id
-    }, work)
-    .meta({fetch: true})
-    .then(function(updatedWorks) {
-        return updatedWorks[0];
+    })
+    .set(work)
+    .then(function() {
+        return;
+    })
+    .catch(err => {
+        console.log('Error saving works ' + err);
+        return
     });
 }
 
@@ -67,14 +72,13 @@ let createWorkModel = function(work, deputyId) {
         id = work.id;
     }
     return {
-        'title': work.title,
-        'themeId': work.theme && work.theme.id ? work.theme.id : null,
-        'tempTheme': work.theme && !work.theme.id ? work.theme : '',
-        'date': work.date,
-        'url': work.url,
-        'officialId': id,
-        'description': work.description,
-        'deputyId': deputyId,
-        'type': work.type
+        title: work.title,
+        themeId: work.theme && work.theme.id ? work.theme.id : null,
+        tempTheme: work.theme && !work.theme.id ? work.theme : '',
+        date: work.date,
+        url: work.url,
+        description: work.description,
+        deputyId: deputyId,
+        type: work.type
     }
 }
