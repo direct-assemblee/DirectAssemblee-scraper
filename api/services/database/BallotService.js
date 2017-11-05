@@ -18,7 +18,7 @@ module.exports = {
 }
 
 let createBallotModel = function(ballot) {
-    let date = DateHelper.formatDate(ballot.date)
+    let date = DateHelper.findAndFormatDateInString(ballot.date)
     return {
         officialId: ballot.officialId,
         title: ballot.title,

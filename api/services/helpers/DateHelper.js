@@ -2,6 +2,9 @@ var moment = require('moment');
 moment.locale('fr');
 
 const DATE_REGEX = /((0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[012])[/-]\d{4})/g;
+
+const DB_DATE_REGEX = /(\d{4}[/-](0?[1-9]|1[012])[/-](0?[1-9]|[12][0-9]|3[01]))/g;
+
 const DATE_WRITTEN_REGEX = /((0?[1-9]|[12][0-9]|3[01]|1er)\s.*\s\d{4})/g;
 
 var self = module.exports = {
@@ -16,6 +19,8 @@ var self = module.exports = {
             date = self.findDateWithRegex(text, DATE_REGEX);
             if (date) {
                 date = self.formatDate(date);
+            } else {
+                date = self.findDateWithRegex(text, DB_DATE_REGEX);
             }
         }
         if (!date) {

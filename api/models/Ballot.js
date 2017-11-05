@@ -1,5 +1,7 @@
 module.exports = {
     attributes: {
+        createdAt: { type: 'string', autoCreatedAt: true, },
+        updatedAt: { type: 'string', autoUpdatedAt: true, },
         id: {
             type: 'number',
             autoIncrement: true
