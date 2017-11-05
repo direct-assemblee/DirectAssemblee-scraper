@@ -31,7 +31,8 @@ let createBallotModel = function(ballot) {
         noVotes: ballot.noVotes,
         isAdopted: ballot.isAdopted,
         analysisUrl: ballot.analysisUrl,
-        fileUrl: ballot.fileUrl
+        fileUrl: ballot.fileUrl,
+        nonVoting: ballot.nonVoting
     }
 }
 

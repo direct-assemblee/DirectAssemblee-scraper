@@ -45,13 +45,13 @@ let self = module.exports = {
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
 
-        let deputies = subArrayIfDebug(allDeputies, 0, 10);
+        let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
         return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
             console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, 10);
+                let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
         })
@@ -133,7 +133,6 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
             }
         }
         return Promise.all(promises);
-        return;
     })
 }
 
@@ -220,14 +219,14 @@ let insertVotesForBallots = function(insertedBallots, ballots) {
         let promises = [];
         for (let i in ballots) {
             if (insertedBallots[i]) {
-                promises.push(insertVotesForBallot(insertedBallots[i].id, ballots[i].votes, deputies))
+                promises.push(insertVotesForBallot(insertedBallots[i], ballots[i].votes, deputies))
             }
         }
         return Promise.all(promises);
     })
 }
 
-let insertVotesForBallot = async function(ballotId, votes, deputies) {
+let insertVotesForBallot = async function(ballot, votes, deputies) {
     let promises = [];
     for (let i in votes) {
         let vote = votes[i]
@@ -238,9 +237,20 @@ let insertVotesForBallot = async function(ballotId, votes, deputies) {
             deputyId = DeputyHelper.getDeputyIdForVoteInBallot(deputies, vote);
         }
         if (deputyId) {
-            let voteToInsert = { deputyId: deputyId, ballotId: ballotId, value: vote.value }
-            promises.push(VoteService.insertVote(voteToInsert))
+            let voteToInsert = { deputyId: deputyId, ballotId: ballot.id, value: vote.value }
+            promises.push(insertVoteForBallotAndFixNonVotings(ballot, voteToInsert));
         }
     }
     return Promise.all(promises)
+}
+
+let insertVoteForBallotAndFixNonVotings = function(ballot, voteToInsert) {
+    return VoteService.insertVote(voteToInsert)
+    .then(function() {
+        return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
+        .then(function(nonVoting) {
+            ballot.nonVoting = nonVoting.length;
+            return BallotService.insertBallot(ballot, true);
+        })
+    })
 }

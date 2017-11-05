@@ -32,6 +32,9 @@ module.exports = {
         noVotes: {
             type: 'number'
         },
+        nonVoting: {
+            type: 'number'
+        },
         isAdopted: {
             type: 'boolean'
         },
