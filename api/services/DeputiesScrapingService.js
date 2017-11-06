@@ -145,7 +145,19 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
                         return work;
                     })
                 } else {
-                    return work;
+                    if (workType === Constants.WORK_TYPE_COMMISSIONS || workType === Constants.WORK_TYPE_PUBLIC_SESSIONS) {
+                        return ThemeHelper.findTheme('Politique générale')
+                        .then(function(foundTheme) {
+                            if (foundTheme) {
+                                work.theme = foundTheme;
+                            }
+                            return work;
+                        })
+                    } else {
+                        return new Promise(function(resolve) {
+                            resolve(work);
+                        })
+                    }
                 }
             })
             .then(function(resultingWorks) {
