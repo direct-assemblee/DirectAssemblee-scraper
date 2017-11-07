@@ -15,7 +15,7 @@ let self = module.exports = {
         cleaned = cleaned.replace(/&quot;/g, '\'');
         cleaned = entities.decode(cleaned);
         cleaned = removeSpecialChars(cleaned);
-        return cleaned
+        return cleaned;
     },
 
     replaceAccents: function(str) {
@@ -25,7 +25,7 @@ let self = module.exports = {
     },
 
     removeParentReference: function(str) {
-        if (str) {
+        if (str && str.length > 0) {
             return (' ' + str.trim()).substr(1);
         }
         return str;

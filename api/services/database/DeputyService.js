@@ -55,11 +55,7 @@ let self = module.exports = {
         };
         return Deputy.update({
             officialId: deputy.officialId
-        }, toUpdate)
-        .meta({fetch: true})
-        .then(function(updatedDeputy) {
-            return updatedDeputy[0];
-        })
+        }, toUpdate);
     }
 }
 
@@ -85,17 +81,11 @@ let createDeputyModel = function(deputy, departmentId) {
 }
 
 let createDeputy = function(deputyToInsert) {
-    return Deputy.create(deputyToInsert)
-    .meta({fetch: true});
+    return Deputy.create(deputyToInsert);
 }
 
 let updateDeputy = function(deputyToUpdate) {
     return Deputy.update({
         officialId: deputyToUpdate.officialId
-    }, deputyToUpdate)
-    .meta({fetch: true})
-    .then(function(updatedDeputies) {
-        // console.log('updated deputy : ' + updatedDeputy[0].lastname);
-        return updatedDeputies[0];
-    });
+    }, deputyToUpdate);
 }

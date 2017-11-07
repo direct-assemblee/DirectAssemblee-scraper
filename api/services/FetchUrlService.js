@@ -1,56 +1,19 @@
 'use strict';
 
 let Promise = require('bluebird');
-let http = require('http');
+let request = require('request-promise');
 let Constants = require('./Constants.js')
 let StringHelper = require('./helpers/StringHelper')
-
-let httpGet = function(url, isIsoEncoding) {
-    return new Promise(function(resolve, reject) {
-        return http.get(url, function(res) {
-            if (isIsoEncoding) {
-                res.setEncoding('binary')
-            } else {
-                res.setEncoding('utf8');
-            }
-            let data = '';
-            res.on('data', function (chunk) {
-                if (chunk.startsWith('error')) {
-                    console.log('--- error : ' + url)
-                    resolve();
-                } else {
-                    data += chunk;
-                }
-            });
-            res.on('end', function () {
-                if (this.complete) {
-                    resolve(data);
-                } else {
-                    console.log('Incomplete response');
-                    resolve();
-                }
-            });
-        })
-        .on('error', function(e) {
-            console.log('Got error: ' + e.message);
-            resolve();
-        })
-        .setTimeout(60000, function() {
-            console.log('---- Timeout');
-            resolve();
-        });
-    })
-}
 
 let parseHtml = function(html, parser) {
     return new Promise(function(resolve, reject) {
         let p = parser.getParser(function(result) {
             html = null;
-            p.end();
             p = null;
             resolve(result);
         })
         p.write(html);
+        p.end();
     })
 }
 
@@ -64,7 +27,12 @@ let self = module.exports = {
     },
 
     retrieveContentWithAttempt: function(url, isIsoEncoding, attemptNumber, parser) {
-        return httpGet(url, isIsoEncoding)
+        let settings = {
+            url: url,
+            encoding: isIsoEncoding ? 'binary' : 'utf8',
+            method: 'GET'
+        }
+        return request(settings)
         .then(function(content) {
             if (content === undefined || content.length < 1000) {
                 console.log('content : ' + content);
@@ -91,5 +59,8 @@ let self = module.exports = {
                 return parseHtml(StringHelper.cleanHtml(content), parser);
             }
         })
+        .catch(function(err) {
+            console.log(err);
+        });
     }
 }

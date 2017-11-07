@@ -10,7 +10,6 @@ let MandateService = require('./database/MandateService.js');
 let ExtraPositionService = require('./database/ExtraPositionService.js');
 let DeclarationService = require('./database/DeclarationService.js');
 let WorkService = require('./database/WorkService.js');
-let ExtraInfoService = require('./database/ExtraInfoService');
 let BallotsScrapingService = require('./BallotsScrapingService');
 let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
@@ -138,26 +137,26 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
 
 let insertDeputy = function(deputy) {
     return DeputyService.insertDeputy(deputy, true)
-    .then(function(insertedDeputy) {
-        return MandateService.insertMandates(deputy.mandates, insertedDeputy.officialId)
+    .then(function() {
+        return MandateService.insertMandates(deputy.mandates, deputy.officialId)
+    })
+    .then(function() {
+        console.log('-- inserted mandates for deputy : ' + deputy.lastname)
+        return ExtraPositionService.insertExtraPositions(deputy.extraPositions, deputy.officialId);
+    })
+    .then(function() {
+        console.log('-- inserted extra positions for deputy : ' + deputy.lastname)
+        return DeclarationService.insertDeclarations(deputy.declarations, deputy.officialId);
+    })
+    .then(function() {
+        console.log('-- inserted declarations for deputy : ' + deputy.lastname)
+        return insertWorks(deputy.works, deputy.officialId)
         .then(function() {
-            console.log('-- inserted mandates for deputy : ' + deputy.lastname)
-            return ExtraPositionService.insertExtraPositions(deputy.extraPositions, insertedDeputy.officialId);
-        })
-        .then(function() {
-            console.log('-- inserted extra positions for deputy : ' + deputy.lastname)
-            return DeclarationService.insertDeclarations(deputy.declarations, insertedDeputy.officialId);
-        })
-        .then(function() {
-            console.log('-- inserted declarations for deputy : ' + deputy.lastname)
-            return insertWorks(deputy.works, insertedDeputy.officialId)
-            .then(function() {
-                if (deputy.works && deputy.works.length > 0) {
-                    console.log('-- inserted works for deputy : ' + deputy.lastname)
-                    RequestService.sendDeputyUpdateNotif(deputy.officialId);
-                }
-                return;
-            })
+            if (deputy.works && deputy.works.length > 0) {
+                console.log('-- inserted works for deputy : ' + deputy.lastname)
+                RequestService.sendDeputyUpdateNotif(deputy.officialId);
+            }
+            return;
         })
     })
 }
@@ -165,7 +164,7 @@ let insertDeputy = function(deputy) {
 let insertWorks = function(works, deputyId) {
     return WorkService.clearWorksForDeputy(deputyId)
     .then(function(removedWorks) {
-        return WorkService.insertWorks(works, deputyId)
+        return WorkService.insertWorks(works, deputyId);
     })
 }
 
@@ -210,7 +209,7 @@ let insertBallots = function(ballots) {
 }
 
 let insertBallot = function(ballot) {
-    return BallotService.insertBallot(ballot, true)
+    return BallotService.insertBallot(ballot, true, true)
 }
 
 let insertVotesForBallots = function(insertedBallots, ballots) {
@@ -250,7 +249,7 @@ let insertVoteForBallotAndFixNonVotings = function(ballot, voteToInsert) {
         return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
         .then(function(nonVoting) {
             ballot.nonVoting = nonVoting.length;
-            return BallotService.insertBallot(ballot, true);
+            return BallotService.insertBallot(ballot, true, false);
         })
     })
 }

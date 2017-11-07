@@ -1,5 +1,6 @@
 let Promise = require('bluebird');
 let ThemeHelper = require('../helpers/ThemeHelper')
+let ExtraInfoService = require('./ExtraInfoService')
 
 module.exports = {
     classifyUnclassifiedQuestions: function() {
@@ -23,26 +24,38 @@ module.exports = {
 
     clearWorksForDeputy: function(deputyId) {
         return Work.destroy()
-        .where({ deputyId: deputyId });
-    },
-
-    insertWork: function(work, deputyId) {
-        let workToInsert = createWorkModel(work, deputyId)
-        return Work.create(workToInsert)
-        .then(function() {
-            return true;
+        .where({ deputyId: deputyId })
+        .meta({fetch: true})
+        .then(function(destroyedWorks) {
+            let workIds = [];
+            for (let i in destroyedWorks) {
+                workIds.push(destroyedWorks[i].id);
+            }
+            return ExtraInfoService.clearExtraInfosForWorks(destroyedWorks);
         });
     },
 
     insertWorks: function(works, deputyId) {
         if (works && works.length > 0) {
-            let worksToInsert = [];
+            let promises = [];
             for (let i in works) {
-                worksToInsert.push(createWorkModel(works[i], deputyId))
+                promises.push(insertWorkWithExtraInfos(works[i], deputyId))
             }
-            return Work.createEach(worksToInsert);
+            return Promise.all(promises);
         }
     }
+}
+
+let insertWorkWithExtraInfos = function(work, deputyId) {
+    let workToInsert = createWorkModel(work, deputyId)
+    return Work.create(workToInsert)
+    .meta({fetch: true})
+    .then(function(insertedWork) {
+        if (work.extraInfos && work.extraInfos.length > 0) {
+            return ExtraInfoService.insertExtraInfos(insertedWork.id, work.extraInfos)
+        }
+        return;
+    })
 }
 
 let findUnclassifiedQuestions = function() {

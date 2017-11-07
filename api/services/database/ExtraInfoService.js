@@ -1,43 +1,24 @@
 let Promise = require('bluebird');
 
 module.exports = {
-    clearExtraPositionsForWorks: function(workIds) {
+    clearExtraInfosForWorks: function(workIds) {
         let promises = [];
         for (let i in workIds) {
-            promises.push(clearExtraPositionsForWork[workIds[i]]);
+            promises.push(clearExtraInfosForWork[workIds[i]]);
         }
         return Promise.all(promises);
     },
 
-    insertExtraInfos: function(extraInfosArray, workIds) {
+    insertExtraInfos: function(workId, extraInfos) {
         let extraInfosToInsert = [];
-        for (let i in workIds) {
-            for (let j in extraInfosArray[i]) {
-                extraInfosToInsert.push({ info: extraInfosArray[i][j].info, value: extraInfosArray[i][j].value, workId: workIds[i] });
-            }
+        for (let i in extraInfos) {
+            extraInfosToInsert.push({ info: extraInfos[i].info, value: extraInfos[i].value, workId: workId });
         }
-        return ExtraInfo.create(extraInfosToInsert);
+        return ExtraInfo.createEach(extraInfosToInsert);
     }
 }
 
-let clearExtraPositionsForWork = function(workId) {
+let clearExtraInfosForWork = function(workId) {
     return ExtraInfo.destroy()
     .where({ workId: workId });
-}
-
-let createExtraInfos = function(extraInfos, workId) {
-    let promises = [];
-    for (let i in extraInfos) {
-        let infoToInsert = { info: extraInfos[i].info, value: extraInfos[i].value, workId: workId };
-        promises.push(createExtraInfo(infoToInsert));
-    }
-    return Promise.all(promises)
-}
-
-let createExtraInfo = function(infoToInsert) {
-    return ExtraInfo.create(infoToInsert)
-    .meta({fetch: true})
-    .then(function(createdExtraInfo) {
-        return createdExtraInfo;
-    });
 }

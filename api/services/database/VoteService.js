@@ -20,6 +20,5 @@ let self = module.exports = {
 }
 
 let createVote = function(voteToInsert) {
-    return Vote.create(voteToInsert)
-    .meta({fetch: true});
+    return Vote.create(voteToInsert);
 }
