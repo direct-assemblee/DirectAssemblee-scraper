@@ -150,14 +150,14 @@ let insertDeputy = function(deputy) {
         })
         .then(function() {
             console.log('-- inserted declarations for deputy : ' + deputy.lastname)
-            return insertWorks(deputy.works, insertedDeputy.officialId);
-        })
-        .then(function(didInsertedWorks) {
-            if (didInsertedWorks) {
-                console.log('-- inserted works for deputy : ' + deputy.lastname)
-                RequestService.sendDeputyUpdateNotif(deputy.officialId);
-            }
-            return;
+            return insertWorks(deputy.works, insertedDeputy.officialId)
+            .then(function() {
+                if (deputy.works && deputy.works.length > 0) {
+                    console.log('-- inserted works for deputy : ' + deputy.lastname)
+                    RequestService.sendDeputyUpdateNotif(deputy.officialId);
+                }
+                return;
+            })
         })
     })
 }

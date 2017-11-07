@@ -40,8 +40,7 @@ module.exports = {
             for (let i in works) {
                 worksToInsert.push(createWorkModel(works[i], deputyId))
             }
-            return Work.createEach(worksToInsert)
-            .meta({fetch: true});
+            return Work.createEach(worksToInsert);
         }
     }
 }
