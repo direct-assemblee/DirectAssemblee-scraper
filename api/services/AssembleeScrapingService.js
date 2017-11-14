@@ -44,46 +44,46 @@ let self = module.exports = {
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
 
-        let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
-        return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
-        .then(function() {
-            console.log('==> start scraping ballots');
+        // let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
+        // return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
+        // .then(function() {
+        //     console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
                 let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
-        })
-        .then(function() {
-            RequestService.sendBallotsUpdateNotif();
-
-            console.log('=> look for non-updated deputies');
-            return DeputyService.findNonUpdatedDeputies()
-            .then(function(nonUpdatedDeputies) {
-                console.log('* found ' + nonUpdatedDeputies.length + ' non updated deputies');
-                let promises = [];
-                for (let i in nonUpdatedDeputies) {
-                    promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
-                }
-                return Promise.all(promises)
-                .then(function(doneDeputies) {
-                    let promises = [];
-                    if (doneDeputies) {
-                        for (let i in doneDeputies) {
-                            if (doneDeputies[i].endOfMandateDate) {
-                                promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
-                            }
-                        }
-                    }
-                    console.log('* updating ' + promises.length + ' done deputies');
-                    return Promise.all(promises)
-                })
-            })
-            .then(function() {
-                console.log('==> done updating database !!')
-                return;
-            })
-        })
+        // })
+        // .then(function() {
+        //     RequestService.sendBallotsUpdateNotif();
+        //
+        //     console.log('=> look for non-updated deputies');
+        //     return DeputyService.findNonUpdatedDeputies()
+        //     .then(function(nonUpdatedDeputies) {
+        //         console.log('* found ' + nonUpdatedDeputies.length + ' non updated deputies');
+        //         let promises = [];
+        //         for (let i in nonUpdatedDeputies) {
+        //             promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
+        //         }
+        //         return Promise.all(promises)
+        //         .then(function(doneDeputies) {
+        //             let promises = [];
+        //             if (doneDeputies) {
+        //                 for (let i in doneDeputies) {
+        //                     if (doneDeputies[i].endOfMandateDate) {
+        //                         promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
+        //                     }
+        //                 }
+        //             }
+        //             console.log('* updating ' + promises.length + ' done deputies');
+        //             return Promise.all(promises)
+        //         })
+        //     })
+        //     .then(function() {
+        //         console.log('==> done updating database !!')
+        //         return;
+        //     })
+        // })
     }
 }
 
@@ -250,6 +250,10 @@ let insertVoteForBallotAndFixNonVotings = function(ballot, voteToInsert) {
         .then(function(nonVoting) {
             ballot.nonVoting = nonVoting.length;
             return BallotService.insertBallot(ballot, true, false);
+        })
+        .then(function(nonVoting) {
+            console.log('inserted votes for ballot')
+            return;
         })
     })
 }
