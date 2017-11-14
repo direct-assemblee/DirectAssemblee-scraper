@@ -1,13 +1,11 @@
 module.exports = {
+    primaryKey: 'officialId',
     attributes: {
         createdAt: { type: 'string', autoCreatedAt: true, },
         updatedAt: { type: 'string', autoUpdatedAt: true, },
-        id: {
-            type: 'number',
-            autoIncrement: true
-        },
         officialId: {
             type: 'number',
+            required: true,
             unique: true
         },
         title: {

@@ -43,7 +43,7 @@ let createBallot = function(ballotToInsert, returnInserted) {
 
 let updateBallot = function(foundBallot, ballotToUpdate, returnInserted) {
     return Ballot.update()
-    .where({ id: foundBallot.id })
+    .where({ officialId: foundBallot.officialId })
     .set(ballotToUpdate)
     .meta({fetch: returnInserted})
     .then(function(updatedBallots) {

@@ -17,7 +17,7 @@ let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
 const SCRAP_TIMES = '0 0,10,15,18 * * *';
-const RANGE_STEP = 10;
+const RANGE_STEP = 20;
 
 let self = module.exports = {
     scrapThenStartService: function() {
@@ -44,46 +44,46 @@ let self = module.exports = {
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
 
-        // let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
-        // return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
-        // .then(function() {
-        //     console.log('==> start scraping ballots');
+        let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
+        return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
+        .then(function() {
+            console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
                 let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
-        // })
-        // .then(function() {
-        //     RequestService.sendBallotsUpdateNotif();
-        //
-        //     console.log('=> look for non-updated deputies');
-        //     return DeputyService.findNonUpdatedDeputies()
-        //     .then(function(nonUpdatedDeputies) {
-        //         console.log('* found ' + nonUpdatedDeputies.length + ' non updated deputies');
-        //         let promises = [];
-        //         for (let i in nonUpdatedDeputies) {
-        //             promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
-        //         }
-        //         return Promise.all(promises)
-        //         .then(function(doneDeputies) {
-        //             let promises = [];
-        //             if (doneDeputies) {
-        //                 for (let i in doneDeputies) {
-        //                     if (doneDeputies[i].endOfMandateDate) {
-        //                         promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
-        //                     }
-        //                 }
-        //             }
-        //             console.log('* updating ' + promises.length + ' done deputies');
-        //             return Promise.all(promises)
-        //         })
-        //     })
-        //     .then(function() {
-        //         console.log('==> done updating database !!')
-        //         return;
-        //     })
-        // })
+        })
+        .then(function() {
+            RequestService.sendBallotsUpdateNotif();
+
+            console.log('=> look for non-updated deputies');
+            return DeputyService.findNonUpdatedDeputies()
+            .then(function(nonUpdatedDeputies) {
+                console.log('* found ' + nonUpdatedDeputies.length + ' non updated deputies');
+                let promises = [];
+                for (let i in nonUpdatedDeputies) {
+                    promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
+                }
+                return Promise.all(promises)
+                .then(function(doneDeputies) {
+                    let promises = [];
+                    if (doneDeputies) {
+                        for (let i in doneDeputies) {
+                            if (doneDeputies[i].endOfMandateDate) {
+                                promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
+                            }
+                        }
+                    }
+                    console.log('* updating ' + promises.length + ' done deputies');
+                    return Promise.all(promises)
+                })
+            })
+            .then(function() {
+                console.log('==> done updating database !!')
+                return;
+            })
+        })
     }
 }
 
@@ -193,7 +193,7 @@ let retrieveAndInsertBallots = function(ballotsRange) {
     .then(function(ballotsRangeRetrieved) {
         return insertBallots(ballotsRangeRetrieved, 0)
         .then(function(insertedBallots) {
-            return insertVotesForBallots(insertedBallots, ballotsRangeRetrieved);
+            return insertVotesForBallots(ballotsRange, ballotsRangeRetrieved);
         })
     })
 }
@@ -209,26 +209,24 @@ let insertBallots = function(ballots) {
 }
 
 let insertBallot = function(ballot) {
-    return BallotService.insertBallot(ballot, true, true)
+    return BallotService.insertBallot(ballot, true, false)
 }
 
-let insertVotesForBallots = function(insertedBallots, ballots) {
+let insertVotesForBallots = function(ballots) {
     return DeputyService.getDeputiesNames()
     .then(function(deputies) {
         let promises = [];
         for (let i in ballots) {
-            if (insertedBallots[i]) {
-                promises.push(insertVotesForBallot(insertedBallots[i], ballots[i].votes, deputies))
-            }
+            promises.push(insertVotesForBallot(ballots[i], deputies))
         }
         return Promise.all(promises);
     })
 }
 
-let insertVotesForBallot = async function(ballot, votes, deputies) {
+let insertVotesForBallot = async function(ballot, deputies) {
     let promises = [];
-    for (let i in votes) {
-        let vote = votes[i]
+    for (let i in ballot.votes) {
+        let vote = ballot.votes[i]
         let deputyId;
         if (vote.deputy.officialId) {
             deputyId = await DeputyService.findDeputyWithOfficialId(vote.deputy.officialId);
@@ -236,25 +234,23 @@ let insertVotesForBallot = async function(ballot, votes, deputies) {
             deputyId = DeputyHelper.getDeputyIdForVoteInBallot(deputies, vote);
         }
         if (deputyId) {
-            console.log('deputyId ' + deputyId)
-            let voteToInsert = { deputyId: deputyId, ballotId: ballot.id, value: vote.value }
-            promises.push(insertVoteForBallotAndFixNonVotings(ballot, voteToInsert));
+            let voteToInsert = { deputyId: deputyId, ballotId: ballot.officialId, value: vote.value }
+            promises.push(VoteService.insertVote(voteToInsert));
         }
     }
     return Promise.all(promises)
+    .then(function() {
+       ballot.nonVoting = findNonVotings(ballot.votes);
+       return BallotService.insertBallot(ballot, true, false);
+   })
 }
 
-let insertVoteForBallotAndFixNonVotings = function(ballot, voteToInsert) {
-    return VoteService.insertVote(voteToInsert)
-    .then(function() {
-        return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
-        .then(function(nonVoting) {
-            ballot.nonVoting = nonVoting.length;
-            return BallotService.insertBallot(ballot, true, false);
-        })
-        .then(function(nonVoting) {
-            console.log('inserted votes for ballot')
-            return;
-        })
-    })
+let findNonVotings = function(votes) {
+    let count = 0;
+    for (let i in votes) {
+        if (votes[i].value == 'non-voting') {
+            count++;
+        }
+    }
+    return count;
 }
