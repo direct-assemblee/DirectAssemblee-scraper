@@ -236,6 +236,7 @@ let insertVotesForBallot = async function(ballot, votes, deputies) {
             deputyId = DeputyHelper.getDeputyIdForVoteInBallot(deputies, vote);
         }
         if (deputyId) {
+            console.log('deputyId ' + deputyId)
             let voteToInsert = { deputyId: deputyId, ballotId: ballot.id, value: vote.value }
             promises.push(insertVoteForBallotAndFixNonVotings(ballot, voteToInsert));
         }
