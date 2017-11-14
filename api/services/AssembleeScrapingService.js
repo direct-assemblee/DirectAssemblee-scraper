@@ -17,7 +17,7 @@ let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
 const SCRAP_TIMES = '0 0,10,15,18 * * *';
-const RANGE_STEP = 20;
+const RANGE_STEP = 10;
 
 let self = module.exports = {
     scrapThenStartService: function() {
