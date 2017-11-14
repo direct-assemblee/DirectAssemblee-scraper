@@ -1,16 +1,16 @@
 let DateHelper = require('../helpers/DateHelper.js');
 
 module.exports = {
-    insertBallot: function(ballot, shouldUpdate, returnInserted) {
+    insertBallot: function(ballot, shouldUpdate) {
         return Ballot.findOne({
             officialId: ballot.officialId
         }).then(function(foundBallot) {
             if (!foundBallot || shouldUpdate) {
                 let ballotToInsert = createBallotModel(ballot)
                 if (!foundBallot) {
-                    return createBallot(ballotToInsert, returnInserted);
+                    return createBallot(ballotToInsert);
                 } else {
-                    return updateBallot(foundBallot, ballotToInsert, returnInserted);
+                    return updateBallot(foundBallot, ballotToInsert);
                 }
             }
         });
@@ -36,19 +36,12 @@ let createBallotModel = function(ballot) {
     }
 }
 
-let createBallot = function(ballotToInsert, returnInserted) {
-    return Ballot.create(ballotToInsert)
-    .meta({fetch: returnInserted});
+let createBallot = function(ballotToInsert) {
+    return Ballot.create(ballotToInsert);
 }
 
-let updateBallot = function(foundBallot, ballotToUpdate, returnInserted) {
+let updateBallot = function(foundBallot, ballotToUpdate) {
     return Ballot.update()
     .where({ officialId: foundBallot.officialId })
-    .set(ballotToUpdate)
-    .meta({fetch: returnInserted})
-    .then(function(updatedBallots) {
-        if (returnInserted) {
-            return updatedBallots[0];
-        }
-    });
+    .set(ballotToUpdate);
 }

@@ -192,7 +192,7 @@ let retrieveAndInsertBallots = function(ballotsRange) {
     return BallotsScrapingService.retrieveBallots(ballotsRange)
     .then(function(ballotsRangeRetrieved) {
         return insertBallots(ballotsRangeRetrieved, 0)
-        .then(function(insertedBallots) {
+        .then(function() {
             return insertVotesForBallots(ballotsRange, ballotsRangeRetrieved);
         })
     })
@@ -202,14 +202,10 @@ let insertBallots = function(ballots) {
     let promises = [];
     for (let i in ballots) {
         if (ballots[i]) {
-            promises.push(insertBallot(ballots[i]));
+            promises.push(BallotService.insertBallot(ballots[i], true));
         }
     }
     return Promise.all(promises)
-}
-
-let insertBallot = function(ballot) {
-    return BallotService.insertBallot(ballot, true, false)
 }
 
 let insertVotesForBallots = function(ballots) {
@@ -241,7 +237,7 @@ let insertVotesForBallot = async function(ballot, deputies) {
     return Promise.all(promises)
     .then(function() {
        ballot.nonVoting = findNonVotings(ballot.votes);
-       return BallotService.insertBallot(ballot, true, false);
+       return BallotService.insertBallot(ballot, true);
    })
 }
 
