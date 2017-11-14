@@ -30,7 +30,8 @@ let self = module.exports = {
         let settings = {
             url: url,
             encoding: isIsoEncoding ? 'binary' : 'utf8',
-            method: 'GET'
+            method: 'GET',
+            timeout: 15000
         }
         return request(settings)
         .then(function(content) {

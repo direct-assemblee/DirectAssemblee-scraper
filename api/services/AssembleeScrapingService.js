@@ -177,20 +177,23 @@ let retrieveAndInsertBallotsByRange = function(ballots, start) {
         }
         slices.push(ballots.slice(i, end))
     }
+    return retrieveSlicesOfBallots(slices);
+}
 
-    let i = start;
-    let end;
-    return Promise.mapSeries(slices, function(ballotsSlice) {
-        end = i + RANGE_STEP;
-        console.log('- retrieving ballots range ' + i + '-' + end);
-        i += RANGE_STEP;
-        return retrieveAndInsertBallots(ballotsSlice);
-    });
+let retrieveSlicesOfBallots = async function(slices) {
+    for (let i in slices) {
+        let start = i * RANGE_STEP;
+        let end = start + RANGE_STEP;
+        console.log('- retrieving ballots range ' + start + '-' + end);
+        await retrieveAndInsertBallots(slices[i]);
+    }
+    return;
 }
 
 let retrieveAndInsertBallots = function(ballotsRange) {
     return BallotsScrapingService.retrieveBallots(ballotsRange)
     .then(function(ballotsRangeRetrieved) {
+        console.log('-- retrieved ballots ' + ballotsRangeRetrieved.length)
         return insertBallots(ballotsRangeRetrieved, 0)
         .then(function() {
             return insertVotesForBallots(ballotsRange, ballotsRangeRetrieved);
