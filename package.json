@@ -9,7 +9,6 @@
     "bluebird": "^3.5.1",
     "commander": "^2.11.0",
     "connect-redis": "3.2.0",
-    "grunt": "1.0.1",
     "html-entities": "^1.2.1",
     "htmlparser2": "^3.9.2",
     "latinize": "^0.4.0",
@@ -20,11 +19,8 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "sails": "^1.0.0-38",
-    "sails-hook-grunt": "^2.0.0",
     "sails-hook-orm": "^2.0.0-16",
-    "sails-hook-sockets": "^1.4.0",
     "sails-mysql": "^1.0.0-15",
-    "socket.io-redis": "4.0.0",
     "webpack": "^2.7.0"
   },
   "scripts": {
@@ -39,6 +35,9 @@
   },
   "author": "mplat",
   "license": "",
+  "engines": {
+    "node": "8"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "istanbul": "^0.4.5",

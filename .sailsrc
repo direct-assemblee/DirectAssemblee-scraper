@@ -4,6 +4,8 @@
   },
   "hooks": {
     "sockets": false,
-    "pubsub": false
+    "pubsub": false,
+    "session": false,
+    "grunt": false
   }
 }
