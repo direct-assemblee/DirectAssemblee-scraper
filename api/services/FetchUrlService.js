@@ -27,6 +27,7 @@ let self = module.exports = {
     },
 
     retrieveContentWithAttempt: function(url, isIsoEncoding, attemptNumber, parser) {
+        console.log('-- fetch ' + url)
         let settings = {
             url: url,
             encoding: isIsoEncoding ? 'binary' : 'utf8',
@@ -57,7 +58,9 @@ let self = module.exports = {
                     }
                 }
             } else {
-                return parseHtml(StringHelper.cleanHtml(content), parser);
+                let cleanContent = StringHelper.cleanHtml(content);
+                content = null;
+                return parseHtml(cleanContent, parser);
             }
         })
         .catch(function(err) {
