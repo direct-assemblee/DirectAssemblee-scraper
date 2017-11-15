@@ -4,4 +4,4 @@ apps:
     node_args : '--max_old_space_size=4096'
     env :
       PORT      : 1327
-      NODE_ENV  : 'development'
+      NODE_ENV  : 'production'
