@@ -15,7 +15,7 @@ let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
-const DEBUG = false;
+const DEBUG = true;
 const SCRAP_TIMES = '0 0,10,15,18 * * *';
 const RANGE_STEP = 10;
 
@@ -44,13 +44,13 @@ let self = module.exports = {
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
 
-        let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
+        let deputies = subArrayIfDebug(allDeputies, 0, 50);
         return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
             console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
+                let ballots = subArrayIfDebug(allBallots, 0, allBallots.length);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
         })
