@@ -168,7 +168,7 @@ let insertWorks = function(works, deputyId) {
     })
 }
 
-let retrieveAndInsertBallotsByRange = function(ballots, start) {
+let retrieveAndInsertBallotsByRange = async function(ballots, start) {
     let slices = [];
     for (let i = start ; i < ballots.length ; i = i + RANGE_STEP) {
         let end = i + RANGE_STEP;
@@ -177,26 +177,27 @@ let retrieveAndInsertBallotsByRange = function(ballots, start) {
         }
         slices.push(ballots.slice(i, end))
     }
-    return retrieveSlicesOfBallots(slices);
+    let deputiesNames = await DeputyService.getDeputiesNames();
+    return retrieveSlicesOfBallots(slices, deputiesNames);
 }
 
-let retrieveSlicesOfBallots = async function(slices) {
+let retrieveSlicesOfBallots = async function(slices, deputiesNames) {
     for (let i in slices) {
         let start = i * RANGE_STEP;
         let end = start + RANGE_STEP;
         console.log('- retrieving ballots range ' + start + '-' + end);
-        await retrieveAndInsertBallots(slices[i]);
+        await retrieveAndInsertBallots(slices[i], deputiesNames);
     }
     return;
 }
 
-let retrieveAndInsertBallots = function(ballotsRange) {
+let retrieveAndInsertBallots = function(ballotsRange, deputiesNames) {
     return BallotsScrapingService.retrieveBallots(ballotsRange)
     .then(function(ballotsRangeRetrieved) {
         console.log('-- retrieved ballots ' + ballotsRangeRetrieved.length)
         return insertBallots(ballotsRangeRetrieved, 0)
         .then(function() {
-            return insertVotesForBallots(ballotsRange, ballotsRangeRetrieved);
+            return insertVotesForBallots(ballotsRange, deputiesNames);
         })
     })
 }
@@ -211,15 +212,12 @@ let insertBallots = function(ballots) {
     return Promise.all(promises)
 }
 
-let insertVotesForBallots = function(ballots) {
-    return DeputyService.getDeputiesNames()
-    .then(function(deputies) {
-        let promises = [];
-        for (let i in ballots) {
-            promises.push(insertVotesForBallot(ballots[i], deputies))
-        }
-        return Promise.all(promises);
-    })
+let insertVotesForBallots = function(ballots, deputiesNames) {
+    let promises = [];
+    for (let i in ballots) {
+        promises.push(insertVotesForBallot(ballots[i], deputiesNames))
+    }
+    return Promise.all(promises);
 }
 
 let insertVotesForBallot = async function(ballot, deputies) {
