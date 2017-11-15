@@ -6,8 +6,7 @@ const END_DATE_REGEX = /au\s((0?[1-9]|[12][0-9]|3[01]|1er)[/-](0?[1-9]|1[012])[/
 module.exports = {
     insertMandates: function(mandates, deputyId) {
         return clearMandatesForDeputy(deputyId)
-        .then(function(removedMandates) {
-            let number = removedMandates ? removedMandates.length : 0;
+        .then(function() {
             return createMandates(mandates, deputyId);
         })
     }

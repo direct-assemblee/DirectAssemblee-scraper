@@ -25,7 +25,11 @@ module.exports = {
         .then(function(ballots) {
             let allBallots = [];
             for (let i in ballots) {
-                allBallots = allBallots.concat(ballots[i]);
+                for (let j in ballots[i]) {
+                    if (isNewBallot(allBallots, ballots[i][j].analysisUrl)) {
+                        allBallots.push(ballots[i][j]);
+                    }
+                }
             }
             return allBallots;
         })
@@ -40,6 +44,17 @@ module.exports = {
         }
         return Promise.all(promises);
     }
+}
+
+let isNewBallot = function(allBallots, url) {
+    let isNew = true;
+    for (let i in allBallots) {
+        if (url === allBallots[i].analysisUrl) {
+            isNew = false;
+            break;
+        }
+    }
+    return isNew;
 }
 
 let retrieveBallotsListOfType = async function(ballotType) {

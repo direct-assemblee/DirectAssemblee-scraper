@@ -27,7 +27,6 @@ let self = module.exports = {
     },
 
     retrieveContentWithAttempt: function(url, isIsoEncoding, attemptNumber, parser) {
-        console.log('-- fetch ' + url)
         let settings = {
             url: url,
             encoding: isIsoEncoding ? 'binary' : 'utf8',

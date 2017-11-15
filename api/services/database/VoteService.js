@@ -1,10 +1,8 @@
 let self = module.exports = {
-    insertVote: function(vote) {
-        return self.findDeputyVoteForBallot(vote.deputyId, vote.ballotId)
-        .then(function(foundVote) {
-            if (!foundVote) {
-                return createVote(vote);
-            }
+    insertVotes: function(ballotId, votes) {
+        return clearVotesForBallot(ballotId)
+        .then(function() {
+            return Vote.createEach(votes);
         })
     },
 
@@ -19,6 +17,7 @@ let self = module.exports = {
     }
 }
 
-let createVote = function(voteToInsert) {
-    return Vote.create(voteToInsert);
+let clearVotesForBallot = function(ballotId) {
+    return Vote.destroy()
+    .where({ ballotId: ballotId })
 }
