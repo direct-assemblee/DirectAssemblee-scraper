@@ -11,8 +11,8 @@ for (var i = 0; i < defaultDiacriticsRemovalMap .length; i++) {
 
 let self = module.exports = {
     cleanHtml: function(content) {
-        let cleaned = self.removeParentReference(content);
-        cleaned = cleaned.replace(/&quot;/g, '\'');
+        //let cleaned = self.removeParentReference(content);
+        let cleaned = content.replace(/&quot;/g, '\'');
         cleaned = entities.decode(cleaned);
         cleaned = removeSpecialChars(cleaned);
         return cleaned;
