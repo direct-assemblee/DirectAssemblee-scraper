@@ -16,7 +16,8 @@ let DeputyHelper = require('./helpers/DeputyHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
-const SCRAP_TIMES = '0 0,15,30,45 * * * *';
+const SCRAP_TIMES = '0 0,0,12,3,4,5,6,7,8,10,15,18 * * *';
+//const SCRAP_TIMES = '0 0,15,30,45 * * * *';
 const RANGE_STEP = 20;
 
 let self = module.exports = {
