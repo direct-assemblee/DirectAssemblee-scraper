@@ -24,37 +24,36 @@ module.exports = {
 
     clearWorksForDeputy: function(deputyId) {
         return Work.destroy()
-        .where({ deputyId: deputyId })
-        .meta({fetch: true})
-        .then(function(destroyedWorks) {
-            let workIds = [];
-            for (let i in destroyedWorks) {
-                workIds.push(destroyedWorks[i].id);
-            }
-            return ExtraInfoService.clearExtraInfosForWorks(destroyedWorks);
-        });
+        .where({ deputyId: deputyId });
     },
 
     insertWorks: function(works, deputyId) {
         if (works && works.length > 0) {
-            let promises = [];
+            let worksToInsert = [];
             for (let i in works) {
-                promises.push(insertWorkWithExtraInfos(works[i], deputyId))
+                worksToInsert.push(createWorkModel(works[i], deputyId));
             }
-            return Promise.all(promises);
+            return insertWorksWithExtraInfos(worksToInsert, works, deputyId);
         }
     }
 }
 
-let insertWorkWithExtraInfos = function(work, deputyId) {
-    let workToInsert = createWorkModel(work, deputyId)
-    return Work.create(workToInsert)
-    .meta({fetch: true})
-    .then(function(insertedWork) {
-        if (work.extraInfos && work.extraInfos.length > 0) {
-            return ExtraInfoService.insertExtraInfos(insertedWork.id, work.extraInfos)
+let insertWorksWithExtraInfos = function(worksToInsert, works, deputyId) {
+    let extraInfosToInsert = [];
+    return Work.createEach(worksToInsert)
+    .fetch()
+    .then(function(insertedWorks) {
+        let promises = [];
+        for (let i in insertedWorks) {
+            let extra = works[i].extraInfos;
+            if (extra && extra.length > 0) {
+                for (let j in extra) {
+                    extraInfosToInsert.push({ info: extra[j].info, value: extra[j].value, workId: insertedWorks[i].id })
+                }
+            }
         }
-        return;
+        insertedWorks = undefined;
+        return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
     })
 }
 

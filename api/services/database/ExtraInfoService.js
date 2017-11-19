@@ -15,6 +15,10 @@ module.exports = {
             extraInfosToInsert.push({ info: extraInfos[i].info, value: extraInfos[i].value, workId: workId });
         }
         return ExtraInfo.createEach(extraInfosToInsert);
+    },
+
+    insertAllExtraInfos: function(extraInfosToInsert) {
+        return ExtraInfo.createEach(extraInfosToInsert);
     }
 }
 

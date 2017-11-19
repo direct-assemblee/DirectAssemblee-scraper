@@ -16,8 +16,8 @@ let DeputyHelper = require('./helpers/DeputyHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
-const SCRAP_TIMES = '0 0,0,12,3,4,5,6,7,8,10,15,18 * * *';
-const RANGE_STEP = 10;
+const SCRAP_TIMES = '0 0,15,30,45 * * * *';
+const RANGE_STEP = 20;
 
 let self = module.exports = {
     scrapThenStartService: function() {
@@ -48,6 +48,7 @@ let self = module.exports = {
         return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
             console.log('==> start scraping ballots');
+            allDeputiesUrls = undefined;
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
                 let ballots = subArrayIfDebug(allBallots, 0, allBallots.length);
@@ -130,6 +131,7 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
                 promises.push(insertDeputy(deputiesRetrieved[i]));
             }
         }
+        deputiesRetrieved = undefined;
         return Promise.all(promises);
     })
 }
@@ -141,20 +143,25 @@ let insertDeputy = function(deputy) {
     })
     .then(function() {
         console.log('-- inserted mandates for deputy : ' + deputy.lastname)
+        deputy.mandates = undefined;
         return ExtraPositionService.insertExtraPositions(deputy.extraPositions, deputy.officialId);
     })
     .then(function() {
         console.log('-- inserted extra positions for deputy : ' + deputy.lastname)
+        deputy.extraPositions = undefined;
         return DeclarationService.insertDeclarations(deputy.declarations, deputy.officialId);
     })
     .then(function() {
         console.log('-- inserted declarations for deputy : ' + deputy.lastname)
+        deputy.declarations = undefined;
         return insertWorks(deputy.works, deputy.officialId)
         .then(function() {
             if (deputy.works && deputy.works.length > 0) {
                 console.log('-- inserted works for deputy : ' + deputy.lastname)
                 RequestService.sendDeputyUpdateNotif(deputy.officialId);
             }
+            deputy.works = undefined
+            deputy = undefined;
             return;
         })
     })
@@ -162,7 +169,7 @@ let insertDeputy = function(deputy) {
 
 let insertWorks = function(works, deputyId) {
     return WorkService.clearWorksForDeputy(deputyId)
-    .then(function(removedWorks) {
+    .then(function() {
         return WorkService.insertWorks(works, deputyId);
     })
 }
@@ -196,6 +203,7 @@ let retrieveAndInsertBallots = function(ballotsRange, deputiesNames) {
         console.log('-- retrieved ballots ' + ballotsRangeRetrieved.length)
         return insertBallots(ballotsRangeRetrieved, 0)
         .then(function() {
+            ballotsRangeRetrieved = null;
             return insertVotesForBallots(ballotsRange, deputiesNames);
         })
     })
@@ -216,6 +224,7 @@ let insertVotesForBallots = function(ballots, deputiesNames) {
     for (let i in ballots) {
         promises.push(insertVotesForBallot(ballots[i], deputiesNames))
     }
+    ballots = undefined;
     return Promise.all(promises);
 }
 
