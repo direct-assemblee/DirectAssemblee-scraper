@@ -41,7 +41,7 @@ module.exports = {
 let insertWorksWithExtraInfos = function(worksToInsert, works, deputyId) {
     let extraInfosToInsert = [];
     return Work.createEach(worksToInsert)
-    .fetch()
+    .meta({fetch: true})
     .then(function(insertedWorks) {
         let promises = [];
         for (let i in insertedWorks) {
