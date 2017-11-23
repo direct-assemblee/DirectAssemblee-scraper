@@ -9,14 +9,6 @@ module.exports = {
         return Promise.all(promises);
     },
 
-    insertExtraInfos: function(workId, extraInfos) {
-        let extraInfosToInsert = [];
-        for (let i in extraInfos) {
-            extraInfosToInsert.push({ info: extraInfos[i].info, value: extraInfos[i].value, workId: workId });
-        }
-        return ExtraInfo.createEach(extraInfosToInsert);
-    },
-
     insertAllExtraInfos: function(extraInfosToInsert) {
         return ExtraInfo.createEach(extraInfosToInsert);
     }

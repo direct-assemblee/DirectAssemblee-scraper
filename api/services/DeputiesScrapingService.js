@@ -66,7 +66,6 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
         })
         .then(function(fullDeputy) {
             console.log('-- retrieved infos and mandates from deputy ' + deputy.lastname);
-            deputy = undefined;
             return fullDeputy;
         });
     })
@@ -87,7 +86,6 @@ let retrieveDeputyWork = function(deputy) {
                 concatWorks.push(works[i][j]);
             }
         }
-        works = undefined;
         return concatWorks;
     });
 }

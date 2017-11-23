@@ -37,7 +37,14 @@ module.exports = {
         configDB(rootedClient);
 
         client = getClient(DB_NAME, false);
-        importSQLFiles(client);
+        return importSQLFiles(client);
+    },
+
+    shutdown: function() {
+        if (client) {
+            client.end();
+        }
+        return;
     }
 }
 
@@ -72,6 +79,7 @@ let importSQLFiles = function(client) {
     .then(function() {
         // execSQL.disconnect();
         console.log('Done importing sql files');
+        return;
     })
 }
 

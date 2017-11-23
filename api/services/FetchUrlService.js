@@ -31,7 +31,7 @@ let self = module.exports = {
             url: url,
             encoding: isIsoEncoding ? 'binary' : 'utf8',
             method: 'GET',
-            timeout: 15000
+            timeout: 20000
         }
         return request(settings)
         .then(function(content) {

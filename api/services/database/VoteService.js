@@ -4,16 +4,6 @@ let self = module.exports = {
         .then(function() {
             return Vote.createEach(votes);
         })
-    },
-
-    findDeputyVoteForBallot: function(deputyId, ballotId) {
-        return Vote.findOne()
-        .where({ deputyId: deputyId, ballotId: ballotId });
-    },
-
-    findVotesWithValueForBallot: function(ballotId, value) {
-        return Vote.find()
-        .where({ ballotId: ballotId , value: value })
     }
 }
 

@@ -1,6 +1,5 @@
 'use strict';
 
-let cron = require('node-cron');
 let Promise = require('bluebird');
 
 let DeputyService = require('./database/DeputyService.js');
@@ -16,25 +15,9 @@ let DeputyHelper = require('./helpers/DeputyHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
-const SCRAP_TIMES = '0 10,18 * * *';
-//const SCRAP_TIMES = '0 0,15,30,45 * * * *';
-const RANGE_STEP = 20;
+const RANGE_STEP = 10;
 
 let self = module.exports = {
-    scrapThenStartService: function() {
-        self.startScraping()
-        .then(function() {
-            self.startService();
-        })
-    },
-
-    startService: function() {
-        cron.schedule(SCRAP_TIMES, function() {
-            console.log('=> start looking for new votes');
-            self.startScraping()
-        });
-    },
-
     startScraping: async function() {
         console.log('==> start classifying unclassified questions');
         await WorkService.classifyUnclassifiedQuestions();
@@ -45,14 +28,14 @@ let self = module.exports = {
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
 
-        let deputies = subArrayIfDebug(allDeputies, 0, 50);
+        let deputies = subArrayIfDebug(allDeputies, 0, 10);
+
         return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
             console.log('==> start scraping ballots');
-            allDeputiesUrls = undefined;
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, allBallots.length);
+                let ballots = subArrayIfDebug(allBallots, 0, 10);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
         })
@@ -71,7 +54,7 @@ let self = module.exports = {
                     let promises = [];
                     if (doneDeputies) {
                         for (let i in doneDeputies) {
-                            if (doneDeputies[i].endOfMandateDate) {
+                            if (doneDeputies[i] && doneDeputies[i].endOfMandateDate) {
                                 promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
                             }
                         }
@@ -132,7 +115,6 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
                 promises.push(insertDeputy(deputiesRetrieved[i]));
             }
         }
-        deputiesRetrieved = undefined;
         return Promise.all(promises);
     })
 }
@@ -143,26 +125,21 @@ let insertDeputy = function(deputy) {
         return MandateService.insertMandates(deputy.mandates, deputy.officialId)
     })
     .then(function() {
-        console.log('-- inserted mandates for deputy : ' + deputy.lastname)
-        deputy.mandates = undefined;
+        console.log('-- inserted mandates for deputy : ' + deputy.lastname);
         return ExtraPositionService.insertExtraPositions(deputy.extraPositions, deputy.officialId);
     })
     .then(function() {
-        console.log('-- inserted extra positions for deputy : ' + deputy.lastname)
-        deputy.extraPositions = undefined;
+        console.log('-- inserted extra positions for deputy : ' + deputy.lastname);
         return DeclarationService.insertDeclarations(deputy.declarations, deputy.officialId);
     })
     .then(function() {
-        console.log('-- inserted declarations for deputy : ' + deputy.lastname)
-        deputy.declarations = undefined;
+        console.log('-- inserted declarations for deputy : ' + deputy.lastname);
         return insertWorks(deputy.works, deputy.officialId)
         .then(function() {
             if (deputy.works && deputy.works.length > 0) {
                 console.log('-- inserted works for deputy : ' + deputy.lastname)
                 RequestService.sendDeputyUpdateNotif(deputy.officialId);
             }
-            deputy.works = undefined
-            deputy = undefined;
             return;
         })
     })
@@ -217,6 +194,7 @@ let insertBallots = function(ballots) {
             promises.push(BallotService.insertBallot(ballots[i], true));
         }
     }
+    ballots = null;
     return Promise.all(promises)
 }
 
@@ -225,14 +203,15 @@ let insertVotesForBallots = function(ballots, deputiesNames) {
     for (let i in ballots) {
         promises.push(insertVotesForBallot(ballots[i], deputiesNames))
     }
-    ballots = undefined;
+    ballots = null;
+    deputiesNames = null;
     return Promise.all(promises);
 }
 
 let insertVotesForBallot = async function(ballot, deputies) {
     let votesToInsert = [];
     for (let i in ballot.votes) {
-        let vote = ballot.votes[i]
+        let vote = ballot.votes[i];
         let deputyId;
         if (vote.deputy.officialId) {
             deputyId = await DeputyService.findDeputyWithOfficialId(vote.deputy.officialId);
@@ -243,6 +222,8 @@ let insertVotesForBallot = async function(ballot, deputies) {
             votesToInsert.push({ deputyId: deputyId, ballotId: ballot.officialId, value: vote.value });
         }
     }
+    ballot.votes = null;
+    deputies = null;
 
     return VoteService.insertVotes(ballot.officialId, votesToInsert)
     .then(function() {
@@ -258,5 +239,6 @@ let findNonVotings = function(votes) {
             count++;
         }
     }
+    votes = null;
     return count;
 }

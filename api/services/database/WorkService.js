@@ -52,7 +52,6 @@ let insertWorksWithExtraInfos = function(worksToInsert, works, deputyId) {
                 }
             }
         }
-        insertedWorks = undefined;
         return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
     })
 }
