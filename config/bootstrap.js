@@ -23,7 +23,7 @@ module.exports.bootstrap = function(cb) {
         DBBuilderService.initDB();
 
         console.log('=> start looking for new votes');
-        AssembleeScrapingService.startScraping()
+        return AssembleeScrapingService.startScraping()
         .then(function() {
             console.log('Shutting down DB')
             DBBuilderService.shutdown();
