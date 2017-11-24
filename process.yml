@@ -2,6 +2,7 @@ apps:
   - script    : ./app.js
     name      : 'directass_dbbuilder'
     node_args : '--max_old_space_size=4096'
+    exec_mode : 'cluster'
     env :
       PORT      : 1327
       NODE_ENV  : 'development'
