@@ -3,6 +3,7 @@ apps:
     name      : 'directass_dbbuilder'
     node_args : '--max_old_space_size=4096'
     exec_mode : 'cluster'
+    autorestart: false
     env :
       PORT      : 1327
       NODE_ENV  : 'development'
