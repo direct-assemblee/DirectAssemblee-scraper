@@ -32,12 +32,9 @@ module.exports.bootstrap = function(cb) {
                     return console.log('Error occurred lowering Sails app: ', err);
                 }
                 console.log('Sails app lowered successfully!');
+                console.log('Exit process')
+                process.exit(0);
             })
-        });
-
-        sails.on('lower', function () {
-            console.log('Exit process')
-            process.exit(0);
         });
     });
 
