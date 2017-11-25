@@ -36,6 +36,7 @@ module.exports.bootstrap = function(cb) {
         });
 
         sails.on('lower', function () {
+            console.log('Exit process')
             process.exit(0);
         });
     });
