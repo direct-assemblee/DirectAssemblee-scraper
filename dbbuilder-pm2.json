@@ -1,0 +1,7 @@
+{
+  "script"          : "process.yml",
+  "error_file"      : "/var/log/dbbbuilder-err.log",
+  "out_file"        : "var/log/dbbbuilder-out.log",
+  "merge_logs"      : true,
+  "log_date_format" : "YYYY-MM-DD HH:mm Z"
+}
