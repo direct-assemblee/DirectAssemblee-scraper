@@ -14,7 +14,7 @@ let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
-const DEBUG = true;
+const DEBUG = false;
 const RANGE_STEP = 10;
 
 let self = module.exports = {
