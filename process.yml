@@ -1,8 +1,12 @@
 apps:
-  - script    : ./app.js
-    name      : 'directass_dbbuilder'
+  - script : ./app.js
+    name : 'directass_dbbuilder'
     node_args : '--max_old_space_size=4096'
-    autorestart: false
+    autorestart : false
+    error_file : '/var/log/dbbbuilder-err.log'
+    out_file : '/var/log/dbbbuilder-out.log'
+    merge_logs : retrieveDeputiesList
+    log_date_format : 'YYYY-MM-DD HH:mm Z'
     env :
       PORT      : 1327
       NODE_ENV  : 'development'
