@@ -14,6 +14,7 @@ module.exports = {
         themeId: {
             model: 'Theme'
         },
+        originalThemeName: 'string',
         date: {
             type: 'string'
         },

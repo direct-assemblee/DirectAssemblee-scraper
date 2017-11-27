@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `ballot` (
   `analysisUrl` varchar(255) DEFAULT NULL,
   `fileUrl` varchar(255) DEFAULT NULL,
   `themeId` int(11) DEFAULT NULL,
+  `originalThemeName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`officialId`),
   UNIQUE KEY `officialId` (`officialId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -209,6 +210,7 @@ CREATE TABLE IF NOT EXISTS `work` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` longtext,
   `tempTheme` varchar(255) DEFAULT NULL,
+  `originalThemeName` varchar(255) DEFAULT NULL,
   `date` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `description` longtext,

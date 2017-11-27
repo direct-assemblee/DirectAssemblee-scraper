@@ -15,7 +15,6 @@ let ExtraInfosCommissionParser = require('./parsers/ExtraInfosCommissionParser')
 let DeputyInfosParser = require('./parsers/DeputyInfosParser');
 let DeputyInfosAndMandatesParser = require('./parsers/DeputyInfosAndMandatesParser');
 
-
 const PARAM_WORK_TYPE = '{work_type}';
 const PARAM_DEPUTY_NAME = '{deputy_name}';
 const WORK_TYPES = [ Constants.WORK_TYPE_QUESTIONS, Constants.WORK_TYPE_REPORTS, Constants.WORK_TYPE_PROPOSITIONS, Constants.WORK_TYPE_COSIGNED_PROPOSITIONS, Constants.WORK_TYPE_COMMISSIONS, Constants.WORK_TYPE_PUBLIC_SESSIONS ]
@@ -134,22 +133,26 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
                     }
                 }
                 work.type = WorkHelper.getWorkTypeName(workType);
-                if (work.theme) {
-                    return ThemeHelper.findTheme(work.theme)
+
+                if (work.parsedTheme) {
+                    return ThemeHelper.findTheme(work.parsedTheme)
                     .then(function(foundTheme) {
                         if (foundTheme) {
                             work.theme = foundTheme;
+                            work.originalThemeName = work.parsedTheme;
                         } else {
-                            console.log('/!\\ new theme not recognized : ' + work.theme);
+                            console.log('/!\\ new theme not recognized : ' + work.parsedTheme);
                         }
                         return work;
                     })
                 } else {
                     if (workType === Constants.WORK_TYPE_COMMISSIONS || workType === Constants.WORK_TYPE_PUBLIC_SESSIONS) {
-                        return ThemeHelper.findTheme('Politique générale')
+                        let name = 'Politique générale';
+                        return ThemeHelper.findTheme(name)
                         .then(function(foundTheme) {
                             if (foundTheme) {
                                 work.theme = foundTheme;
+                                work.originalThemeName = name;
                             }
                             return work;
                         })
@@ -210,7 +213,7 @@ let getParserForType = function(parsedWork) {
 }
 
 let processResultForQuestion = function(parsedWork, result) {
-    parsedWork.theme = result;
+    parsedWork.parsedTheme = result;
     return parsedWork;
 }
 
@@ -219,7 +222,7 @@ let processResultForExtraInfos = function(parsedWork, result) {
     if (result.description) {
         parsedWork.description = result.description;
     }
-    parsedWork.theme = result.theme;
+    parsedWork.parsedTheme = result.theme;
     parsedWork.extraInfos = result.extraInfos;
     return parsedWork;
 }
@@ -227,7 +230,7 @@ let processResultForExtraInfos = function(parsedWork, result) {
 let processResultForOtherTypes = function(parsedWork, result) {
     parsedWork.id = result.id;
     parsedWork.description = result.description;
-    parsedWork.theme = result.theme;
+    parsedWork.parsedTheme = result.theme;
     return parsedWork;
 }
 

@@ -13,6 +13,7 @@ module.exports = {
             model: 'Theme'
         },
         tempTheme: 'string',
+        originalThemeName: 'string',
         date: {
             type: 'string'
         },

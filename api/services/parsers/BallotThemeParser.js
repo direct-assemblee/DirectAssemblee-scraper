@@ -17,7 +17,17 @@ module.exports = {
                     let lightText = StringHelper.removeParentReference(text);
                     if (lightText && lightText.length > 0) {
                         let wholeTitle = lightText.substring(lightText.indexOf('-') + 2);
-                        parsedItem = wholeTitle.split(':')[0].trim();
+                        let split = wholeTitle.split(':');
+                        if (split) {
+                            parsedItem = {};
+                            if (split.length > 0 && split[0].trim().length > 0) {
+                                parsedItem.theme = split[0].trim();
+                            }
+                            if (split.length > 1 && split[1].trim().length > 0) {
+                                parsedItem.themeDetail = split[1].trim();
+                            }
+                            expectedItem = null;
+                        }
                     }
                 }
             },

@@ -19,10 +19,15 @@ module.exports = {
 
 let createBallotModel = function(ballot) {
     let date = DateHelper.findAndFormatDateInString(ballot.date)
+    let originalThemeName = ballot.originalThemeName;
+    if (originalThemeName && originalThemeName.length > 0) {
+        originalThemeName = originalThemeName.charAt(0).toUpperCase() + originalThemeName.slice(1);
+    }
     return {
         officialId: ballot.officialId,
         title: ballot.title,
         themeId: ballot.theme ? ballot.theme.id : null,
+        originalThemeName: originalThemeName,
         date: date,
         dateDetailed: ballot.dateDetailed,
         type: ballot.type,

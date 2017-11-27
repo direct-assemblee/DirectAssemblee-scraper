@@ -116,11 +116,12 @@ let retrieveBallotTheme = function(ballot) {
     if (ballot.fileUrl) {
         return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true, BallotThemeParser)
         .then(function(parsedTheme) {
-            if (parsedTheme) {
-                return ThemeHelper.findTheme(parsedTheme)
+            if (parsedTheme && parsedTheme.theme) {
+                return ThemeHelper.findTheme(parsedTheme.theme)
                 .then(function(foundTheme) {
                     if (foundTheme) {
                         ballot.theme = foundTheme;
+                        ballot.originalThemeName = parsedTheme.themeDetail;
                     } else {
                         console.log('/!\\ new theme not recognized : ' + parsedTheme);
                     }
