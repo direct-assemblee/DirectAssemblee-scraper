@@ -3,8 +3,8 @@ apps:
     name : 'directass_dbbuilder'
     node_args : '--max_old_space_size=4096'
     autorestart : false
-    error_file : '/var/log/dbbbuilder-err.log'
-    out_file : '/var/log/dbbbuilder-out.log'
+    error_file : '/var/log/dbbuilder-err.log'
+    out_file : '/var/log/dbbuilder-out.log'
     merge_logs : true
     log_date_format : 'YYYY-MM-DD HH:mm Z'
     env :
