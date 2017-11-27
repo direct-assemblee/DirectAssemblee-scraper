@@ -1,13 +1,13 @@
 var Request = require('request-promise');
 
 module.exports = {
-    sendDeputyUpdateNotif: function(deputyId) {
-        console.log('RequestService.sendDeputyUpdateNotif')
+    sendDeputiesUpdateNotif: function(deputiesIds) {
+        console.log('=> RequestService.sendDeputiesUpdateNotif for ' + deputiesIds.length + 'deputies')
         var options = {
             method: 'POST',
-            uri: 'http://localhost:1328/api/deputyUpdated',
+            uri: 'http://localhost:1328/api/deputiesUpdated',
             body: {
-                deputyId: deputyId
+                deputiesIds: deputiesIds
             },
             json: true
         };
@@ -15,22 +15,10 @@ module.exports = {
     },
 
     sendBallotsUpdateNotif: function() {
-        console.log('RequestService.sendBallotsUpdateNotif')
+        console.log('=> RequestService.sendBallotsUpdateNotif')
         var options = {
             method: 'POST',
             uri: 'http://localhost:1328/api/ballotsUpdated',
-            body: {
-            },
-            json: true
-        };
-        makeRequest(options);
-    },
-
-    sendDoneUpdatingNotif: function() {
-        console.log('RequestService.sendDoneUpdatingNotif')
-        var options = {
-            method: 'POST',
-            uri: 'http://localhost:1328/api/updatesDone',
             body: {
             },
             json: true
@@ -42,7 +30,6 @@ module.exports = {
 let makeRequest = function(options) {
     Request(options)
     .then(function (parsedBody) {
-        console.log('makeRequest success')
         // POST succeeded...
         parsedBody = null;
     })

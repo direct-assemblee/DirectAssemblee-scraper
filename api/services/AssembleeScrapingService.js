@@ -115,7 +115,15 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
                 promises.push(insertDeputy(deputiesRetrieved[i]));
             }
         }
-        return Promise.all(promises);
+        return Promise.all(promises)
+        .then(function(addedDeputiesIds) {
+            return Promise.filter(addedDeputiesIds, function(id) {
+                return id; // exists only if works were added
+            })
+            .then(function(deputiesWithNewWorksIds) {
+                return RequestService.sendDeputiesUpdateNotif(deputiesWithNewWorksIds);
+            })
+        })
     })
 }
 
@@ -137,8 +145,8 @@ let insertDeputy = function(deputy) {
         return insertWorks(deputy.works, deputy.officialId)
         .then(function() {
             if (deputy.works && deputy.works.length > 0) {
-                console.log('-- inserted works for deputy : ' + deputy.lastname)
-                RequestService.sendDeputyUpdateNotif(deputy.officialId);
+                console.log('-- inserted works for deputy : ' + deputy.lastname);
+                return deputy.officialId;
             }
             return;
         })
