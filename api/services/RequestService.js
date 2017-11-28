@@ -1,16 +1,20 @@
 var Request = require('request-promise');
 
+let apiPort = process.env.API_PORT || '1328';
+let apiBaseUrl = 'http://localhost:' + apiPort + '/api/';
+
 module.exports = {
     sendDeputiesUpdateNotif: function(deputiesIds) {
         console.log('=> RequestService.sendDeputiesUpdateNotif for ' + deputiesIds.length + 'deputies')
         var options = {
             method: 'POST',
-            uri: 'http://localhost:1328/api/deputiesUpdated',
+            uri: apiBaseUrl + 'deputiesUpdated',
             body: {
                 deputiesIds: deputiesIds
             },
             json: true
         };
+        console.log('sendDeputiesUpdateNotif ' + options.uri)
         makeRequest(options);
     },
 
@@ -18,7 +22,7 @@ module.exports = {
         console.log('=> RequestService.sendBallotsUpdateNotif')
         var options = {
             method: 'POST',
-            uri: 'http://localhost:1328/api/ballotsUpdated',
+            uri: apiBaseUrl + 'ballotsUpdated',
             body: {
             },
             json: true
