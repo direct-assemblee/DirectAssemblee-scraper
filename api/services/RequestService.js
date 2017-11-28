@@ -1,8 +1,8 @@
 var Request = require('request-promise');
 
-let apiHost = process.env.API_HOST || 'http://localhost'
+let apiHost = process.env.API_HOST || 'localhost'
 let apiPort = process.env.API_PORT || '1328';
-let apiBaseUrl = apiHost + ':' + apiPort + '/api/';
+let apiBaseUrl = 'http://' + apiHost + ':' + apiPort + '/api/';
 
 module.exports = {
     sendDeputiesUpdateNotif: function(deputiesIds) {
