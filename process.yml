@@ -7,13 +7,3 @@ apps:
     out_file : '/var/log/dbbuilder-out.log'
     merge_logs : true
     log_date_format : 'YYYY-MM-DD HH:mm Z'
-    env :
-      PORT      : 1327
-      NODE_ENV  : 'development'
-      DBBUILDER_PORT : 1327
-      API_PORT : 1328
-      DATABASE_PORT : 3306
-      DATABASE_USER : directass
-      DATABASE_PASSWORD : directass
-      DATABASE_ROOT_PASSWORD : d23irect4_ass
-      DATABASE_NAME : directassemblee
