@@ -7,3 +7,9 @@ apps:
     out_file : '/var/log/dbbuilder-out.log'
     merge_logs : true
     log_date_format : 'YYYY-MM-DD HH:mm Z'
+    env :
+      NODE_ENV: development
+      PORT: 1327
+    env_production:
+      NODE_ENV: production
+      PORT: 11327
