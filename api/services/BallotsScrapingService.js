@@ -4,8 +4,10 @@ let Constants = require('./Constants.js')
 let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
-let ThemeHelper = require('./helpers/ThemeHelper')
+let ThemeHelper = require('./helpers/ThemeHelper');
+let EmailService = require('./EmailService');
 
+const MAX_THEME_LENGTH = 55;
 const PARAM_BALLOT_TYPE = '{ballot_type}';
 const BALLOT_TYPE_ORDINARY = 'SOR';
 const BALLOT_TYPE_SOLEMN = 'SSO';
@@ -124,6 +126,12 @@ let retrieveBallotTheme = function(ballot) {
                         ballot.originalThemeName = parsedTheme.themeDetail;
                     } else {
                         console.log('/!\\ new theme not recognized : ' + parsedTheme);
+                    }
+                    return ballot;
+                })
+                .then(function(ballot) {
+                    if (ballot.originalThemeName && ballot.originalThemeName.length > MAX_THEME_LENGTH && !ThemeHelper.findShorterName(ballot.originalThemeName)) {
+                        EmailService.sendThemeTooLongEmail(ballot.originalThemeName);
                     }
                     return ballot;
                 })

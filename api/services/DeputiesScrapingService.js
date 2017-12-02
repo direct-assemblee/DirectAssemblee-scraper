@@ -133,44 +133,45 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
                     }
                 }
                 work.type = WorkHelper.getWorkTypeName(workType);
-
-                if (work.parsedTheme) {
-                    return ThemeHelper.findTheme(work.parsedTheme)
-                    .then(function(foundTheme) {
-                        if (foundTheme) {
-                            work.theme = foundTheme;
-                            work.originalThemeName = work.parsedTheme;
-                        } else {
-                            console.log('/!\\ new theme not recognized : ' + work.parsedTheme);
-                        }
-                        return work;
-                    })
-                } else {
-                    if (workType === Constants.WORK_TYPE_COMMISSIONS || workType === Constants.WORK_TYPE_PUBLIC_SESSIONS) {
-                        let name = 'Politique générale';
-                        return ThemeHelper.findTheme(name)
-                        .then(function(foundTheme) {
-                            if (foundTheme) {
-                                work.theme = foundTheme;
-                                work.originalThemeName = name;
-                            }
-                            return work;
-                        })
-                    } else {
-                        return new Promise(function(resolve) {
-                            resolve(work);
-                        })
-                    }
-                }
-            })
-            .then(function(resultingWorks) {
-                return resultingWorks;
+                return setThemeToWork(work, workType);
             })
         } else {
             console.log('/!\\ work : no works')
             return null;
         }
     });
+}
+
+let setThemeToWork = function(work, parsedWorkType) {
+    let themeToSearch;
+    if (work.parsedTheme) {
+        themeToSearch = work.parsedTheme
+    } else if (parsedWorkType === Constants.WORK_TYPE_COMMISSIONS || parsedWorkType === Constants.WORK_TYPE_PUBLIC_SESSIONS) {
+        themeToSearch = 'Politique générale';
+    }
+
+    if (themeToSearch) {
+        return searchTheme(work, themeToSearch)
+        .then(function(theme) {
+            work.theme = theme.foundTheme;
+            work.originalThemeName = theme.originalThemeName;
+            return work;
+        })
+    } else {
+        return new Promise(function(resolve) {
+            resolve(work);
+        })
+    }
+}
+
+let searchTheme = function(work, themeName) {
+    return ThemeHelper.findTheme(themeName)
+    .then(function(foundTheme) {
+        if (!foundTheme) {
+            console.log('/!\\ new theme not recognized : ' + themeName);
+        }
+        return { foundTheme: foundTheme, originalThemeName : themeName };
+    })
 }
 
 let retrieveExtraForWork = function(parsedWork) {
@@ -188,7 +189,6 @@ let retrieveExtraForWork = function(parsedWork) {
         return parsedWork;
     }
 }
-
 
 let isNotPublicSession = function(workType) {
     return workType === Constants.WORK_TYPE_QUESTIONS || workType === Constants.WORK_TYPE_PROPOSITIONS
