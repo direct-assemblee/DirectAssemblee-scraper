@@ -235,7 +235,7 @@ let insertVotesForBallot = async function(ballot, deputies) {
 
     return VoteService.insertVotes(ballot.officialId, votesToInsert)
     .then(function() {
-       ballot.nonVoting = findNonVotings(ballot.votes);
+       ballot.nonVoting = findNonVotings(votesToInsert);
        return BallotService.insertBallot(ballot, true);
    })
 }
