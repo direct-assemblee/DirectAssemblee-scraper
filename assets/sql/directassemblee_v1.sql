@@ -7,7 +7,7 @@
 #
 # Hôte: 127.0.0.1 (MySQL 5.7.18)
 # Base de données: directassemblee
-# Temps de génération: 2017-11-15 16:53:45 +0000
+# Temps de génération: 2017-12-10 12:43:00 +0000
 # ************************************************************
 
 
@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `ballot` (
   `updatedAt` varchar(255) DEFAULT NULL,
   `officialId` int(11) NOT NULL,
   `title` longtext,
+  `originalThemeName` varchar(255) DEFAULT NULL,
   `date` varchar(255) DEFAULT NULL,
   `dateDetailed` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
@@ -39,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `ballot` (
   `analysisUrl` varchar(255) DEFAULT NULL,
   `fileUrl` varchar(255) DEFAULT NULL,
   `themeId` int(11) DEFAULT NULL,
-  `originalThemeName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`officialId`),
   UNIQUE KEY `officialId` (`officialId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `declaration` (
 
 
 # Affichage de la table department
-# --------------------------------
+# ------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `department` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `department` (
   `soundexName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `deputy` (
 CREATE TABLE IF NOT EXISTS `deputy_subscribers__subscriber_followedDeputiesIds` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `deputy_subscribers` int(11) DEFAULT NULL,
-  `subscriber_followedDeputiesIds` int(11) DEFAULT NULL,
+  `subscriber_followedDeputiesIds` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -166,10 +166,10 @@ CREATE TABLE IF NOT EXISTS `mandate` (
 # ------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `subscriber` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `instanceId` varchar(255) NOT NULL,
   `token` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
+  PRIMARY KEY (`instanceId`),
+  UNIQUE KEY `instanceId` (`instanceId`),
   UNIQUE KEY `token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -184,12 +184,13 @@ CREATE TABLE IF NOT EXISTS `theme` (
   `typeName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
 # Affichage de la table vote
-# ---------------------------
+# ------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS `vote` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `value` varchar(255) DEFAULT NULL,

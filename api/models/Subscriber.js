@@ -1,8 +1,9 @@
 module.exports = {
+    primaryKey: 'instanceId',
     attributes: {
-        id: {
-            type: 'number',
-            autoIncrement: true
+        instanceId: {
+            type: 'string',
+            required: true
         },
         token: {
             type: 'string',
