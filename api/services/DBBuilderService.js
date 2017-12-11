@@ -72,10 +72,9 @@ let importSQLFiles = function(client) {
     let directory = 'assets/sql';
     let files = FileHelper.getFiles(directory);
     let tasks = [];
-    files.forEach(function(file) {
-        tasks.push(executeSQLFile(client, path.join(directory, file)));
-    });
-    return Promise.all(tasks)
+    return Promise.each(files, function(file) {
+        return executeSQLFile(client, path.join(directory, file))
+    })
     .then(function() {
         // execSQL.disconnect();
         console.log('Done importing sql files');

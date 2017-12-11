@@ -26,7 +26,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `departement`
 --
 
-CREATE TABLE IF NOT EXISTS department (
+CREATE TABLE IF NOT EXISTS `department` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(3) CHARACTER SET utf8 DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
