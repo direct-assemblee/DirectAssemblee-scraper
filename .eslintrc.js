@@ -21,7 +21,9 @@ module.exports = {
        'ExtraPosition': true,
        'ExtraInfo': true,
        'Mandate': true,
+       'ShortTheme': true,
        'Subscriber': true,
+       'Subtheme': true,
        'Vote': true,
        'Work': true,
 
@@ -29,6 +31,7 @@ module.exports = {
        'FetchUrlService': true,
        'DBBuilderService': true,
        'RequestService': true,
+       'ShortThemeService': true,
        'ThemeHelper': true
     },
     "rules": {

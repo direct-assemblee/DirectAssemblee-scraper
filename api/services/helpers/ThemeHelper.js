@@ -1,31 +1,56 @@
 let Promise = require('bluebird');
-let themes = require('../../../assets/themes.json').themes;
 let EmailService = require('../EmailService')
-let themesShortnames = require('../../../assets/shortThemes.json').themes;
+let ShortThemeService = require('../database/ShortThemeService');
+let SubthemeService = require('../database/SubthemeService');
+
+let shortThemes;
+let subthemes;
+
+const REFRESH_PERIOD = 30*60*1000;
 
 module.exports = {
+    initThemes: function() {
+        refreshShortThemes();
+        refreshSubthemes();
+        setInterval(refreshShortThemes, REFRESH_PERIOD)
+        setInterval(refreshSubthemes, REFRESH_PERIOD)
+    },
+
+    findShorterName: function(fullname) {
+        for (let i in shortThemes) {
+            if (shortThemes[i].fullName === fullname) {
+                return shortThemes[i].shortName;
+            }
+        }
+    },
+
     findTheme: function(searchedSubTheme) {
-        return Promise.filter(themes, function(theme) {
-            return theme.subthemes.includes(searchedSubTheme);
+        return Promise.filter(subthemes, function(subtheme) {
+            return subtheme.name.includes(searchedSubTheme);
         })
-        .then(function(foundThemes) {
+        .then(function(foundSubthemes) {
             let theme;
-            if (foundThemes.length > 0) {
-                theme = foundThemes[0];
+            if (foundSubthemes.length > 0) {
+                theme = foundSubthemes[0].themeId;
             } else {
                 theme = searchedSubTheme;
                 EmailService.sendNewThemeEmail(searchedSubTheme);
             }
             return theme;
         });
-    },
-
-    findShorterName: function(fullname) {
-        for (let i in themesShortnames) {
-            if (themesShortnames[i].fullname === fullname) {
-                return themesShortnames[i].shortname;
-            }
-        }
-        return null;
     }
+}
+
+let refreshShortThemes = function() {
+    return ShortThemeService.findShortThemes()
+    .then(function(themes) {
+        shortThemes = themes;
+    })
+}
+
+let refreshSubthemes = function() {
+    return SubthemeService.findSubthemes()
+    .then(function(themes) {
+        subthemes = themes;
+    })
 }

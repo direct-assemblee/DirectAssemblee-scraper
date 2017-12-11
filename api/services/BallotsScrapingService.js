@@ -130,8 +130,12 @@ let retrieveBallotTheme = function(ballot) {
                     return ballot;
                 })
                 .then(function(ballot) {
-                    if (ballot.originalThemeName && ballot.originalThemeName.length > MAX_THEME_LENGTH && !ThemeHelper.findShorterName(ballot.originalThemeName)) {
-                        EmailService.sendThemeTooLongEmail(ballot.originalThemeName);
+                    let fullTheme = ballot.originalThemeName;
+                    if (fullTheme && fullTheme.length > MAX_THEME_LENGTH) {
+                        let shortName = ThemeHelper.findShorterName(fullTheme)
+                        if (!shortName) {
+                            EmailService.sendThemeTooLongEmail(ballot.originalThemeName);
+                        }
                     }
                     return ballot;
                 })
