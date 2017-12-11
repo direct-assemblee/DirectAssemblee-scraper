@@ -1,6 +1,8 @@
 let htmlparser = require('htmlparser2');
 let StringHelper = require('../helpers/StringHelper');
 
+let USELESS_PARENTHESIS = /\([0-9]+\)/g;
+
 module.exports = {
     getParser: function(callback) {
         let parsedItem;
@@ -25,6 +27,9 @@ module.exports = {
                             }
                             if (split.length > 1 && split[1].trim().length > 0) {
                                 parsedItem.themeDetail = split[1].trim();
+                                if (parsedItem.themeDetail) {
+                                    parsedItem.themeDetail = parsedItem.themeDetail.replace(USELESS_PARENTHESIS, '');
+                                }
                             }
                             expectedItem = null;
                         }
