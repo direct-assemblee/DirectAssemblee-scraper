@@ -162,6 +162,20 @@ CREATE TABLE IF NOT EXISTS `mandate` (
 
 
 
+# Affichage de la table shorttheme
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `shorttheme` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fullName` varchar(255) DEFAULT NULL,
+  `shortName` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `fullName` (`fullName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 # Affichage de la table subscriber
 # ------------------------------------------------------------
 
@@ -173,6 +187,19 @@ CREATE TABLE IF NOT EXISTS `subscriber` (
   UNIQUE KEY `token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+# Affichage de la table subtheme
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `subtheme` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `themeId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 # Affichage de la table theme
