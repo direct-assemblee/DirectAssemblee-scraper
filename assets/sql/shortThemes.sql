@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `shorttheme` (
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
 
-INSERT IGNORE `shortTheme` (`id`, `fullName`, `shortName`) VALUES
+INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (1, 'Ordonnances prises sur le fondement de la loi sur le renforcement du dialogue social', 'Ordonnances : renforcement du dialogue social'),
 (2, 'Fin de la recherche et de l\'exploitation des hydrocarbures', 'Recherche et exploitation des hydrocarbures'),
 (3, '« eau » et « assainissement », compétences optionnelles des communautés de communes', '« eau / assainissement », communautés de communes'),
