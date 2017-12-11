@@ -20,23 +20,24 @@ module.exports.bootstrap = function(cb) {
         }
 
         console.log('Initializing DB')
-        DBBuilderService.initDB();
-
-        console.log('=> start looking for new votes');
-        return AssembleeScrapingService.startScraping()
+        return DBBuilderService.initDB()
         .then(function() {
-            console.log('Shutting down DB')
-            DBBuilderService.shutdown();
-            sails.lower(function (err) {
-                if (err) {
-                    return console.log('Error occurred lowering Sails app: ', err);
-                }
-                console.log('Sails app lowered successfully!');
-                console.log('Exit process')
-                process.exit(0);
+            console.log('=> start looking for new votes');
+            return AssembleeScrapingService.startScraping()
+            .then(function() {
+                console.log('Shutting down DB')
+                DBBuilderService.shutdown();
+                sails.lower(function (err) {
+                    if (err) {
+                        return console.log('Error occurred lowering Sails app: ', err);
+                    }
+                    console.log('Sails app lowered successfully!');
+                    console.log('Exit process')
+                    process.exit(0);
+                })
             })
-        });
-    });
+        })
+    })
 
     // It's very important to trigger this callback method when you are finished
     // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
