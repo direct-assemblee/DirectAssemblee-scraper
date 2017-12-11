@@ -44,6 +44,7 @@ let removeSpecialChars = function(str) {
     .replace(/\\b/g, '')
     .replace(/\\f/g, '')
     .replace('&quot;', '')
+    .replace(/<[^>]*em>/g, '')
     .replace('data-place', 'dataplace')
     .replace(/\[dotspace\]/g, '.<br>');
 }
