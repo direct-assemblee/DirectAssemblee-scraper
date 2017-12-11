@@ -12,6 +12,7 @@ let WorkService = require('./database/WorkService.js');
 let BallotsScrapingService = require('./BallotsScrapingService');
 let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
+let ThemeHelper = require('./helpers/ThemeHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
@@ -19,6 +20,8 @@ const RANGE_STEP = 10;
 
 let self = module.exports = {
     startScraping: async function() {
+        ThemeHelper.initThemes();
+
         console.log('==> start classifying unclassified questions');
         await WorkService.classifyUnclassifiedQuestions();
 
