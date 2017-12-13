@@ -37,6 +37,7 @@ let removeSpecialChars = function(str) {
     .replace(/\s+/g, ' ')
     .replace(/\\n/g, ' ')
     .replace(/\\'/g, '\'')
+    .replace(/\x92/g, '\'')
     .replace(/\\'/g, '\'')
     .replace(/\\&/g, '')
     .replace(/\\r/g, '')
