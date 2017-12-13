@@ -6,7 +6,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-CREATE TABLE IF NOT EXISTS subtheme (
+CREATE TABLE IF NOT EXISTS `subtheme` (
   `id` int(4) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `themeId` int(11) DEFAULT NULL,
@@ -333,7 +333,10 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (288, "Plan Juncker", 30),
 (289, "Impact de la législation européenne en matière de services publics", 30),
 
-(290, "Politique générale", 31);
+(290, "Politique générale", 31),
+
+
+(291, "Archives et bibliothèques", 7);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
