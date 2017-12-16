@@ -18,7 +18,7 @@ module.exports = {
 
     findShorterName: function(fullname) {
         for (let i in shortThemes) {
-            if (shortThemes[i].fullName === fullname) {
+            if (shortThemes[i].fullName.toLowerCase() === fullname.toLowerCase()) {
                 return shortThemes[i].shortName;
             }
         }
