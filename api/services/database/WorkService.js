@@ -44,15 +44,20 @@ let insertWorksWithExtraInfos = function(worksToInsert, works, deputyId) {
     .meta({fetch: true})
     .then(function(insertedWorks) {
         let promises = [];
+        let workIds = [];
         for (let i in insertedWorks) {
             let extra = works[i].extraInfos;
             if (extra && extra.length > 0) {
+                workIds.push(insertedWorks[i].id)
                 for (let j in extra) {
                     extraInfosToInsert.push({ info: extra[j].info, value: extra[j].value, workId: insertedWorks[i].id })
                 }
             }
         }
-        return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
+        return ExtraInfoService.clearExtraInfosForWorks(workIds)
+        .then(function() {
+            return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
+        });
     })
 }
 
