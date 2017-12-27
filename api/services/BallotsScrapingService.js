@@ -5,7 +5,9 @@ let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
 let ThemeHelper = require('./helpers/ThemeHelper');
+let DateHelper = require('./helpers/DateHelper');
 let EmailService = require('./EmailService');
+let BallotService = require('./database/BallotService');
 
 const MAX_THEME_LENGTH = 55;
 const PARAM_BALLOT_TYPE = '{ballot_type}';
@@ -18,10 +20,12 @@ const BALLOTS_PAGE_SIZE = 100;
 const BALLOTS_LIST_URL = Constants.BASE_URL + 'scrutins/liste/offset/' + Constants.PARAM_OFFSET + '/(type)/' + PARAM_BALLOT_TYPE + '/(idDossier)/TOUS/(legislature)/' + Constants.MANDATE_NUMBER;
 
 module.exports = {
-    retrieveBallotsList: function() {
+    retrieveBallotsList: async function() {
+        let lastBallotDate = await BallotService.findLastBallotDate();
+
         let promises = [];
         for (let i = 0 ; i < BALLOT_TYPES.length ; i++) {
-            promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i]))
+            promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i], lastBallotDate))
         }
         return Promise.all(promises)
         .then(function(ballots) {
@@ -33,6 +37,8 @@ module.exports = {
                     }
                 }
             }
+            let count = allBallots ? allBallots.length : 0;
+            console.log(count + ' ballots added in the last 30 days')
             return allBallots;
         })
     },
@@ -59,14 +65,14 @@ let isNewBallot = function(allBallots, url) {
     return isNew;
 }
 
-let retrieveBallotsListOfType = async function(ballotType) {
+let retrieveBallotsListOfType = async function(ballotType, lastBallotDate) {
     let results = [];
     let page = 0;
 
     let shouldGetNext = true;
     while (shouldGetNext) {
         let url = getBallotsListPageUrl(ballotType, page);
-        let ballots = await retrieveBallotsListOfTypeWithPage(url, ballotType);
+        let ballots = await retrieveBallotsListOfTypeWithPage(url, ballotType, lastBallotDate);
 
         shouldGetNext = false;
         if (ballots && ballots.length > 0) {
@@ -84,21 +90,24 @@ let getBallotsListPageUrl = function(ballotType, pageOffset) {
     return BALLOTS_LIST_URL.replace(Constants.PARAM_OFFSET, pageOffset * BALLOTS_PAGE_SIZE).replace(PARAM_BALLOT_TYPE, ballotType);
 }
 
-let retrieveBallotsListOfTypeWithPage = function(url, ballotType) {
+let retrieveBallotsListOfTypeWithPage = function(url, ballotType, lastBallotDate) {
     if (ballotType === 'TOUS') {
         ballotType = 'SOR'; // default value
     }
     return FetchUrlService.retrieveContent(url, BallotsListParser)
-    .then(function(results) {
-        if (results) {
-            for (let i in results) {
-                if (results[i].title.indexOf('motion de censure') > 0) {
-                    results[i].type = 'motion_of_censure';
-                } else if (!results[i].type) {
-                    results[i].type = ballotType;
+    .then(function(ballots) {
+        if (ballots) {
+            return Promise.filter(ballots, function(ballot) {
+                return ballot != undefined && DateHelper.isLessThanAMonthOlder(ballot.date, lastBallotDate);
+            })
+            .map(function(ballot) {
+                if (ballot.title.indexOf('motion de censure') > 0) {
+                    ballot.type = 'motion_of_censure';
+                } else if (!ballot.type) {
+                    ballot.type = ballotType;
                 }
-            }
-            return results;
+                return ballot;
+            })
         } else {
             console.log('/!\\ ballot list : no content')
             return;

@@ -5,6 +5,8 @@ let request = require('request-promise');
 let Constants = require('./Constants.js')
 let StringHelper = require('./helpers/StringHelper')
 
+var count = 0;
+
 let parseHtml = function(html, parser) {
     return new Promise(function(resolve, reject) {
         let p = parser.getParser(function(result) {
@@ -27,6 +29,8 @@ let self = module.exports = {
     },
 
     retrieveContentWithAttempt: function(url, isIsoEncoding, attemptNumber, parser) {
+        count++;
+
         let settings = {
             url: url,
             encoding: isIsoEncoding ? 'binary' : 'utf8',
@@ -65,5 +69,9 @@ let self = module.exports = {
         .catch(function(err) {
             console.log(err);
         });
+    },
+
+    howManyRequest: function() {
+        console.log('howManyRequest ?   ==> ' + count)
     }
 }

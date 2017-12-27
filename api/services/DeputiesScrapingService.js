@@ -4,6 +4,8 @@ let Promise = require('bluebird');
 let Constants = require('./Constants.js')
 
 let WorkHelper = require('./helpers/WorkHelper')
+let DateHelper = require('./helpers/DateHelper')
+let WorkService = require('./database/WorkService')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
 let DeclarationScrapingService = require('./DeclarationScrapingService');
 let DeputyWorkParser = require('./parsers/DeputyWorkParser');
@@ -39,11 +41,13 @@ module.exports = {
         let deputyUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
         return FetchUrlService.retrieveContent(deputyUrl, DeputyInfosParser)
         .then(function(deputyInfos) {
-            if (deputyInfos.endOfMandateDate) {
-                console.log('* expired mandate for : ' + deputy.lastname + ' - end of mandate : ' + deputyInfos.endOfMandateDate);
+            if (deputyInfos) {
+                if (deputyInfos.endOfMandateDate) {
+                    console.log('* expired mandate for : ' + deputy.lastname + ' - end of mandate : ' + deputyInfos.endOfMandateDate);
+                }
+                deputy.endOfMandateDate = deputyInfos.endOfMandateDate;
+                deputy.endOfMandateReason = deputyInfos.endOfMandateReason;
             }
-            deputy.endOfMandateDate = deputyInfos.endOfMandateDate;
-            deputy.endOfMandateReason = deputyInfos.endOfMandateReason;
             return deputy;
         });
     }
@@ -70,10 +74,12 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
     })
 }
 
-let retrieveDeputyWork = function(deputy) {
+let retrieveDeputyWork = async function(deputy) {
+    let lastWorkDate = await WorkService.findLastWorkDate(deputy.officialId);
+
     let allWorks = [];
     for (let i = 0 ; i < WORK_TYPES.length ; i++) {
-        allWorks.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i]))
+        allWorks.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i], lastWorkDate))
     }
     return Promise.filter(allWorks, function(workOfType) {
         return workOfType.length > 0;
@@ -89,21 +95,22 @@ let retrieveDeputyWork = function(deputy) {
     });
 }
 
-let retrieveDeputyWorkOfType = async function(deputy, workType) {
+let retrieveDeputyWorkOfType = async function(deputy, workType, lastWorkDate) {
     let results = [];
     let page = 0;
 
     let shouldGetNext = true;
     while (shouldGetNext) {
         let url = getWorkPageUrl(deputy, workType, page);
-        let works = await retrieveDeputyWorkOfTypeWithPage(url, workType);
+        let works = await retrieveDeputyWorkOfTypeWithPage(url, workType, lastWorkDate);
+
 
         shouldGetNext = false;
         if (works && works.length > 0) {
             for (let i in works) {
                 results.push(works[i]);
             }
-            shouldGetNext = works.length == WORK_PAGE_SIZE && page < 3;
+            shouldGetNext = works.length == WORK_PAGE_SIZE;
         }
         page++;
     }
@@ -114,12 +121,12 @@ let getWorkPageUrl = function(deputy, workType, pageOffset) {
     return DEPUTY_WORK_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId).replace(Constants.PARAM_OFFSET, pageOffset * WORK_PAGE_SIZE).replace(PARAM_WORK_TYPE, workType);
 }
 
-let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType) {
+let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType, lastWorkDate) {
     return FetchUrlService.retrieveContent(workUrl, DeputyWorkParser)
     .then(function(works) {
         if (works) {
             return Promise.filter(works, function(work) {
-                return work != undefined;
+                return work != undefined && DateHelper.isLaterOrSame(work.date, lastWorkDate);
             })
             .map(function(work) {
                 work.type = workType;

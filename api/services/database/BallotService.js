@@ -14,6 +14,16 @@ module.exports = {
                 }
             }
         });
+    },
+
+    findLastBallotDate: function() {
+        return Ballot.find()
+        .sort('date DESC')
+        .then(function(ballots) {
+            if (ballots && ballots.length > 0) {
+                return ballots[0].date;
+            }
+        })
     }
 }
 

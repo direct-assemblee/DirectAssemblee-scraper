@@ -6,7 +6,7 @@ let apiBaseUrl = 'http://' + apiHost + ':' + apiPort + '/api/';
 
 module.exports = {
     sendDeputiesUpdateNotif: function(deputiesIds) {
-        console.log('=> RequestService.sendDeputiesUpdateNotif for ' + deputiesIds.length + 'deputies')
+        console.log('=> RequestService.sendDeputiesUpdateNotif for ' + deputiesIds.length + ' deputies')
         var options = {
             method: 'POST',
             uri: apiBaseUrl + 'deputiesUpdated',

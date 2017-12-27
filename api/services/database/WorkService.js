@@ -35,6 +35,17 @@ module.exports = {
             }
             return insertWorksWithExtraInfos(worksToInsert, works, deputyId);
         }
+    },
+
+    findLastWorkDate: function(deputyId) {
+        return Work.find()
+        .where({ deputyId: deputyId })
+        .sort('date DESC')
+        .then(function(works) {
+            if (works && works.length > 0) {
+                return works[0].date;
+            }
+        })
     }
 }
 

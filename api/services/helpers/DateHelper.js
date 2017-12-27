@@ -70,5 +70,25 @@ var self = module.exports = {
     yesterday: function() {
         var yesterday = moment().subtract(1, 'days');
         return yesterday.format('YYYY-MM-DD');
+    },
+
+    isLaterOrSame: function(date1, date2) {
+        return self.formatSimpleDate(date1) >= self.formatSimpleDate(date2);
+    },
+
+    isLessThanAMonthOlder: function(date1, date2) {
+        return self.getDiffInDays(date1, date2) < 30;
+    },
+
+    getDiffInDays: function(date1, date2) {
+        var diff = 0;
+        if (date1 && date2) {
+            diff = moment(date2, 'YYYY-MM-DD').diff(moment(date1, 'DD/MM/YYYY'), 'days');
+        }
+        return diff;
+    },
+
+    formatSimpleDate: function(date) {
+        return moment(date).format('YYYY-MM-DD');
     }
 }
