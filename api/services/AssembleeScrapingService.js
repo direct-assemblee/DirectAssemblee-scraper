@@ -68,7 +68,7 @@ let self = module.exports = {
             })
             .then(function() {
                 console.log('==> done updating database !!')
-                return;
+                return FetchUrlService.howManyRequest();
             })
         })
     }
