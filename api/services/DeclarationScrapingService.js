@@ -22,5 +22,8 @@ module.exports = {
                 return FetchUrlService.retrieveContent(allDeputiesUrls[i], DeputyDeclarationsParser);
             }
         }
+        return new Promise(function(resolve) {
+            resolve();
+        })
     }
 }

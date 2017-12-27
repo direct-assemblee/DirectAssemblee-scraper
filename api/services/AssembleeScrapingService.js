@@ -88,12 +88,14 @@ let subArrayIfDebug = function(array, start, size) {
 
 let retrieveAndInsertDeputiesByRange = function(allDeputiesUrls, deputies, start) {
     let slices = [];
-    for (let i = start ; i < deputies.length ; i = i + RANGE_STEP) {
-        let end = i + RANGE_STEP;
-        if (end > deputies.length) {
-            end = deputies.length;
+    if (deputies) {
+        for (let i = start ; i < deputies.length ; i = i + RANGE_STEP) {
+            let end = i + RANGE_STEP;
+            if (end > deputies.length) {
+                end = deputies.length;
+            }
+            slices.push(deputies.slice(i, end))
         }
-        slices.push(deputies.slice(i, end))
     }
     return retrieveSlicesOfDeputies(allDeputiesUrls, slices);
 }
@@ -212,7 +214,9 @@ let insertBallots = function(ballots) {
 let insertVotesForBallots = function(ballots, deputiesNames) {
     let promises = [];
     for (let i in ballots) {
-        promises.push(insertVotesForBallot(ballots[i], deputiesNames))
+        if (ballots[i]) {
+            promises.push(insertVotesForBallot(ballots[i], deputiesNames))
+        }
     }
     ballots = null;
     deputiesNames = null;
