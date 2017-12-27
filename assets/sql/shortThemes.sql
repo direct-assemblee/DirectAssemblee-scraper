@@ -18,7 +18,9 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (2, 'Fin de la recherche et de l\'exploitation des hydrocarbures', 'Recherche et exploitation des hydrocarbures'),
 (3, '« eau » et « assainissement », compétences optionnelles des communautés de communes', '« eau / assainissement », communautés de communes'),
 (4, 'Prorogation de l\'application de la loi sur l\'état d\'urgence', 'Maintien de la loi sur l\'état d\'urgence'),
-(5, 'Gestion des milieux aquatiques et prévention des inondations', 'Milieux aquatiques / prévention des inondations');
+(5, 'Gestion des milieux aquatiques et prévention des inondations', 'Milieux aquatiques / prévention des inondations'),
+(6, 'Protocole annexe à la convention avec l\'Algérie sur la sécurité sociale', 'Convention avec l\'Algérie sur la sécurité sociale'),
+(7, 'Accord de partenariat et de coopération entre l\'UE et le Kazakhstan', 'Partenariat et coopération UE / Kazakhstan');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

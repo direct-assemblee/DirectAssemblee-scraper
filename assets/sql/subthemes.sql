@@ -336,7 +336,8 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (290, "Politique générale", 31),
 
 
-(291, "Archives et bibliothèques", 7);
+(291, "Archives et bibliothèques", 7),
+(292, "Services à la personne", 22);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
