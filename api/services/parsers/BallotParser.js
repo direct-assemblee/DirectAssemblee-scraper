@@ -60,9 +60,10 @@ module.exports = {
                             lightText = lightText.replace('MM.', '').replace('M.', '').replace('Mmes', '').replace('Mme', '')
                             .replace(',', ' ').replace(' et ', ' ').replace(/\(.*\)/, ' ');
                             let firstname = lightText;
-                            if (firstname.endsWith(' de')) {
-                                firstname = firstname.substring(0, firstname.length - 3);
-                                currentVoteDeputy.lastname = 'de ';
+                            let particule = getParticule(firstname);
+                            if (particule) {
+                                firstname = firstname.substring(0, firstname.length - particule.length);
+                                currentVoteDeputy.lastname = particule.replace(' ', '') + ' ';
                             }
                             currentVoteDeputy.firstname = firstname.trim();
                         } else if (expectedItem === 'vote.lastname') {
@@ -125,6 +126,17 @@ module.exports = {
             }
         }, {decodeEntities: true});
     }
+}
+
+let getParticule = function(firstname) {
+    let particules = [ ' de', ' de la', ' au', ' du' ]
+    for (let i in particules) {
+        let part = particules[i]
+        if (firstname.endsWith(part)) {
+            return part
+        }
+    }
+    return
 }
 
 let isInteresting = function(expectedItem, text) {
