@@ -18,9 +18,9 @@
     "moment": "2.17.1",
     "request": "2.83.0",
     "request-promise": "4.2.2",
-    "sails": "1.0.0-38",
+    "sails": "1.0.0-40",
     "sails-hook-orm": "2.0.0-16",
-    "sails-mysql": "1.0.0-15",
+    "sails-mysql": "1.0.0-16",
     "webpack": "2.7.0"
   },
   "scripts": {
