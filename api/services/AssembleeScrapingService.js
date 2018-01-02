@@ -48,23 +48,7 @@ let self = module.exports = {
             console.log('=> look for non-updated deputies');
             return DeputyService.findNonUpdatedDeputies()
             .then(function(nonUpdatedDeputies) {
-                let promises = [];
-                for (let i in nonUpdatedDeputies) {
-                    promises.push(DeputiesScrapingService.checkMandate(nonUpdatedDeputies[i]))
-                }
-                return Promise.all(promises)
-                .then(function(doneDeputies) {
-                    let promises = [];
-                    if (doneDeputies) {
-                        for (let i in doneDeputies) {
-                            if (doneDeputies[i] && doneDeputies[i].endOfMandateDate) {
-                                promises.push(DeputyService.saveEndOfMandate(doneDeputies[i]))
-                            }
-                        }
-                    }
-                    console.log('* updating ' + promises.length + ' done deputies');
-                    return Promise.all(promises)
-                })
+                return checkMandatesForNonUpdatedDeputies(nonUpdatedDeputies)
             })
             .then(function() {
                 console.log('==> done updating database !!')
@@ -256,4 +240,20 @@ let findNonVotings = function(votes) {
     }
     votes = null;
     return count;
+}
+
+let checkMandatesForNonUpdatedDeputies = async function(nonUpdatedDeputies) {
+    if (nonUpdatedDeputies && nonUpdatedDeputies.length > 0) {
+        console.log('* ' + nonUpdatedDeputies.length + ' deputies have no new activity - let\'s check their mandate...');
+    }
+    return Promise.map(nonUpdatedDeputies, function(nonUpdatedDeputy) {
+        return DeputiesScrapingService.checkMandate(nonUpdatedDeputy)
+        .then(function(doneDeputy) {
+            if (doneDeputy && doneDeputy.endOfMandateDate) {
+                console.log('* updating deputy ' + doneDeputy.lastname);
+                return DeputyService.saveEndOfMandate(doneDeputy)
+            }
+            return
+        })
+    }, { concurrency: 10 })
 }
