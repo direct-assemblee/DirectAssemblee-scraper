@@ -1,5 +1,6 @@
 let Promise = require('bluebird');
 let ThemeHelper = require('../helpers/ThemeHelper')
+let DateHelper = require('../helpers/DateHelper')
 let ExtraInfoService = require('./ExtraInfoService')
 
 module.exports = {
@@ -22,18 +23,17 @@ module.exports = {
         })
     },
 
-    clearWorksForDeputy: function(deputyId) {
-        return Work.destroy()
-        .where({ deputyId: deputyId });
-    },
-
     insertWorks: function(works, deputyId) {
         if (works && works.length > 0) {
-            let worksToInsert = [];
-            for (let i in works) {
-                worksToInsert.push(createWorkModel(works[i], deputyId));
-            }
-            return insertWorksWithExtraInfos(worksToInsert, works, deputyId);
+            let olderWorkDate = getOlderWorkDate(works)
+            return clearWorksForDeputyAfterDate(deputyId, olderWorkDate)
+            .then(function() {
+                let worksToInsert = [];
+                for (let i in works) {
+                    worksToInsert.push(createWorkModel(works[i], deputyId));
+                }
+                return insertWorksWithExtraInfos(worksToInsert, works, deputyId);
+            })
         }
     },
 
@@ -46,6 +46,25 @@ module.exports = {
                 return works[0].date;
             }
         })
+    }
+}
+
+let clearWorksForDeputyAfterDate = function(deputyId, afterDate) {
+    let options = {
+        deputyId: deputyId ,
+        date: { '>': afterDate }
+    }
+    return Work.destroy()
+    .where(options);
+}
+
+let getOlderWorkDate = function(works) {
+    if (works && works.length > 0) {
+        works.sort(function(a, b) {
+            var diff = DateHelper.getDiffInDays(a.date, b.date)
+            return diff == 0 ? 0 : diff > 0 ? 1 : -1
+        });
+        return works[0].date
     }
 }
 

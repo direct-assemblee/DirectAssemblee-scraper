@@ -131,7 +131,7 @@ let insertDeputy = function(deputy) {
     })
     .then(function() {
         console.log('-- inserted declarations for deputy : ' + deputy.lastname);
-        return insertWorks(deputy.works, deputy.officialId)
+        return WorkService.insertWorks(deputy.works, deputy.officialId)
         .then(function() {
             if (deputy.works && deputy.works.length > 0) {
                 console.log('-- inserted works for deputy : ' + deputy.lastname);
@@ -139,13 +139,6 @@ let insertDeputy = function(deputy) {
             }
             return;
         })
-    })
-}
-
-let insertWorks = function(works, deputyId) {
-    return WorkService.clearWorksForDeputy(deputyId)
-    .then(function() {
-        return WorkService.insertWorks(works, deputyId);
     })
 }
 
