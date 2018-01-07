@@ -98,7 +98,7 @@ let retrieveBallotsListOfTypeWithPage = function(url, ballotType, lastBallotDate
     .then(function(ballots) {
         if (ballots) {
             return Promise.filter(ballots, function(ballot) {
-                return ballot != undefined && DateHelper.isLessThanAMonthOlder(ballot.date, lastBallotDate);
+                return ballot != undefined && (!lastBallotDate || DateHelper.isLessThanAMonthOlder(ballot.date, lastBallotDate));
             })
             .map(function(ballot) {
                 if (ballot.title.indexOf('motion de censure') > 0) {

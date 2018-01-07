@@ -126,7 +126,7 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType, lastWorkDate)
     .then(function(works) {
         if (works) {
             return Promise.filter(works, function(work) {
-                return work != undefined && DateHelper.isLaterOrSame(work.date, lastWorkDate);
+                return work != undefined && (!lastWorkDate || DateHelper.isLaterOrSame(work.date, lastWorkDate));
             })
             .map(function(work) {
                 work.type = workType;
