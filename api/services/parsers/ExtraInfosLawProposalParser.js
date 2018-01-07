@@ -29,7 +29,11 @@ module.exports = {
                         expectedItem = 'motives';
                     }
                 } else if (tagname === 'table' && expectedItem === 'motives_text' && extraInfo) {
-                    extraInfo += 'Vous pouvez consulter la suite sur le site officiel de l\'Assemblée Nationale';
+                    let lastSentenceEnd = regexLastIndexOf(extraInfo, /[.?!]/)
+                    if (lastSentenceEnd > 0) {
+                        extraInfo = extraInfo.substr(0, lastSentenceEnd + 1)
+                    }
+                    extraInfo += ' Vous pouvez consulter la suite sur le site officiel de l\'Assemblée Nationale.';
                     expectedItem = null;
                 }
             },
@@ -66,6 +70,9 @@ module.exports = {
                 if (tagname === 'html') {
                     expectedItem = null;
                     parsedItem.extraInfos = [];
+                    if (extraInfo && extraInfo.length > 0 && extraInfo[extraInfo.length - 1] == '\n') {
+                        extraInfo = extraInfo.substr(0, extraInfo.length - 1).trim();
+                    }
                     parsedItem.extraInfos.push({ info: 'lawMotives', value: extraInfo });
                     callback(parsedItem);
                 } else if (tagname === 'p' && expectedItem && extraInfo) {
@@ -74,4 +81,9 @@ module.exports = {
             }
         }, {decodeEntities: true});
     }
+}
+
+let regexLastIndexOf = function(str, regex) {
+    var match = str.match(regex);
+    return str.lastIndexOf(match[match.length-1]);
 }
