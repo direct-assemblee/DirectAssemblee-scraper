@@ -70,8 +70,11 @@ module.exports = {
                 if (tagname === 'html') {
                     expectedItem = null;
                     parsedItem.extraInfos = [];
-                    if (extraInfo && extraInfo.length > 0 && extraInfo[extraInfo.length - 1] == '\n') {
-                        extraInfo = extraInfo.substr(0, extraInfo.length - 1).trim();
+                    if (extraInfo && extraInfo.length > 0) {
+                        if (extraInfo[extraInfo.length - 1] == '\n') {
+                            extraInfo = extraInfo.substr(0, extraInfo.length - 1).trim();
+                        }
+                        extraInfo = extraInfo.replace(/\n/g, '\n\n')
                     }
                     parsedItem.extraInfos.push({ info: 'lawMotives', value: extraInfo });
                     callback(parsedItem);
