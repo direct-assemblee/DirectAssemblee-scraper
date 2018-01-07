@@ -50,12 +50,14 @@ module.exports = {
 }
 
 let clearWorksForDeputyAfterDate = function(deputyId, afterDate) {
-    let options = {
-        deputyId: deputyId ,
-        date: { '>': afterDate }
+    if (afterDate) {
+        let options = {
+            deputyId: deputyId ,
+            date: { '>': afterDate }
+        }
+        return Work.destroy()
+        .where(options);
     }
-    return Work.destroy()
-    .where(options);
 }
 
 let getOlderWorkDate = function(works) {
