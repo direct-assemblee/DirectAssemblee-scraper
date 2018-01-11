@@ -53,7 +53,7 @@ let clearWorksForDeputyAfterDate = function(deputyId, afterDate) {
     if (afterDate) {
         let options = {
             deputyId: deputyId ,
-            date: { '>': afterDate }
+            date: { '>=': afterDate }
         }
         return Work.destroy()
         .where(options);
