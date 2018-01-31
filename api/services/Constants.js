@@ -30,6 +30,7 @@ const DB_WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
 const DB_WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
 const DB_WORK_TYPE_VOTE_CENSURE = 'vote_motion_of_censure';
 const DB_WORK_TYPE_VOTE_OTHER = 'vote_others';
+const DB_WORK_TYPE_VOTE_UNDEFINED = 'vote_undefined';
 
 module.exports = {
     BASE_URL: BASE_URL,
@@ -59,4 +60,5 @@ module.exports = {
     DB_WORK_TYPE_VOTE_ORDINARY: DB_WORK_TYPE_VOTE_ORDINARY,
     DB_WORK_TYPE_VOTE_CENSURE: DB_WORK_TYPE_VOTE_CENSURE,
     DB_WORK_TYPE_VOTE_OTHER: DB_WORK_TYPE_VOTE_OTHER,
+    DB_WORK_TYPE_VOTE_UNDEFINED: DB_WORK_TYPE_VOTE_UNDEFINED
 }

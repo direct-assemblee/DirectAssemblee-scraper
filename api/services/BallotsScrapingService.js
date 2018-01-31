@@ -14,8 +14,9 @@ const PARAM_BALLOT_TYPE = '{ballot_type}';
 const BALLOT_TYPE_ORDINARY = 'SOR';
 const BALLOT_TYPE_SOLEMN = 'SSO';
 const BALLOT_TYPE_OTHER = 'AUT';
+const BALLOT_TYPE_UNDEFINED = 'UND';
 const BALLOT_TYPE_ALL = 'TOUS';
-const BALLOT_TYPES = [ BALLOT_TYPE_ALL, BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER ];
+const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_ALL ];
 const BALLOTS_PAGE_SIZE = 100;
 const BALLOTS_LIST_URL = Constants.BASE_URL + 'scrutins/liste/offset/' + Constants.PARAM_OFFSET + '/(type)/' + PARAM_BALLOT_TYPE + '/(idDossier)/TOUS/(legislature)/' + Constants.MANDATE_NUMBER;
 
@@ -92,7 +93,7 @@ let getBallotsListPageUrl = function(ballotType, pageOffset) {
 
 let retrieveBallotsListOfTypeWithPage = function(url, ballotType, lastBallotDate) {
     if (ballotType === 'TOUS') {
-        ballotType = 'SOR'; // default value
+        ballotType = BALLOT_TYPE_UNDEFINED; // default value
     }
     return FetchUrlService.retrieveContent(url, BallotsListParser)
     .then(function(ballots) {
