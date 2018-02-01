@@ -21,7 +21,10 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (5, 'Gestion des milieux aquatiques et prévention des inondations', 'Milieux aquatiques / prévention des inondations'),
 (6, 'Protocole annexe à la convention avec l\'Algérie sur la sécurité sociale', 'Convention avec l\'Algérie sur la sécurité sociale'),
 (7, 'Accord de partenariat et de coopération entre l\'UE et le Kazakhstan', 'Partenariat et coopération UE / Kazakhstan'),
-(8, 'Transfert des compétences eau et assainissement aux communautés de communes', '« eau / assainissement », communautés de communes');
+(8, 'Transfert des compétences eau et assainissement aux communautés de communes', '« eau / assainissement », communautés de communes'),
+(9, 'Importance de la ratification du CETA par voie référendaire', 'Affaire étrangères : CETA'),
+(10, 'Reconnaissance de l\'épuisement professionnel comme maladie', 'Maladies professionnelles'),
+(11, 'Adaptation au droit de l\'UE dans le domaine de la sécurité', 'Sécurité : droit de l\'UE');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
