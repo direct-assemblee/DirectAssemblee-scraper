@@ -24,7 +24,8 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (8, 'Transfert des compétences eau et assainissement aux communautés de communes', '« eau / assainissement », communautés de communes'),
 (9, 'Importance de la ratification du CETA par voie référendaire', 'Affaire étrangères : CETA'),
 (10, 'Reconnaissance de l\'épuisement professionnel comme maladie', 'Maladies professionnelles'),
-(11, 'Adaptation au droit de l\'UE dans le domaine de la sécurité', 'Sécurité : droit de l\'UE');
+(11, 'Adaptation au droit de l\'UE dans le domaine de la sécurité', 'Sécurité : droit de l\'UE'),
+(12, 'Euthanasie et suicide assisté, pour une fin de vie digne', 'Fin de vie');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
