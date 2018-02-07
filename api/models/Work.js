@@ -1,4 +1,5 @@
 module.exports = {
+    primaryKey: 'id',
     attributes: {
         createdAt: { type: 'string', autoCreatedAt: true, },
         updatedAt: { type: 'string', autoUpdatedAt: true, },
@@ -18,7 +19,8 @@ module.exports = {
             type: 'string'
         },
         url: {
-            type: 'string'
+            type: 'string',
+            unique: true
         },
         description: {
             type: 'json'
@@ -26,8 +28,13 @@ module.exports = {
         type: {
             type: 'string'
         },
-        deputyId: {
-            model: 'Deputy'
+        authors: {
+            collection: 'deputy',
+            via: 'workCreations'
+        },
+        participants: {
+            collection: 'deputy',
+            via: 'workParticipations'
         }
     }
 };

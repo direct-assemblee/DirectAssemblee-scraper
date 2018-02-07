@@ -3,7 +3,7 @@ let ThemeHelper = require('../helpers/ThemeHelper')
 let DateHelper = require('../helpers/DateHelper')
 let ExtraInfoService = require('./ExtraInfoService')
 
-module.exports = {
+let self = module.exports = {
     classifyUnclassifiedQuestions: function() {
         return findUnclassifiedQuestions()
         .then(function(unclassifiedQuestions) {
@@ -23,41 +23,118 @@ module.exports = {
         })
     },
 
+    findWork: function(workId) {
+        if (workId) {
+            return Work.findOne()
+            .where({ id: workId })
+        } else {
+            return new Promise(function(resolve, reject) {
+                resolve()
+            })
+        }
+    },
+
+    findWorkFromUrl: function(workUrl) {
+        if (workUrl) {
+            return Work.findOne()
+            .where({ url: workUrl })
+        } else {
+            return new Promise(function(resolve, reject) {
+                resolve()
+            })
+        }
+    },
+
     insertWorks: function(works, deputyId) {
         if (works && works.length > 0) {
-            let olderWorkDate = getOlderWorkDate(works)
-            return clearWorksForDeputyAfterDate(deputyId, olderWorkDate)
-            .then(function() {
-                let worksToInsert = [];
-                for (let i in works) {
-                    worksToInsert.push(createWorkModel(works[i], deputyId));
-                }
-                return insertWorksWithExtraInfos(worksToInsert, works, deputyId);
+            let insertPromises = [];
+            for (let i in works) {
+                insertPromises.push(createOrUpdateWork(works[i]));
+            }
+            return Promise.all(insertPromises)
+            .then(function(insertedWorksIds) {
+                return insertExtraInfos(insertedWorksIds, works, deputyId);
             })
         }
     },
 
     findLastWorkDate: function(deputyId) {
-        return Work.find()
-        .where({ deputyId: deputyId })
+        return findWorksWithAuthorsAndSubscribers()
         .sort('date DESC')
         .then(function(works) {
-            if (works && works.length > 0) {
-                return works[0].date;
-            }
+            return Promise.filter(works, function(work) {
+                return workHasDeputy(work, deputyId)
+            })
+            .then(function(deputyWorks) {
+                if (deputyWorks && deputyWorks.length > 0) {
+                    return deputyWorks[0].date;
+                }
+            })
         })
     }
 }
 
-let clearWorksForDeputyAfterDate = function(deputyId, afterDate) {
-    if (afterDate) {
-        let options = {
-            deputyId: deputyId ,
-            date: { '>=': afterDate }
+let populateWork = function(workId) {
+    return Work.find({ id: workId})
+        .populate('authors')
+        .populate('participants')
+        .then(function(works) {
+            return works[0]
+        })
+}
+
+let findWorksWithAuthorsAndSubscribers = function() {
+    return Work.find()
+        .populate('authors')
+        .populate('participants')
+        .sort('date DESC')
+}
+
+let workHasDeputy = function(work, deputyId) {
+    return workContributorsContainsDeputyId(work.authors, deputyId) || workContributorsContainsDeputyId(work.participants, deputyId)
+}
+
+let workContributorsContainsDeputyId = function(contributors, deputyId) {
+    let found = false;
+    if (contributors && contributors.length) {
+        for (let i in contributors) {
+            if (contributors[i].officialId == deputyId) {
+                found = true;
+                break;
+            }
         }
-        return Work.destroy()
-        .where(options);
     }
+    return found;
+}
+
+let createOrUpdateWork = function(work) {
+    return self.findWorkFromUrl(work.url)
+    .then(function(foundWork) {
+        let workModel = createBasicWorkModel(work)
+        if (foundWork) {
+            return updateWork(foundWork, workModel)
+        } else {
+            return createWork(workModel);
+        }
+    })
+}
+
+let createWork = function(workModel) {
+    return Work.create(workModel)
+    .meta({ fetch: true })
+    .then(function(insertedWork) {
+        return insertedWork.id
+    })
+}
+
+let updateWork = function(work, workUpdate) {
+    return Work.update()
+    .where({ id: work.id })
+    .set(workUpdate)
+    .meta({ fetch: true })
+    .then(function(insertedWork) {
+        return insertedWork[0].id
+    })
 }
 
 let getOlderWorkDate = function(works) {
@@ -70,27 +147,25 @@ let getOlderWorkDate = function(works) {
     }
 }
 
-let insertWorksWithExtraInfos = function(worksToInsert, works, deputyId) {
+let insertExtraInfos = function(insertedWorksIds, works, deputyId) {
     let extraInfosToInsert = [];
-    return Work.createEach(worksToInsert)
-    .meta({fetch: true})
-    .then(function(insertedWorks) {
-        let promises = [];
-        let workIds = [];
-        for (let i in insertedWorks) {
-            let extra = works[i].extraInfos;
-            if (extra && extra.length > 0) {
-                workIds.push(insertedWorks[i].id)
-                for (let j in extra) {
-                    extraInfosToInsert.push({ info: extra[j].info, value: extra[j].value, workId: insertedWorks[i].id })
-                }
+    let promises = [];
+    let workIds = [];
+    for (let i in insertedWorksIds) {
+        addDeputyToWork(insertedWorksIds[i], deputyId)
+
+        let extra = works[i].extraInfos;
+        if (extra && extra.length > 0) {
+            workIds.push(insertedWorksIds[i])
+            for (let j in extra) {
+                extraInfosToInsert.push({ info: extra[j].info, value: extra[j].value, workId: insertedWorksIds[i] })
             }
         }
-        return ExtraInfoService.clearExtraInfosForWorks(workIds)
-        .then(function() {
-            return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
-        });
-    })
+    }
+    return ExtraInfoService.clearExtraInfosForWorks(workIds)
+    .then(function() {
+        return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
+    });
 }
 
 let findUnclassifiedQuestions = function() {
@@ -113,11 +188,7 @@ let saveWork = function(work) {
     });
 }
 
-let createWorkModel = function(work, deputyId) {
-    let id;
-    if (typeof work.id === 'number') {
-        id = work.id;
-    }
+let createBasicWorkModel = function(work) {
     return {
         title: work.title,
         themeId: work.theme && work.theme.id ? work.theme.id : null,
@@ -126,7 +197,65 @@ let createWorkModel = function(work, deputyId) {
         date: work.date,
         url: work.url,
         description: work.description,
-        deputyId: deputyId,
         type: work.type
     }
+}
+
+let addDeputyToWork = function(workId, deputyId) {
+    return populateWork(workId)
+    .then(function(populatedWork) {
+        if (populatedWork.type === Constants.DB_WORK_TYPE_QUESTIONS || populatedWork.type === Constants.DB_WORK_TYPE_PROPOSITIONS) {
+            if (!workHasAuthor(populatedWork, deputyId)) {
+                return addAuthor(populatedWork, deputyId);
+            }
+        } else if (!workHasParticipant(populatedWork, deputyId)) {
+            return addParticipant(populatedWork, deputyId);
+        }
+    })
+}
+
+let workHasAuthor = function(work, deputyId) {
+    let result = false;
+	for (let i in work.authors) {
+		if (work.authors[i].officialId == deputyId) {
+			result = true;
+			break;
+		}
+	}
+	return result;
+}
+
+let addAuthor = function(work, deputyId) {
+    return Work.addToCollection(work.id, 'authors')
+    .members(deputyId)
+    .exec(function(err, result) {
+        if (err) {
+            console.log('error ' + err)
+            return;
+        }
+        return
+    })
+}
+
+let workHasParticipant = function(work, deputyId) {
+    let result = false;
+	for (let i in work.participants) {
+		if (work.participants[i].officialId == deputyId) {
+			result = true;
+			break;
+		}
+	}
+	return result;
+}
+
+let addParticipant = function(work, deputyId) {
+    return Work.addToCollection(work.id, 'participants')
+    .members(deputyId)
+    .exec(function(err, result) {
+        if (err) {
+            console.log('error ' + err)
+            return;
+        }
+        return
+    })
 }

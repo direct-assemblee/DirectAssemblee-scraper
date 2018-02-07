@@ -57,6 +57,16 @@ module.exports = {
             collection: 'subscriber',
             via: 'followedDeputiesIds',
             dominant: true
+        },
+        workCreations: {
+            collection: 'work',
+            via: 'authors',
+            dominant: true
+        },
+        workParticipations: {
+            collection: 'work',
+            via: 'participants',
+            dominant: true
         }
     }
 };

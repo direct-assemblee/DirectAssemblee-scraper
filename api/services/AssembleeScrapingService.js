@@ -16,7 +16,7 @@ let ThemeHelper = require('./helpers/ThemeHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
-const RANGE_STEP = 10;
+const RANGE_STEP = 1;
 
 let self = module.exports = {
     startScraping: async function() {
@@ -31,14 +31,14 @@ let self = module.exports = {
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
 
-        let deputies = subArrayIfDebug(allDeputies, 0, 10);
+        let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
 
         return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
             console.log('==> start scraping ballots');
             return BallotsScrapingService.retrieveBallotsList()
             .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, 10);
+                let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
                 return retrieveAndInsertBallotsByRange(ballots, 0);
             })
         })

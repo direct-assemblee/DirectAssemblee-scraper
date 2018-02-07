@@ -116,6 +116,22 @@ CREATE TABLE IF NOT EXISTS `deputy_subscribers__subscriber_followedDeputiesIds` 
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS
+`deputy_workCreations__work_authors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `deputy_workCreations` int(11) DEFAULT NULL,
+  `work_authors` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `deputy_workParticipations__work_participants` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `deputy_workParticipations` int(11) DEFAULT NULL,
+  `work_participants` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
 # Affichage de la table extrainfo
@@ -244,7 +260,6 @@ CREATE TABLE IF NOT EXISTS `work` (
   `description` longtext,
   `type` varchar(255) DEFAULT NULL,
   `themeId` int(11) DEFAULT NULL,
-  `deputyId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

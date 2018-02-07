@@ -24,7 +24,7 @@ const TABLE_MANDATE = 'Mandate';
 const TABLE_EXTRA_POSITION = 'ExtraPosition';
 const TABLE_EXTRA_INFO = 'ExtraInfo';
 const TABLE_SUBSCRIBER = 'Subscriber';
-const TABLE_DEPUTIES_SUBSCRIBERS = 'deputy_subscribers__subscriber_followeddeputiesids'
+const TABLE_DEPUTIES_SUBSCRIBERS = 'deputy_subscribers__subscriber_followeddeputiesids';
 
 module.exports = {
     resetDB: function() {
