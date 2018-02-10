@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS `deputy` (
   `mandateEndDate` varchar(255) DEFAULT NULL,
   `mandateEndReason` varchar(255) DEFAULT NULL,
   `seatNumber` double DEFAULT NULL,
+  `activityRate` double DEFAULT '0',
   PRIMARY KEY (`officialId`),
   UNIQUE KEY `officialId` (`officialId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

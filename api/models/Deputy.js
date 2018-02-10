@@ -67,6 +67,9 @@ module.exports = {
             collection: 'work',
             via: 'participants',
             dominant: true
+        },
+        activityRate: {
+            type: 'number'
         }
     }
 };
