@@ -21,6 +21,7 @@ const RANGE_STEP = 10;
 let self = module.exports = {
     startScraping: async function() {
         ThemeHelper.initThemes();
+        RequestService.sendResetCache();
 
         console.log('==> start classifying unclassified questions');
         await WorkService.classifyUnclassifiedQuestions();

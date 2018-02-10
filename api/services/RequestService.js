@@ -30,7 +30,19 @@ module.exports = {
             json: true
         };
         makeRequest(options);
-    }
+    },
+
+    sendResetCache: function() {
+        console.log('=> RequestService.sendResetCache')
+        var options = {
+            method: 'POST',
+            uri: apiBaseUrl + 'resetCache',
+            body: {
+            },
+            json: true
+        };
+        makeRequest(options);
+    },
 };
 
 let makeRequest = function(options) {
