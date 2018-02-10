@@ -47,14 +47,25 @@ let self = module.exports = {
 
     insertWorks: function(works, deputyId) {
         if (works && works.length > 0) {
-            let insertPromises = [];
-            for (let i in works) {
-                insertPromises.push(createOrUpdateWork(works[i]));
-            }
-            return Promise.all(insertPromises)
-            .then(function(insertedWorksIds) {
-                return insertExtraInfos(insertedWorksIds, works, deputyId);
-            })
+            let urls = []
+            return Promise.filter(works, function(work) {
+                let isNew = !urls.includes(work.url)
+                if (isNew) {
+                    urls.push(work.url)
+                }
+                return isNew
+            }, { concurrency: 1 })
+            .mapSeries(function(work) {
+                let extraToInsert = []
+                return createOrUpdateWork(work)
+                .then(function(insertedWorkId) {
+                    addDeputyToWork(insertedWorkId, deputyId)
+                    return buildExtraInfosToInsert(insertedWorkId, work, deputyId);
+                })
+                .then(function(allExtrasToInsert) {
+                    return ExtraInfoService.createOrUpdateExtrasInfos(allExtrasToInsert);
+                })
+            }, { concurrency: 1 })
         }
     },
 
@@ -147,25 +158,15 @@ let getOlderWorkDate = function(works) {
     }
 }
 
-let insertExtraInfos = function(insertedWorksIds, works, deputyId) {
+let buildExtraInfosToInsert = function(insertedWorksId, work, deputyId) {
+    let extra = work.extraInfos;
     let extraInfosToInsert = [];
-    let promises = [];
-    let workIds = [];
-    for (let i in insertedWorksIds) {
-        addDeputyToWork(insertedWorksIds[i], deputyId)
-
-        let extra = works[i].extraInfos;
-        if (extra && extra.length > 0) {
-            workIds.push(insertedWorksIds[i])
-            for (let j in extra) {
-                extraInfosToInsert.push({ info: extra[j].info, value: extra[j].value, workId: insertedWorksIds[i] })
-            }
+    if (extra && extra.length > 0) {
+        for (let j in extra) {
+            extraInfosToInsert.push({ info: extra[j].info, value: extra[j].value, workId: insertedWorksId })
         }
     }
-    return ExtraInfoService.clearExtraInfosForWorks(workIds)
-    .then(function() {
-        return ExtraInfoService.insertAllExtraInfos(extraInfosToInsert);
-    });
+    return extraInfosToInsert
 }
 
 let findUnclassifiedQuestions = function() {

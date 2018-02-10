@@ -16,7 +16,7 @@ let ThemeHelper = require('./helpers/ThemeHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
-const RANGE_STEP = 1;
+const RANGE_STEP = 10;
 
 let self = module.exports = {
     startScraping: async function() {
@@ -98,13 +98,11 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
     return DeputiesScrapingService.retrieveDeputies(allDeputiesUrls, deputiesRange)
     .then(function(deputiesRetrieved) {
         console.log('-- retrieved deputies ' + deputiesRetrieved.length)
-        let promises = [];
-        for (let i in deputiesRetrieved) {
-            if (deputiesRetrieved[i]) {
-                promises.push(insertDeputy(deputiesRetrieved[i]));
+        return Promise.mapSeries(deputiesRetrieved, function(deputy) {
+            if (deputy) {
+                return insertDeputy(deputy)
             }
-        }
-        return Promise.all(promises)
+        })
         .then(function(addedDeputiesIds) {
             return Promise.filter(addedDeputiesIds, function(id) {
                 return id; // exists only if works were added

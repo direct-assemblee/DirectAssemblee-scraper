@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `deputy_workParticipations__work_participants` (
   `work_participants` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 # Affichage de la table extrainfo
