@@ -55,7 +55,14 @@ let self = module.exports = {
         };
         return Deputy.update({
             officialId: deputy.officialId
-        }, toUpdate);
+        }, toUpdate)
+        .then(function() {
+            return;
+        })
+        .catch(err => {
+            console.log('Error updating deputy ' + err);
+            return
+        });
     }
 }
 

@@ -146,6 +146,10 @@ let updateWork = function(work, workUpdate) {
     .then(function(insertedWork) {
         return insertedWork[0].id
     })
+    .catch(err => {
+        console.log('Error updating work ' + err);
+        return
+    });
 }
 
 let getOlderWorkDate = function(works) {

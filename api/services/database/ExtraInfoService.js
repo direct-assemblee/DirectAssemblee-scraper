@@ -28,4 +28,11 @@ let updateExtraInfo = function(foundExtraInfo, extraInfo) {
     return ExtraInfo.update()
     .where({ id: foundExtraInfo.id })
     .set(extraInfo)
+    .then(function() {
+        return;
+    })
+    .catch(err => {
+        console.log('Error updating extrainfo ' + err);
+        return
+    });
 }

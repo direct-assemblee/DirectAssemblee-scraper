@@ -58,5 +58,12 @@ let createBallot = function(ballotToInsert) {
 let updateBallot = function(foundBallot, ballotToUpdate) {
     return Ballot.update()
     .where({ officialId: foundBallot.officialId })
-    .set(ballotToUpdate);
+    .set(ballotToUpdate)
+    .then(function() {
+        return;
+    })
+    .catch(err => {
+        console.log('Error updating ballot ' + err);
+        return
+    });
 }
