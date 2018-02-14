@@ -2,6 +2,7 @@ let Promise = require('bluebird');
 let ThemeHelper = require('../helpers/ThemeHelper')
 let DateHelper = require('../helpers/DateHelper')
 let ExtraInfoService = require('./ExtraInfoService')
+let DeputyService = require('./DeputyService')
 
 let self = module.exports = {
     classifyUnclassifiedQuestions: function() {
@@ -59,7 +60,7 @@ let self = module.exports = {
                 let extraToInsert = []
                 return createOrUpdateWork(work)
                 .then(function(insertedWorkId) {
-                    addDeputyToWork(insertedWorkId, deputyId)
+                    DeputyService.addWorkToDeputy(insertedWorkId, work.type, deputyId)
                     return buildExtraInfosToInsert(insertedWorkId, work, deputyId);
                 })
                 .then(function(allExtrasToInsert) {
@@ -204,63 +205,4 @@ let createBasicWorkModel = function(work) {
         description: work.description,
         type: work.type
     }
-}
-
-let addDeputyToWork = function(workId, deputyId) {
-    return populateWork(workId)
-    .then(function(populatedWork) {
-        if (populatedWork.type === Constants.DB_WORK_TYPE_QUESTIONS || populatedWork.type === Constants.DB_WORK_TYPE_PROPOSITIONS) {
-            if (!workHasAuthor(populatedWork, deputyId)) {
-                return addAuthor(populatedWork, deputyId);
-            }
-        } else if (!workHasParticipant(populatedWork, deputyId)) {
-            return addParticipant(populatedWork, deputyId);
-        }
-    })
-}
-
-let workHasAuthor = function(work, deputyId) {
-    let result = false;
-	for (let i in work.authors) {
-		if (work.authors[i].officialId == deputyId) {
-			result = true;
-			break;
-		}
-	}
-	return result;
-}
-
-let addAuthor = function(work, deputyId) {
-    return Work.addToCollection(work.id, 'authors')
-    .members(deputyId)
-    .exec(function(err, result) {
-        if (err) {
-            console.log('error ' + err)
-            return;
-        }
-        return
-    })
-}
-
-let workHasParticipant = function(work, deputyId) {
-    let result = false;
-	for (let i in work.participants) {
-		if (work.participants[i].officialId == deputyId) {
-			result = true;
-			break;
-		}
-	}
-	return result;
-}
-
-let addParticipant = function(work, deputyId) {
-    return Work.addToCollection(work.id, 'participants')
-    .members(deputyId)
-    .exec(function(err, result) {
-        if (err) {
-            console.log('error ' + err)
-            return;
-        }
-        return
-    })
 }

@@ -1,6 +1,26 @@
 let DateHelper = require('../helpers/DateHelper.js');
 
 let self = module.exports = {
+    findDeputyWithId: function(deputyId) {
+        return Deputy.findOne().where({
+            officialId: deputyId
+        })
+    },
+
+    addWorkToDeputy: function(workId, workType, deputyId) {
+        if (workType === Constants.DB_WORK_TYPE_QUESTIONS || workType === Constants.DB_WORK_TYPE_PROPOSITIONS) {
+            return addWorkCreationIfNew(deputyId, workId)
+        } else {
+            return addWorkParticipationIfNew(deputyId, workId)
+        }
+    },
+
+    findDeputyWithWorks: function(deputyId) {
+        return Deputy.findOne({ officialId: deputyId })
+        .populate('workCreations')
+        .populate('workParticipations')
+    },
+
     findNonUpdatedDeputies: function() {
         return Deputy.find()
         .where({ updatedAt: { '<': DateHelper.yesterday() } });
@@ -95,4 +115,68 @@ let updateDeputy = function(deputyToUpdate) {
     return Deputy.update({
         officialId: deputyToUpdate.officialId
     }, deputyToUpdate);
+}
+
+let addWorkCreationIfNew = function(deputyId, workId) {
+    return hasWorkAsCreation(deputyId, workId)
+    .then(function(exists) {
+        if (!exists) {
+            return Deputy.addToCollection(deputyId, 'workCreations')
+            .members(workId)
+            .then(function() {
+                return;
+            })
+            .catch(err => {
+                console.log('-- Error adding creation ' + err);
+                return
+            });
+        }
+    })
+}
+
+let addWorkParticipationIfNew = function(deputyId, workId) {
+    return hasWorkAsParticipation(deputyId, workId)
+    .then(function(exists) {
+        if (!exists) {
+            return Deputy.addToCollection(deputyId, 'workParticipations')
+            .members(workId)
+            .then(function() {
+                return;
+            })
+            .catch(err => {
+                console.log('-- Error adding participation ' + err);
+                return
+            });
+        }
+    })
+}
+
+let hasWorkAsCreation = function(deputyId, workId) {
+    let result = false;
+    return Deputy.findOne({ officialId: deputyId })
+    .populate('workCreations')
+    .then(function(deputy) {
+        for (let i in deputy.workCreations) {
+            if (deputy.workCreations[i].id == workId) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    })
+}
+
+let hasWorkAsParticipation = function(deputyId, workId) {
+    let result = false;
+    return Deputy.findOne({ officialId: deputyId })
+    .populate('workParticipations')
+    .then(function(deputy) {
+        for (let i in deputy.workParticipations) {
+            if (deputy.workParticipations[i].id == workId) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    })
 }
