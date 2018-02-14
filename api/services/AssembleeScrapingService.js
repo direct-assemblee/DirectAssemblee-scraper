@@ -16,7 +16,7 @@ let ThemeHelper = require('./helpers/ThemeHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
 
 const DEBUG = false;
-const RANGE_STEP = 10;
+const RANGE_STEP = 1;
 
 let self = module.exports = {
     startScraping: async function() {
