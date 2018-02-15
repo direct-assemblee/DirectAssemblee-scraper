@@ -1,4 +1,5 @@
 let DateHelper = require('../helpers/DateHelper.js');
+let Promise = require('bluebird')
 
 let self = module.exports = {
     findDeputyWithId: function(deputyId) {
@@ -7,12 +8,17 @@ let self = module.exports = {
         })
     },
 
-    addWorkToDeputy: function(workId, workType, deputyId) {
-        if (workType === Constants.DB_WORK_TYPE_QUESTIONS || workType === Constants.DB_WORK_TYPE_PROPOSITIONS) {
-            return addWorkCreationIfNew(deputyId, workId)
-        } else {
-            return addWorkParticipationIfNew(deputyId, workId)
-        }
+    addWorksToDeputy: async function(works, deputyId) {
+        let creations = await findWorks(deputyId, 'workCreations')
+        let participations = await findWorks(deputyId, 'workParticipations')
+
+        return Promise.mapSeries(works, function(work) {
+            if (work.type === Constants.DB_WORK_TYPE_QUESTIONS || work.type === Constants.DB_WORK_TYPE_PROPOSITIONS) {
+                return addWorkCreationIfNew(deputyId, work.id, creations)
+            } else {
+                return addWorkParticipationIfNew(deputyId, work.id, participations)
+            }
+        }, { concurrency: 1 })
     },
 
     findDeputyWithWorks: function(deputyId) {
@@ -117,66 +123,49 @@ let updateDeputy = function(deputyToUpdate) {
     }, deputyToUpdate);
 }
 
-let addWorkCreationIfNew = function(deputyId, workId) {
-    return hasWorkAsCreation(deputyId, workId)
-    .then(function(exists) {
-        if (!exists) {
-            return Deputy.addToCollection(deputyId, 'workCreations')
-            .members(workId)
-            .then(function() {
-                return;
-            })
-            .catch(err => {
-                console.log('-- Error adding creation ' + err);
-                return
-            });
-        }
-    })
+let addWorkCreationIfNew = function(deputyId, workId, works) {
+    if (!hasWork(deputyId, workId, works)) {
+        return Deputy.addToCollection(deputyId, 'workCreations')
+        .members(workId)
+        .then(function() {
+            return;
+        })
+        .catch(err => {
+            console.log('-- Error adding creation ' + err);
+            return
+        });
+    }
 }
 
-let addWorkParticipationIfNew = function(deputyId, workId) {
-    return hasWorkAsParticipation(deputyId, workId)
-    .then(function(exists) {
-        if (!exists) {
-            return Deputy.addToCollection(deputyId, 'workParticipations')
-            .members(workId)
-            .then(function() {
-                return;
-            })
-            .catch(err => {
-                console.log('-- Error adding participation ' + err);
-                return
-            });
-        }
-    })
+let addWorkParticipationIfNew = function(deputyId, workId, works) {
+    if (!hasWork(deputyId, workId, works)) {
+        return Deputy.addToCollection(deputyId, 'workParticipations')
+        .members(workId)
+        .then(function() {
+            return;
+        })
+        .catch(err => {
+            console.log('-- Error adding participation ' + err);
+            return
+        });
+    }
 }
 
-let hasWorkAsCreation = function(deputyId, workId) {
-    let result = false;
+let findWorks = function(deputyId, workType) {
     return Deputy.findOne({ officialId: deputyId })
-    .populate('workCreations')
+    .populate(workType)
     .then(function(deputy) {
-        for (let i in deputy.workCreations) {
-            if (deputy.workCreations[i].id == workId) {
-                result = true;
-                break;
-            }
-        }
-        return result;
+        return deputy.works;
     })
 }
 
-let hasWorkAsParticipation = function(deputyId, workId) {
+let hasWork = function(deputyId, workId, works) {
     let result = false;
-    return Deputy.findOne({ officialId: deputyId })
-    .populate('workParticipations')
-    .then(function(deputy) {
-        for (let i in deputy.workParticipations) {
-            if (deputy.workParticipations[i].id == workId) {
-                result = true;
-                break;
-            }
+    for (let i in works) {
+        if (works[i].id == workId) {
+            result = true;
+            break;
         }
-        return result;
-    })
+    }
+    return result;
 }

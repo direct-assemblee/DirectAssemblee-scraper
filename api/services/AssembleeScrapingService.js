@@ -132,10 +132,13 @@ let insertDeputy = function(deputy) {
         console.log('-- inserted declarations for deputy : ' + deputy.lastname);
         if (deputy.works && deputy.works.length > 0) {
             return WorkService.insertWorks(deputy.works, deputy.officialId)
-            .then(function() {
-                if (deputy.works && deputy.works.length > 0) {
-                    console.log('-- inserted works for deputy : ' + deputy.lastname);
-                    return deputy.officialId;
+            .then(function(insertedWorks) {
+                if (insertedWorks && insertedWorks.length > 0) {
+                    return DeputyService.addWorksToDeputy(insertedWorks, deputy.officialId)
+                    .then(function() {
+                        console.log('-- inserted works for deputy : ' + deputy.lastname);
+                        return deputy.officialId;
+                    })
                 }
                 return;
             })

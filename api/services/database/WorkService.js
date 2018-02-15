@@ -60,11 +60,12 @@ let self = module.exports = {
                 let extraToInsert = []
                 return createOrUpdateWork(work)
                 .then(function(insertedWorkId) {
-                    DeputyService.addWorkToDeputy(insertedWorkId, work.type, deputyId)
-                    return buildExtraInfosToInsert(insertedWorkId, work, deputyId);
-                })
-                .then(function(allExtrasToInsert) {
-                    return ExtraInfoService.createOrUpdateExtrasInfos(allExtrasToInsert);
+                    let extras = buildExtraInfosToInsert(insertedWorkId, work, deputyId)
+                    return ExtraInfoService.createOrUpdateExtrasInfos(extras)
+                    .then(function() {
+                        work.id = insertedWorkId
+                        return work;
+                    })
                 })
             }, { concurrency: 1 })
         }
