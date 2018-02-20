@@ -21,7 +21,6 @@ const RANGE_STEP = 1;
 let self = module.exports = {
     startScraping: async function() {
         ThemeHelper.initThemes();
-        RequestService.sendResetCache();
 
         console.log('==> start classifying unclassified questions');
         await WorkService.classifyUnclassifiedQuestions();
@@ -53,6 +52,7 @@ let self = module.exports = {
             })
             .then(function() {
                 console.log('==> done updating database !!')
+                RequestService.sendResetCache();
                 return FetchUrlService.howManyRequest();
             })
         })
