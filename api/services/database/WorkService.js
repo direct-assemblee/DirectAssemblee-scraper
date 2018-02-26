@@ -50,11 +50,12 @@ let self = module.exports = {
         if (works && works.length > 0) {
             let urls = []
             return Promise.filter(works, function(work) {
+                let isPast = DateHelper.isPast(work.date)
                 let isNew = !urls.includes(work.url)
-                if (isNew) {
+                if (isPast && isNew) {
                     urls.push(work.url)
                 }
-                return isNew
+                return isPast && isNew
             }, { concurrency: 1 })
             .mapSeries(function(work) {
                 let extraToInsert = []

@@ -72,8 +72,16 @@ var self = module.exports = {
         return yesterday.format('YYYY-MM-DD');
     },
 
+    getFormattedNow: function() {
+        return self.formatSimpleDate(moment());
+    },
+
     isLaterOrSame: function(date1, date2) {
         return self.formatSimpleDate(date1) >= self.formatSimpleDate(date2);
+    },
+
+    isPast: function(date) {
+        return self.getFormattedNow() >= self.formatSimpleDate(date);
     },
 
     isLessThanAMonthOlder: function(date1, date2) {
