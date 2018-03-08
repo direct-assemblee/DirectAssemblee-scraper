@@ -26,7 +26,8 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (10, 'Reconnaissance de l\'épuisement professionnel comme maladie', 'Maladies professionnelles'),
 (11, 'Adaptation au droit de l\'UE dans le domaine de la sécurité', 'Sécurité : droit de l\'UE'),
 (12, 'Euthanasie et suicide assisté, pour une fin de vie digne', 'Fin de vie'),
-(13, 'Mise en place d\'un récépissé dans le cadre d\'un contrôle d\'identité', 'Récépissé pour les contrôles d\'identité');
+(13, 'Mise en place d\'un récépissé dans le cadre d\'un contrôle d\'identité', 'Récépissé pour les contrôles d\'identité'),
+(14, 'Accord de transport aérien avec les USA, l\'Islande et la Norvège', 'Accord de transport aérien');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

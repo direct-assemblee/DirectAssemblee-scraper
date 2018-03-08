@@ -339,7 +339,9 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (292, "Services à la personne", 22),
 (293, "Mutualité sociale agricole", 24),
 (294, "Contraception", 22),
-(295, "Médecines alternatives", 22);
+(295, "Médecines alternatives", 22),
+(296, "Affaires internationales", 1),
+(297, "Commerce, artisanat et PME", 19);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
