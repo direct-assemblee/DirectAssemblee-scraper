@@ -6,11 +6,12 @@ module.exports = {
             officialId: ballot.officialId
         }).then(function(foundBallot) {
             if (!foundBallot || shouldUpdate) {
-                let ballotToInsert = createBallotModel(ballot)
                 if (!foundBallot) {
+                    let ballotToInsert = createBallotModel(ballot)
                     return createBallot(ballotToInsert);
                 } else {
-                    return updateBallot(foundBallot, ballotToInsert);
+                    let ballotToUpdate = updateBallotModel(ballot)
+                    return updateBallot(foundBallot, ballotToUpdate);
                 }
             }
         });
@@ -40,6 +41,27 @@ let createBallotModel = function(ballot) {
         originalThemeName: originalThemeName,
         date: date,
         dateDetailed: ballot.dateDetailed,
+        type: ballot.type,
+        totalVotes: ballot.totalVotes,
+        yesVotes: ballot.yesVotes,
+        noVotes: ballot.noVotes,
+        isAdopted: ballot.isAdopted,
+        analysisUrl: ballot.analysisUrl,
+        fileUrl: ballot.fileUrl,
+        nonVoting: ballot.nonVoting
+    }
+}
+
+let updateBallotModel = function(ballot) {
+    let originalThemeName = ballot.originalThemeName;
+    if (originalThemeName && originalThemeName.length > 0) {
+        originalThemeName = originalThemeName.charAt(0).toUpperCase() + originalThemeName.slice(1);
+    }
+    return {
+        officialId: ballot.officialId,
+        title: ballot.title,
+        themeId: ballot.theme ? ballot.theme.id : null,
+        originalThemeName: originalThemeName,
         type: ballot.type,
         totalVotes: ballot.totalVotes,
         yesVotes: ballot.yesVotes,
