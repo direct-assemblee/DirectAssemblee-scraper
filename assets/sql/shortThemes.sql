@@ -32,10 +32,10 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (16, 'Protection des savoir-faire et des informations commerciales non divulgués', 'Secret des affaires'),
 (17, 'Encadrement du régime d\'ouverture des établissements privés hors contrat', 'Régime des établissements privés hors contrat'),
 (18, 'Accueil des gens du voyage et lutte contre les installations illicites', 'Gens du voyage'),
-(19, 'Attribution de la carte du combattant aux soldats engagés en Algérie après les accords d\'Evian', ''),
-(20, 'Augmentation du pouvoir d\'achat grâce à la création d\'un ticket-carburant', ''),
-(21, 'Exonération fiscale et sociale des heures supplémentaires', ''),
-(22, 'Suppression de la prise en compte des revenus du conjoint dans la base de calcul de l\'allocation aux adultes handicapés', '');
+(19, 'Attribution de la carte du combattant aux soldats engagés en Algérie après les accords d\'Evian', 'Soldats engagés en Algérie / accords d\'Evian'),
+(20, 'Augmentation du pouvoir d\'achat grâce à la création d\'un ticket-carburant', 'Augmentation du pouvoir d\'achat'),
+(21, 'Exonération fiscale et sociale des heures supplémentaires', 'Exonération fiscale et sociale des heures supplémentaires'),
+(22, 'Suppression de la prise en compte des revenus du conjoint dans la base de calcul de l\'allocation aux adultes handicapés', 'Calcul de l\'allocation aux adultes handicapés');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
