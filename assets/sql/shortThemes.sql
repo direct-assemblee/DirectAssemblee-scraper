@@ -27,7 +27,15 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (11, 'Adaptation au droit de l\'UE dans le domaine de la sécurité', 'Sécurité : droit de l\'UE'),
 (12, 'Euthanasie et suicide assisté, pour une fin de vie digne', 'Fin de vie'),
 (13, 'Mise en place d\'un récépissé dans le cadre d\'un contrôle d\'identité', 'Récépissé pour les contrôles d\'identité'),
-(14, 'Accord de transport aérien avec les USA, l\'Islande et la Norvège', 'Accord de transport aérien');
+(14, 'Accord de transport aérien avec les USA, l\'Islande et la Norvège', 'Accord de transport aérien'),
+(15, 'Consultation sur l\'accession à la pleine souveraineté de la Nouvelle-Calédonie', 'Souveraineté de la Nouvelle-Calédonie'),
+(16, 'Protection des savoir-faire et des informations commerciales non divulgués', 'Secret des affaires'),
+(17, 'Encadrement du régime d\'ouverture des établissements privés hors contrat', 'Régime des établissements privés hors contrat'),
+(18, 'Accueil des gens du voyage et lutte contre les installations illicites', 'Gens du voyage'),
+(19, 'Attribution de la carte du combattant aux soldats engagés en Algérie après les accords d\'Evian', ''),
+(20, 'Augmentation du pouvoir d\'achat grâce à la création d\'un ticket-carburant', ''),
+(21, 'Exonération fiscale et sociale des heures supplémentaires', ''),
+(22, 'Suppression de la prise en compte des revenus du conjoint dans la base de calcul de l\'allocation aux adultes handicapés', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

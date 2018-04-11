@@ -341,7 +341,10 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (294, "Contraception", 22),
 (295, "Médecines alternatives", 22),
 (296, "Affaires internationales", 1),
-(297, "Commerce, artisanat et PME", 19);
+(297, "Commerce, artisanat et PME", 19),
+(298, "Commerces, artisanat et PME", 19),
+(299, "Impôt sur la fortune immobilière", 9),
+(300, "Heure légale", 30);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
