@@ -3,7 +3,7 @@
 let htmlparser = require('htmlparser2');
 let StringHelper = require('../helpers/StringHelper');
 
-const HATVP_DEPUTY_URL_START = 'http://www.hatvp.fr/fiche-nominative/?declarant=';
+const HATVP_DEPUTY_URL_START = 'https://www.hatvp.fr/fiche-nominative/?declarant=';
 
 module.exports = {
     getParser: function(callback) {

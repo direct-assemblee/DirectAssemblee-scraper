@@ -6,7 +6,7 @@ let DeclarationsUrlsParser = require('./parsers/DeclarationsUrlsParser')
 let DeputyDeclarationsParser = require('./parsers/DeputyDeclarationsParser')
 
 const PARAM_DEPUTY_NAME = '{deputy_name}';
-const DEPUTY_DECLARATIONS_URL = 'http://www.hatvp.fr/fiche-nominative/?declarant=' + PARAM_DEPUTY_NAME;
+const DEPUTY_DECLARATIONS_URL = 'https://www.hatvp.fr/fiche-nominative/?declarant=' + PARAM_DEPUTY_NAME;
 const HATVP_DEPUTIES_LIST = 'http://www.hatvp.fr/resultat-de-recherche-avancee/?document=&mandat=depute&region=0&dep=';
 
 module.exports = {
