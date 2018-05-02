@@ -44,7 +44,14 @@ module.exports.session = {
   *                                                                          *
   ***************************************************************************/
 
-  // adapter: 'redis',
+  adapter: 'redis',
+  host: process.env.API_REDIS_HOST || 'redis',
+  port: process.env.API_REDIS_PORT || 6379,
+  ttl: process.env.API_REDIS_TTL || 86400,
+  db: parseInt(process.env.API_REDIS_DB) || 0,
+  pass: process.env.API_REDIS_PASSWORD || '',
+  prefix: process.env.API_REDIS_PREFIX || 'sess:'
+
 
   /***************************************************************************
   *                                                                          *
