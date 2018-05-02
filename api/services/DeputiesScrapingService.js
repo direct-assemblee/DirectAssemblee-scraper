@@ -60,8 +60,9 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
         deputy.declarations = declarations;
         return deputy;
     })
-    .then(function(deputy) {
-        return retrieveDeputyWork(deputy)
+    .then(async function(deputy) {
+        let allWorks = await WorkService.findWorksWithAuthorsAndSubscribers();
+        return retrieveDeputyWork(allWorks, deputy)
         .then(function(works) {
             deputy.works = works;
             console.log('-- retrieved works for : ' + deputy.lastname);
@@ -74,14 +75,14 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
     })
 }
 
-let retrieveDeputyWork = async function(deputy) {
-    let lastWorkDate = await WorkService.findLastWorkDate(deputy.officialId);
+let retrieveDeputyWork = async function(allWorks, deputy) {
+    let lastWorkDate = await WorkService.findLastWorkDate(allWorks, deputy.officialId);
 
-    let allWorks = [];
+    let deputyWorks = [];
     for (let i = 0 ; i < WORK_TYPES.length ; i++) {
-        allWorks.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i], lastWorkDate))
+        deputyWorks.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i], lastWorkDate))
     }
-    return Promise.filter(allWorks, function(workOfType) {
+    return Promise.filter(deputyWorks, function(workOfType) {
         return workOfType.length > 0;
     })
     .then(function(works) {

@@ -72,19 +72,22 @@ let self = module.exports = {
         }
     },
 
-    findLastWorkDate: function(deputyId) {
-        return findWorksWithAuthorsAndSubscribers()
-        .sort('date DESC')
-        .then(function(works) {
-            return Promise.filter(works, function(work) {
-                return workHasDeputy(work, deputyId)
-            })
-            .then(function(deputyWorks) {
-                if (deputyWorks && deputyWorks.length > 0) {
-                    return deputyWorks[0].date;
-                }
-            })
+    findLastWorkDate: function(allWorks, deputyId) {
+        return Promise.filter(allWorks, function(work) {
+            return workHasDeputy(work, deputyId)
         })
+        .then(function(deputyWorks) {
+            if (deputyWorks && deputyWorks.length > 0) {
+                return deputyWorks[0].date;
+            }
+        })
+    },
+
+    findWorksWithAuthorsAndSubscribers: function() {
+        return Work.find()
+            .populate('authors')
+            .populate('participants')
+            .sort('date DESC')
     }
 }
 
@@ -95,13 +98,6 @@ let populateWork = function(workId) {
         .then(function(works) {
             return works[0]
         })
-}
-
-let findWorksWithAuthorsAndSubscribers = function() {
-    return Work.find()
-        .populate('authors')
-        .populate('participants')
-        .sort('date DESC')
 }
 
 let workHasDeputy = function(work, deputyId) {
