@@ -50,6 +50,11 @@ module.exports = {
                         if (lightText) {
                             let dateMatched = DateHelper.findAndFormatDateInString(lightText);
                             if (dateMatched) {
+                                let seanceText = 'séance'
+                                let seanceIndex = lightText.indexOf(seanceText);
+                                if (lightText.includes(seanceText)) {
+                                    currentSectionItem.title = lightText.substring(0, seanceIndex + seanceText.length)
+                                }
                                 currentSectionItem.date = dateMatched;
                                 expectedItem = null;
                             }
