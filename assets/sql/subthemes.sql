@@ -344,7 +344,16 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (297, "Commerce, artisanat et PME", 19),
 (298, "Commerces, artisanat et PME", 19),
 (299, "Impôt sur la fortune immobilière", 9),
-(300, "Heure légale", 30);
+(300, "Heure légale", 30),
+(301, "Agriculture, pêche et forêt", 2),
+(302, "Immigration maîtrisée, droit d'asile effectif et intégration réussie", 25),
+(303, "Partis et mouvements politiques", 21),
+(304, "PME, commerces et artisanat", 19),
+(305, "Engagement associatif", 25),
+(306, "Presse en ligne", 7),
+(307, "Amélioration de la prestation de compensation du handicap", 22),
+(308, "Interdiction du glyphosate", 2),
+(309, "Agriculture et forêt", 2);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
