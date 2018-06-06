@@ -36,7 +36,9 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (20, 'Augmentation du pouvoir d\'achat grâce à la création d\'un ticket-carburant', 'Augmentation du pouvoir d\'achat'),
 (21, 'Exonération fiscale et sociale des heures supplémentaires', 'Exonération fiscale et sociale des heures supplémentaires'),
 (22, 'Suppression de la prise en compte des revenus du conjoint dans la base de calcul de l\'allocation aux adultes handicapés', 'Calcul de l\'allocation aux adultes handicapés'),
-(23, 'Droit voisin au profit des éditeurs de services de presse en ligne', "Presse en ligne");
+(23, 'Droit voisin au profit des éditeurs de services de presse en ligne', "Presse en ligne"),
+(24, 'Équilibre des relations commerciales dans le secteur agro-alimentaire', 'Agro-alimentaire : relations commerciales'),
+(25, 'Évolution du logement, de l’aménagement et du numérique (ELAN)', 'Logement, aménagement et numérique');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

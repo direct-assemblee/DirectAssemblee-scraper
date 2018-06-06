@@ -18,7 +18,12 @@ module.exports = {
                 if (expectedItem === 'title') {
                     let lightText = StringHelper.removeParentReference(text);
                     if (lightText && lightText.length > 0) {
-                        let wholeTitle = lightText.substring(lightText.indexOf('-') + 2);
+                        let endOfTitle = lightText.lastIndexOf('(');
+                        if (endOfTitle == -1) {
+                            endOfTitle = lightText.lastIndexOf('-');
+                        }
+                        let titleLength = lightText.length - (lightText.length - endOfTitle);
+                        let wholeTitle = lightText.substring(0, titleLength);
                         let split = wholeTitle.split(':');
                         if (split) {
                             parsedItem = {};

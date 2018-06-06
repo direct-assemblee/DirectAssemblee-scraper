@@ -126,7 +126,7 @@ let retrieveBallotDetails = function(ballot, attempts) {
 
 let retrieveBallotTheme = function(ballot) {
     if (ballot.fileUrl) {
-        return FetchUrlService.retrieveContentWithIsoEncoding(ballot.fileUrl, true, BallotThemeParser)
+        return FetchUrlService.retrieveContent(ballot.fileUrl, BallotThemeParser)
         .then(function(parsedTheme) {
             if (parsedTheme && parsedTheme.theme) {
                 return ThemeHelper.findTheme(parsedTheme.theme)
