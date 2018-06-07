@@ -155,7 +155,7 @@ let findWorks = function(deputyId, workType) {
     return Deputy.findOne({ officialId: deputyId })
     .populate(workType)
     .then(function(deputy) {
-        return deputy.works;
+        return deputy[workType];
     })
 }
 
