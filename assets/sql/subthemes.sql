@@ -353,7 +353,8 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (306, "Presse en ligne", 7),
 (307, "Amélioration de la prestation de compensation du handicap", 22),
 (308, "Interdiction du glyphosate", 2),
-(309, "Agriculture et forêt", 2);
+(309, "Agriculture et forêt", 2),
+(310, "Accidents du travail et maladies professionnelles", 22);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

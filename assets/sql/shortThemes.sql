@@ -38,7 +38,12 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (22, 'Suppression de la prise en compte des revenus du conjoint dans la base de calcul de l\'allocation aux adultes handicapés', 'Calcul de l\'allocation aux adultes handicapés'),
 (23, 'Droit voisin au profit des éditeurs de services de presse en ligne', "Presse en ligne"),
 (24, 'Équilibre des relations commerciales dans le secteur agro-alimentaire', 'Agro-alimentaire : relations commerciales'),
-(25, 'Évolution du logement, de l’aménagement et du numérique (ELAN)', 'Logement, aménagement et numérique');
+(25, 'Évolution du logement, de l’aménagement et du numérique (ELAN)', 'Logement, aménagement et numérique'),
+(26, 'Accidents du travail et maladies professionne', 'Accidents du travail et maladies professionnelles'),
+(27, 'Encadrement de l\'utilisation du téléphone portable dans les écoles et collèges', 'Utilisation du téléphone portable à l\'école et au collège'),
+(28, 'Mise des aspirations du peuple au cœur des débats budgétaires', 'Aspirations du peuple au cœur des débats budgétaires'),
+(29, 'Adaptation des vitesses maximales autorisées par la police de la circulation', 'Vitesses maximales de circulation autorisées'),
+(30, 'Renforcement des outils et des moyens de pilotage de la recherche publique', 'Outils et moyens de pilotage de la recherche publique');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
