@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Hôte: 127.0.0.1 (MySQL 5.7.18)
+# Hôte: 127.0.0.1 (MySQL 5.7.22)
 # Base de données: directassemblee
-# Temps de génération: 2017-12-10 12:43:00 +0000
+# Temps de génération: 2018-06-26 18:55:35 +0000
 # ************************************************************
 
 
@@ -91,7 +91,6 @@ CREATE TABLE IF NOT EXISTS `deputy` (
   `parliamentGroup` varchar(255) DEFAULT NULL,
   `departmentId` double DEFAULT NULL,
   `district` double DEFAULT NULL,
-  `commission` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `job` varchar(255) DEFAULT NULL,
@@ -117,14 +116,23 @@ CREATE TABLE IF NOT EXISTS `deputy_subscribers__subscriber_followedDeputiesIds` 
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS
-`deputy_workCreations__work_authors` (
+
+
+# Affichage de la table deputy_workCreations__work_authors
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `deputy_workCreations__work_authors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `deputy_workCreations` int(11) DEFAULT NULL,
   `work_authors` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Affichage de la table deputy_workParticipations__work_participants
+# ------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `deputy_workParticipations__work_participants` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -133,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `deputy_workParticipations__work_participants` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Affichage de la table extrainfo
@@ -155,9 +164,33 @@ CREATE TABLE IF NOT EXISTS `extrainfo` (
 CREATE TABLE IF NOT EXISTS `extraposition` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `position` varchar(255) DEFAULT NULL,
-  `office` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
   `deputyId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Affichage de la table instance
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `instance` (
+  `officialId` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `typeId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`officialId`),
+  UNIQUE KEY `officialId` (`officialId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Affichage de la table instancetype
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `instancetype` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `singular` varchar(255) DEFAULT NULL,
+  `plural` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -173,6 +206,33 @@ CREATE TABLE IF NOT EXISTS `mandate` (
   `startingDate` varchar(255) DEFAULT NULL,
   `endingDate` varchar(255) DEFAULT NULL,
   `deputyId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Affichage de la table role
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `roleTypeId` int(11) DEFAULT NULL,
+  `deputyId` int(11) DEFAULT NULL,
+  `instanceId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Affichage de la table roletype
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `roletype` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `maleName` varchar(255) DEFAULT NULL,
+  `femaleName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -219,6 +279,7 @@ CREATE TABLE IF NOT EXISTS `subtheme` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+
 # Affichage de la table theme
 # ------------------------------------------------------------
 
@@ -262,7 +323,8 @@ CREATE TABLE IF NOT EXISTS `work` (
   `type` varchar(255) DEFAULT NULL,
   `themeId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `url` (`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
