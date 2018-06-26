@@ -6,14 +6,14 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-CREATE TABLE IF NOT EXISTS `roleType` (
+CREATE TABLE IF NOT EXISTS `roletype` (
   `id` int(3) NOT NULL AUTO_INCREMENT,
   `maleName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `femaleName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
 
-INSERT IGNORE `roleType` (`id`, `maleName`, `femaleName`) VALUES
+INSERT IGNORE `roletype` (`id`, `maleName`, `femaleName`) VALUES
 (1, 'Président', 'Présidente'),
 (2, 'Co-Président', 'Co-Présidente'),
 (3, 'Vice-Président', 'Vice-Présidente'),
