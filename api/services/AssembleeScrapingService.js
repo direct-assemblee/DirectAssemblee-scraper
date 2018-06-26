@@ -14,6 +14,10 @@ let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
 let ThemeHelper = require('./helpers/ThemeHelper')
 let DeclarationScrapingService = require('./DeclarationScrapingService')
+let InstanceService = require('./database/InstanceService')
+let RoleTypeService = require('./database/RoleTypeService')
+let RoleService = require('./database/RoleService')
+let InstanceTypeService = require('./database/InstanceTypeService')
 
 const DEBUG = false;
 const RANGE_STEP = 1;
@@ -118,11 +122,18 @@ let retrieveAndInsertDeputies = function(allDeputiesUrls, deputiesRange) {
 let insertDeputy = function(deputy) {
     return DeputyService.insertDeputy(deputy, true)
     .then(function() {
+        console.log('-- inserted deputy : ' + deputy.lastname);
         return MandateService.insertMandates(deputy.mandates, deputy.officialId)
     })
     .then(function() {
         console.log('-- inserted mandates for deputy : ' + deputy.lastname);
-        return ExtraPositionService.insertExtraPositions(deputy.extraPositions, deputy.officialId);
+        return insertInstancesAndDeputyRoles(deputy.instancesWithRoles, deputy.officialId)
+    })
+    .then(function() {
+        console.log('-- inserted instances for deputy : ' + deputy.lastname);
+        if (deputy.extraPosition != null) {
+            return ExtraPositionService.insertExtraPosition(deputy.extraPosition, deputy.officialId);
+        }
     })
     .then(function() {
         console.log('-- inserted extra positions for deputy : ' + deputy.lastname);
@@ -143,6 +154,32 @@ let insertDeputy = function(deputy) {
                 return;
             })
         }
+    })
+}
+
+let insertInstancesAndDeputyRoles = function(instancesWithRoles, deputyId) {
+    return Promise.map(instancesWithRoles, function(instance) {
+        return InstanceTypeService.find(instance.name, instance.type)
+        .then(function(typeId) {
+            if (typeId != null) {
+                instance.typeId = typeId
+                return InstanceService.createOrUpdate(instance)
+                .then(function(insertedInstanceId) {
+                    if (insertedInstanceId != null) {
+                        return RoleTypeService.find(instance.role)
+                        .then(function(roleTypeId) {
+                            if (roleTypeId != null) {
+                                return RoleService.createOrUpdate(insertedInstanceId, deputyId, roleTypeId)
+                            } else {
+                                console.log('/!\\ Could not find roleType ' + instance.role + ' in DB')
+                            }
+                        })
+                    }
+                })
+            } else {
+                console.log('/!\\ Could not find instanceType ' + instance.type.name + ' in DB')
+            }
+        })
     })
 }
 

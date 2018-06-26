@@ -29,9 +29,6 @@ module.exports = {
         district: {
             type: 'number'
         },
-        commission: {
-            type: 'string'
-        },
         phone: {
             type: 'string'
         },

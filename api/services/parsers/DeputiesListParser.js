@@ -41,9 +41,6 @@ module.exports = {
                     case 5:
                     parsedItem.district = lightText;
                     break;
-                    case 6:
-                    parsedItem.commission = lightText;
-                    break;
                     default:
                     break;
                 }
@@ -72,6 +69,5 @@ let print = function(parsedItem) {
     console.log('lastname : ' + parsedItem.lastname);
     console.log('department : ' + parsedItem.department);
     console.log('district : ' + parsedItem.district);
-    console.log('commission : ' + parsedItem.commission);
     console.log('------------- ');
 }

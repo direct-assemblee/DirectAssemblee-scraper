@@ -43,7 +43,7 @@ module.exports = {
         .then(function(deputyInfos) {
             if (deputyInfos) {
                 if (deputyInfos.endOfMandateDate) {
-                    console.log('* expired mandate for : ' + deputy.lastname + ' - end of mandate : ' + deputyInfos.endOfMandateDate);
+                    console.log('/!\\ expired mandate for : ' + deputy.lastname + ' - end of mandate : ' + deputyInfos.endOfMandateDate);
                 }
                 deputy.endOfMandateDate = deputyInfos.endOfMandateDate;
                 deputy.endOfMandateReason = deputyInfos.endOfMandateReason;
@@ -104,8 +104,6 @@ let retrieveDeputyWorkOfType = async function(deputy, workType, lastWorkDate) {
     while (shouldGetNext) {
         let url = getWorkPageUrl(deputy, workType, page);
         let works = await retrieveDeputyWorkOfTypeWithPage(url, workType, lastWorkDate);
-
-
         shouldGetNext = false;
         if (works && works.length > 0) {
             for (let i in works) {
@@ -254,15 +252,26 @@ let processResultForType = function(parsedWork, result) {
     return processedResult;
 }
 
+let retrieveDeputyInstances = function(deputy) {
+    let deputyInfosUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
+    return FetchUrlService.retrieveContent(deputyInfosUrl, DeputyInstancesParser)
+    .then(function(instancesWithRoles) {
+        deputy.instancesWithRoles = instancesWithRoles
+        return deputy
+    })
+}
+
 let retrieveDeputyInfosAndMandates = function(deputy) {
     let mandatesUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
     return FetchUrlService.retrieveContent(mandatesUrl, DeputyInfosAndMandatesParser)
     .then(function(result) {
         if (result) {
+            deputy.instancesWithRoles = result.instances;
+
             deputy.currentMandateStartDate = result.mandates.currentMandateStartDate;
             deputy.mandates = result.mandates;
 
-            deputy.extraPositions = result.extraPositions;
+            deputy.extraPosition = result.extraPosition;
 
             deputy.phone = result.infos.phone;
             deputy.email = result.infos.email;

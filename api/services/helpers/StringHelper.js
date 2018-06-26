@@ -26,7 +26,7 @@ let self = module.exports = {
 
     removeParentReference: function(str) {
         if (str && str.length > 0) {
-            return (' ' + str.trim()).substr(1);
+            return (' ' + str.trim()).substr(1).trim();
         }
         return str;
     }
@@ -47,5 +47,8 @@ let removeSpecialChars = function(str) {
     .replace('&quot;', '')
     .replace(/<[^>]*em>/g, '')
     .replace('data-place', 'dataplace')
+    .replace(new RegExp('data-url', 'g'), 'dataurl')
+    .replace(new RegExp('data-uri-suffix', 'g'), 'dataurisuffix')
+    .replace(new RegExp('data-sort', 'g'), 'datasort')
     .replace(/\[dotspace\]/g, '.<br>');
 }

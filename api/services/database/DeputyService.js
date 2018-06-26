@@ -102,7 +102,6 @@ let createDeputyModel = function(deputy, departmentId) {
         'parliamentGroup': deputy.parliamentGroup,
         'departmentId': departmentId,
         'district': deputy.district,
-        'commission': deputy.commission,
         'phone': deputy.phone,
         'email': deputy.email,
         'job': deputy.job,

@@ -4,11 +4,11 @@ module.exports = {
             type: 'number',
             autoIncrement: true
         },
-        position: {
+        maleName: {
             type: 'string'
         },
-        deputyId: {
-            model: 'Deputy'
+        femaleName: {
+            type: 'string'
         }
     }
 };

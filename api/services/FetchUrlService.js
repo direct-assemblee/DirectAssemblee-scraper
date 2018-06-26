@@ -29,6 +29,7 @@ let self = module.exports = {
     },
 
     retrieveContentWithAttempt: function(url, isIsoEncoding, attemptNumber, parser) {
+        url = url.toString().replace('(', '%28').replace(')', '%29')
         count++;
 
         let settings = {
