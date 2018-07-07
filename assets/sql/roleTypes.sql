@@ -16,19 +16,19 @@ CREATE TABLE IF NOT EXISTS `roletype` (
 INSERT IGNORE `roletype` (`id`, `maleName`, `femaleName`) VALUES
 (1, 'Président', 'Présidente'),
 (2, 'Co-Président', 'Co-Présidente'),
-(3, 'Vice-Président', 'Vice-Présidente'),
-(4, 'Premier vice-président', 'Première vice-présidente'),
-(5, 'Deuxième vice-président', 'Deuxième vice-présidente'),
-(6, 'Secrétaire', 'Secrétaire'),
-(7, 'Rapporteur', 'Rapporteure'),
-(8, 'Co-rapporteur', 'Co-rapporteure'),
-(9, 'Rapporteur général', 'Rapporteure générale'),
-(10, 'Questeur', 'Questeure'),
-(11, 'Membre', 'Membre'),
+(3, 'Premier vice-président', 'Première vice-présidente'),
+(4, 'Deuxième vice-président', 'Deuxième vice-présidente'),
+(5, 'Vice-Président', 'Vice-Présidente'),
+(6, 'Questeur', 'Questeure'),
+(7, 'Rapporteur général', 'Rapporteure générale'),
+(8, 'Rapporteur', 'Rapporteure'),
+(9, 'Co-rapporteur', 'Co-rapporteure'),
+(10, 'Secrétaire', 'Secrétaire'),
+(11, 'Membre nommé', 'Membre nommée'),
 (12, 'Membre de droit', 'Membre de droit'),
-(13, 'Membre nommé', 'Membre nommée'),
-(14, 'Membre titulaire', 'Membre titulaire'),
-(15, 'Membre suppléant', 'Membre suppléante');
+(13, 'Membre titulaire', 'Membre titulaire'),
+(14, 'Membre suppléant', 'Membre suppléante'),
+(15, 'Membre', 'Membre');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
