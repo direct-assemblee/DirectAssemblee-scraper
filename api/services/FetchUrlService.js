@@ -62,7 +62,7 @@ let self = module.exports = {
                     }
                 }
             } else {
-                let cleanContent = StringHelper.cleanHtml(content);
+                let cleanContent = StringHelper.clean(content);
                 content = null;
                 return parseHtml(cleanContent, parser);
             }

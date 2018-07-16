@@ -31,10 +31,6 @@ module.exports = {
         let retrieveMandate = false;
         let reallyExpectPreviousDeputiesMandates = false;
 
-        let extraPosition;
-        let expectExtraPosition = false;
-        let expectExtraPositionValue = false;
-
         let infos = {};
         let expectedItemForInfos;
 
@@ -42,14 +38,18 @@ module.exports = {
             if (attribs.class === 'bordure-top') {
                 expectInstance = true;
                 expectedItemForInstance = 'type'
-            } else if (expectInstance && attribs.href != null && attribs.href.startsWith('/instances/')) {
-                let lightText = StringHelper.removeParentReference(attribs.href);
-                let start = lightText.indexOf(INSTANCE_ID_PREFIX)
-                lightText = lightText.substring(start + INSTANCE_ID_PREFIX.length)
-                parsedInstance.officialId = lightText
-                expectedItemForInstance = 'name'
-            } else if (expectInstance && tagname === 'span' && attribs.class === 'dt') {
-                expectedItemForInstance = 'role'
+            } else if (expectInstance) {
+                if (attribs.href != null && attribs.href.startsWith('/instances/')) {
+                    let lightText = StringHelper.removeParentReference(attribs.href);
+                    let start = lightText.indexOf(INSTANCE_ID_PREFIX)
+                    lightText = lightText.substring(start + INSTANCE_ID_PREFIX.length)
+                    parsedInstance.officialId = lightText
+                    expectedItemForInstance = 'name'
+                } else if (parsedType === "Bureau") {
+                    expectedItemForInstance = 'name'
+                } else if (tagname === 'span' && attribs.class === 'dt') {
+                    expectedItemForInstance = 'role'
+                }
             }
         }
 
@@ -63,13 +63,7 @@ module.exports = {
                     } else if (expectedItemForInstance === 'type') {
                         parsedType = lightText
                     } else if (expectedItemForInstance === 'name') {
-                        parsedInstance.name = lightText
-                        parsedInstance.role = parsedRole
-                        parsedInstance.type = { name: parsedType }
-                        if (parsedType === "Commissions") {
-                            parsedInstance.type.permanentCommission = commissionCount == 0
-                            commissionCount++
-                        }
+                        buildParsedItem(lightText);
                         parsedInstances.push(parsedInstance);
                         expectedItemForInstance = null;
                         parsedInstance = {}
@@ -78,34 +72,27 @@ module.exports = {
             }
         }
 
+        let buildParsedItem = function(lightText) {
+            if (parsedType === "Bureau") {
+                let positionEnd = lightText.indexOf('de l\'Assemblée nationale')
+                parsedInstance.role = lightText.substring(0, positionEnd)
+                parsedInstance.name = "Bureau"
+                parsedInstance.type = { name: "Bureau" }
+                parsedInstance.officialId = 1
+            } else {
+                parsedInstance.name = lightText
+                parsedInstance.role = parsedRole
+                parsedInstance.type = { name: parsedType }
+                if (parsedType === "Commissions") {
+                    parsedInstance.type.permanentCommission = commissionCount == 0
+                    commissionCount++
+                }
+            }
+        }
+
         let onCloseTagForInstances = function(tagname) {
             if (tagname === 'div') {
                 expectedItemForInstance = null;
-            }
-        }
-
-        let onOpenTagForExtraPosition = function(tagname, attribs) {
-            if (attribs.class === 'bordure-top') {
-                expectExtraPosition = true;
-            } else if (tagname === 'li' && expectExtraPositionValue) {
-                expectExtraPosition = false;
-                expectExtraPositionValue = true;
-            }
-        }
-
-        let onTextForExtraPosition = function(text) {
-            if (expectExtraPosition || expectExtraPositionValue) {
-                let lightText = StringHelper.removeParentReference(text);
-                if (lightText != null && lightText.length > 0) {
-                    if (expectExtraPosition && lightText === 'Bureau') {
-                        expectExtraPositionValue = true;
-                    } else if (expectExtraPositionValue) {
-                        let positionEnd = lightText.indexOf('de l\'Assemblée nationale')
-                        extraPosition = { 'position': lightText.substring(0, positionEnd) };
-                        expectExtraPositionValue = false;
-                        expectExtraPosition = false;
-                    }
-                }
             }
         }
 
@@ -244,13 +231,11 @@ module.exports = {
             onopentag: function(tagname, attribs) {
                 onOpenTagForInstances(tagname, attribs);
                 onOnOpenTagForMandates(tagname, attribs);
-                onOpenTagForExtraPosition(tagname, attribs);
                 onOpenTagForInfos(tagname, attribs);
             },
             ontext: function(text) {
                 onTextForInstances(text);
                 onTextForMandates(text);
-                onTextForExtraPosition(text);
                 onTextForInfos(text);
             },
             onclosetag: function(tagname) {
@@ -258,7 +243,7 @@ module.exports = {
                 onCloseTagForMandates(tagname);
                 onCloseTagForInfos(tagname);
                 if (tagname === 'html') {
-                    callback({ instances: parsedInstances, mandates: mandatesGroup, extraPosition: extraPosition, infos: infos });
+                    callback({ instances: parsedInstances, mandates: mandatesGroup, infos: infos });
                 }
             }
         }, {decodeEntities: true});

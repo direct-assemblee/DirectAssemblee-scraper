@@ -271,8 +271,6 @@ let retrieveDeputyInfosAndMandates = function(deputy) {
             deputy.currentMandateStartDate = result.mandates.currentMandateStartDate;
             deputy.mandates = result.mandates;
 
-            deputy.extraPosition = result.extraPosition;
-
             deputy.phone = result.infos.phone;
             deputy.email = result.infos.email;
             deputy.job = result.infos.job;

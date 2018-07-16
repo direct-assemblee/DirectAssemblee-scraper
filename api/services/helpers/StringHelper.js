@@ -10,7 +10,7 @@ for (var i = 0; i < defaultDiacriticsRemovalMap .length; i++) {
 }
 
 let self = module.exports = {
-    cleanHtml: function(content) {
+    clean: function(content) {
         let cleaned = self.removeParentReference(content);
         cleaned = cleaned.replace(/&quot;/g, '\'');
         cleaned = entities.decode(cleaned);
@@ -19,7 +19,7 @@ let self = module.exports = {
     },
 
     replaceAccents: function(str) {
-        return str.replace(/[^\u0000-\u007E]/g, function(a){
+        return str.replace(/[^\u0000-\u007E]/g, function(a) {
             return diacriticsMap[a] || a;
         });
     },

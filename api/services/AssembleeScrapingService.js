@@ -6,7 +6,6 @@ let DeputyService = require('./database/DeputyService.js');
 let BallotService = require('./database/BallotService.js');
 let VoteService = require('./database/VoteService.js');
 let MandateService = require('./database/MandateService.js');
-let ExtraPositionService = require('./database/ExtraPositionService.js');
 let DeclarationService = require('./database/DeclarationService.js');
 let WorkService = require('./database/WorkService.js');
 let BallotsScrapingService = require('./BallotsScrapingService');
@@ -131,12 +130,6 @@ let insertDeputy = function(deputy) {
     })
     .then(function() {
         console.log('-- inserted instances for deputy : ' + deputy.lastname);
-        if (deputy.extraPosition != null) {
-            return ExtraPositionService.insertExtraPosition(deputy.extraPosition, deputy.officialId);
-        }
-    })
-    .then(function() {
-        console.log('-- inserted extra positions for deputy : ' + deputy.lastname);
         return DeclarationService.insertDeclarations(deputy.declarations, deputy.officialId);
     })
     .then(function() {

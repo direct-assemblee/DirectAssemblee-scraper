@@ -18,7 +18,6 @@ module.exports = {
        'Declaration': true,
        'Department': true,
        'Deputy': true,
-       'ExtraPosition': true,
        'ExtraInfo': true,
        'Mandate': true,
        'ShortTheme': true,

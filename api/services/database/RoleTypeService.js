@@ -1,4 +1,5 @@
 let Promise = require('bluebird');
+let StringHelper = require('../helpers/StringHelper');
 
 let allRoleTypes;
 
@@ -24,5 +25,7 @@ let self = module.exports = {
 
 let typeFound = function(type, name) {
     name = name.replace('(', '').replace(')', '')
-    return name.toLowerCase().startsWith(type.maleName.toLowerCase()) || name.toLowerCase().startsWith(type.femaleName.toLowerCase())
+    name = StringHelper.clean(name)
+    return name.toLowerCase() == StringHelper.clean(type.maleName.toLowerCase())
+        || name.toLowerCase() == StringHelper.clean(type.femaleName.toLowerCase())
 }

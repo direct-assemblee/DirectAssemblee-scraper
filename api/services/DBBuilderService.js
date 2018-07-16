@@ -21,7 +21,6 @@ const TABLE_BALLOT = 'Ballot';
 const TABLE_THEME = 'Theme';
 const TABLE_VOTE = 'Vote';
 const TABLE_MANDATE = 'Mandate';
-const TABLE_EXTRA_POSITION = 'ExtraPosition';
 const TABLE_EXTRA_INFO = 'ExtraInfo';
 const TABLE_SUBSCRIBER = 'Subscriber';
 const TABLE_DEPUTIES_SUBSCRIBERS = 'deputy_subscribers__subscriber_followeddeputiesids';

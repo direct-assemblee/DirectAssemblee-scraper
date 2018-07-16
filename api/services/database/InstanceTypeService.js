@@ -27,7 +27,7 @@ let typeFound = function(type, parsedName, parsedType) {
         if (parsedType.permanentCommission) {
             return type.singular == 'Commission permanente'
         } else {
-            return type.singular == 'Commission (non permanente)'
+            return type.singular == 'Commission non permanente'
         }
     } else {
         return parsedType.name.startsWith(type.plural) || parsedType.name.startsWith(type.singular)

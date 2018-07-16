@@ -158,19 +158,6 @@ CREATE TABLE IF NOT EXISTS `extrainfo` (
 
 
 
-# Affichage de la table extraposition
-# ------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `extraposition` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `position` varchar(255) DEFAULT NULL,
-  `deputyId` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
 # Affichage de la table instance
 # ------------------------------------------------------------
 
