@@ -44,7 +44,8 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (28, 'Mise des aspirations du peuple au cœur des débats budgétaires', 'Aspirations du peuple au cœur des débats budgétaires'),
 (29, 'Adaptation des vitesses maximales autorisées par la police de la circulation', 'Vitesses maximales de circulation autorisées'),
 (30, 'Renforcement des outils et des moyens de pilotage de la recherche publique', 'Outils et moyens de pilotage de la recherche publique'),
-(31, 'Renforcement des droits des consommateurs en matière de démarchage téléphonique', 'Démarchage téléphonique : droits des consommateurs');
+(31, 'Renforcement des droits des consommateurs en matière de démarchage téléphonique', 'Démarchage téléphonique : droits des consommateurs'),
+(32, 'Pour une démocratie plus représentative, responsable et efficace', 'Démocratie plus représentative, responsable et efficace');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
