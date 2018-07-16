@@ -24,12 +24,12 @@ INSERT IGNORE `roletype` (`id`, `maleName`, `femaleName`) VALUES
 (8, 'Rapporteur', 'Rapporteure'),
 (9, 'Co-rapporteur', 'Co-rapporteure'),
 (10, 'Secrétaire', 'Secrétaire'),
-(11, 'Président d\'âge', 'Présidente d\'âge')
+(11, 'Président d\'âge', 'Présidente d\'âge'),
 (12, 'Membre nommé', 'Membre nommée'),
 (13, 'Membre de droit', 'Membre de droit'),
 (14, 'Membre titulaire', 'Membre titulaire'),
 (15, 'Membre suppléant', 'Membre suppléante'),
-(16, 'Membre', 'Membre'),;
+(16, 'Membre', 'Membre');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
