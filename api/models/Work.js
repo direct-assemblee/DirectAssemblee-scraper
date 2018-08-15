@@ -26,7 +26,7 @@ module.exports = {
             type: 'json'
         },
         type: {
-            type: 'string'
+            model: 'WorkType'
         },
         authors: {
             collection: 'deputy',

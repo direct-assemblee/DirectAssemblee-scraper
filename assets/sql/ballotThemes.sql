@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `theme` (
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `typeName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 INSERT IGNORE `theme` (`id`, `name`, `typeName`) VALUES
 (1, 'Affaires étrangères', 'AFFAIRES_ETRANGERES'),

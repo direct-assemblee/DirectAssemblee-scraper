@@ -22,7 +22,7 @@ module.exports = {
             type: 'string'
         },
         type: {
-            type: 'string'
+            model: 'BallotType'
         },
         totalVotes: {
             type: 'number'

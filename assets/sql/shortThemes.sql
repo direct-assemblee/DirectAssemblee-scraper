@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `shorttheme` (
   `fullName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `shortName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (1, 'Ordonnances prises sur le fondement de la loi sur le renforcement du dialogue social', 'Ordonnances : renforcement du dialogue social'),
@@ -45,7 +45,11 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (29, 'Adaptation des vitesses maximales autorisées par la police de la circulation', 'Vitesses maximales de circulation autorisées'),
 (30, 'Renforcement des outils et des moyens de pilotage de la recherche publique', 'Outils et moyens de pilotage de la recherche publique'),
 (31, 'Renforcement des droits des consommateurs en matière de démarchage téléphonique', 'Démarchage téléphonique : droits des consommateurs'),
-(32, 'Pour une démocratie plus représentative, responsable et efficace', 'Démocratie plus représentative, responsable et efficace');
+(32, 'Pour une démocratie plus représentative, responsable et efficace', 'Démocratie plus représentative, responsable et efficace'),
+(33, 'Utilisation des caméras mobiles par les autorités de sécurité publique', 'Utilisation des caméras pour la sécurité publique'),
+(34, 'Protocole contre la fabrication et le trafic illicites d\'armes à feu', 'Fabrication et le trafic illicites d\'armes à feu'),
+(35, 'Accord de coopération entre l\'Union européenne et la Nouvelle-Zélande', 'Accord entre l\'UE et la Nouvelle-Zélande'),
+(36, 'Immigration maîtrisée, droit d\'asile effectif et intégration réussie','Immigration, droit d\'asile et intégration');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

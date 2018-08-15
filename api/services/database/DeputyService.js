@@ -13,7 +13,7 @@ let self = module.exports = {
         let participations = await findWorks(deputyId, 'workParticipations')
 
         return Promise.mapSeries(works, function(work) {
-            if (work.type === Constants.DB_WORK_TYPE_QUESTIONS || work.type === Constants.DB_WORK_TYPE_PROPOSITIONS) {
+            if (work.isCreation) {
                 return addWorkCreationIfNew(deputyId, work.id, creations)
             } else {
                 return addWorkParticipationIfNew(deputyId, work.id, participations)

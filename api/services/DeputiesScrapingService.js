@@ -3,7 +3,7 @@
 let Promise = require('bluebird');
 let Constants = require('./Constants.js')
 
-let WorkHelper = require('./helpers/WorkHelper')
+let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper')
 let DateHelper = require('./helpers/DateHelper')
 let WorkService = require('./database/WorkService')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
@@ -19,8 +19,11 @@ let DeputyInfosAndMandatesParser = require('./parsers/DeputyInfosAndMandatesPars
 
 const PARAM_WORK_TYPE = '{work_type}';
 const PARAM_DEPUTY_NAME = '{deputy_name}';
-const WORK_TYPES = [ Constants.WORK_TYPE_QUESTIONS, Constants.WORK_TYPE_REPORTS, Constants.WORK_TYPE_PROPOSITIONS, Constants.WORK_TYPE_COSIGNED_PROPOSITIONS, Constants.WORK_TYPE_COMMISSIONS, Constants.WORK_TYPE_PUBLIC_SESSIONS ]
+const WORK_OFFICIAL_TYPES = [ WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_QUESTIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_REPORTS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_PROPOSITIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COSIGNED_PROPOSITIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS ]
 const WORK_PAGE_SIZE = 10;
+
+const DEPUTIES_LIST_URL = Constants.BASE_URL + 'deputes/liste/departements/(vue)/tableau';
+const DEPUTY_INFO_URL = Constants.BASE_URL + 'deputes/fiche/OMC_PA' + Constants.PARAM_DEPUTY_ID;
 const DEPUTY_WORK_URL = Constants.BASE_URL + 'deputes/documents_parlementaires/(offset)/' + Constants.PARAM_OFFSET + '/(id_omc)/OMC_PA' + Constants.PARAM_DEPUTY_ID + '/(type)/' + PARAM_WORK_TYPE;
 const DEPUTY_DECLARATIONS_URL = 'http://www.hatvp.fr/fiche-nominative/?declarant=' + PARAM_DEPUTY_NAME;
 const HATVP_DEPUTIES_LIST = 'http://www.hatvp.fr/resultat-de-recherche-avancee/?document=&mandat=depute&region=0&dep=';
@@ -28,7 +31,7 @@ const HATVP_DEPUTY_URL_START = 'http://www.hatvp.fr/fiche-nominative/?declarant=
 
 module.exports = {
     retrieveDeputiesList: function() {
-        return FetchUrlService.retrieveContent(Constants.DEPUTIES_LIST_URL, DeputiesListParser);
+        return FetchUrlService.retrieveContent(DEPUTIES_LIST_URL, DeputiesListParser);
     },
 
     retrieveDeputies: function(allDeputiesUrls, deputies) {
@@ -38,7 +41,7 @@ module.exports = {
     },
 
     checkMandate: function(deputy) {
-        let deputyUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
+        let deputyUrl = DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
         return FetchUrlService.retrieveContent(deputyUrl, DeputyInfosParser)
         .then(function(deputyInfos) {
             if (deputyInfos) {
@@ -79,8 +82,8 @@ let retrieveDeputyWork = async function(allWorks, deputy) {
     let lastWorkDate = await WorkService.findLastWorkDate(allWorks, deputy.officialId);
 
     let deputyWorks = [];
-    for (let i = 0 ; i < WORK_TYPES.length ; i++) {
-        deputyWorks.push(retrieveDeputyWorkOfType(deputy, WORK_TYPES[i], lastWorkDate))
+    for (let i = 0 ; i < WORK_OFFICIAL_TYPES.length ; i++) {
+        deputyWorks.push(retrieveDeputyWorkOfType(deputy, WORK_OFFICIAL_TYPES[i], lastWorkDate))
     }
     return Promise.filter(deputyWorks, function(workOfType) {
         return workOfType.length > 0;
@@ -96,14 +99,14 @@ let retrieveDeputyWork = async function(allWorks, deputy) {
     });
 }
 
-let retrieveDeputyWorkOfType = async function(deputy, workType, lastWorkDate) {
+let retrieveDeputyWorkOfType = async function(deputy, parsedWorkType, lastWorkDate) {
     let results = [];
     let page = 0;
 
     let shouldGetNext = true;
     while (shouldGetNext) {
-        let url = getWorkPageUrl(deputy, workType, page);
-        let works = await retrieveDeputyWorkOfTypeWithPage(url, workType, lastWorkDate);
+        let url = getWorkPageUrl(deputy, parsedWorkType, page);
+        let works = await retrieveDeputyWorkOfTypeWithPage(url, parsedWorkType, lastWorkDate);
         shouldGetNext = false;
         if (works && works.length > 0) {
             for (let i in works) {
@@ -116,11 +119,11 @@ let retrieveDeputyWorkOfType = async function(deputy, workType, lastWorkDate) {
     return results;
 }
 
-let getWorkPageUrl = function(deputy, workType, pageOffset) {
-    return DEPUTY_WORK_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId).replace(Constants.PARAM_OFFSET, pageOffset * WORK_PAGE_SIZE).replace(PARAM_WORK_TYPE, workType);
+let getWorkPageUrl = function(deputy, parsedWorkType, pageOffset) {
+    return DEPUTY_WORK_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId).replace(Constants.PARAM_OFFSET, pageOffset * WORK_PAGE_SIZE).replace(PARAM_WORK_TYPE, parsedWorkType);
 }
 
-let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType, lastWorkDate) {
+let retrieveDeputyWorkOfTypeWithPage = function(workUrl, parsedWorkType, lastWorkDate) {
     return FetchUrlService.retrieveContent(workUrl, DeputyWorkParser)
     .then(function(works) {
         if (works) {
@@ -128,18 +131,14 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType, lastWorkDate)
                 return work != undefined && (!lastWorkDate || DateHelper.isLaterOrSame(work.date, lastWorkDate));
             })
             .map(function(work) {
-                work.type = workType;
-                return retrieveExtraForWork(work);
+                return retrieveExtraForWork(work, parsedWorkType);
             })
             .map(function(work) {
-                if (workType == Constants.WORK_TYPE_COMMISSIONS) {
-                    let title = work.title.split('-')[1];
-                    if (title) {
-                        work.title = title.trim();
-                    }
-                }
-                work.type = WorkHelper.getWorkTypeName(workType);
-                return setThemeToWork(work, workType);
+                return WorkAndBallotTypeHelper.getWorkTypeId(parsedWorkType)
+                .then(function(workTypeId) {
+                    work.type = workTypeId
+                    return setThemeToWork(work, parsedWorkType);
+                })
             })
         } else {
             console.log('/!\\ work : no works')
@@ -148,11 +147,90 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, workType, lastWorkDate)
     });
 }
 
+let retrieveExtraForWork = function(parsedWork, parsedWorkType) {
+    if (!WorkAndBallotTypeHelper.isPublicSession(parsedWorkType)) {
+        return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, !WorkAndBallotTypeHelper.isQuestion(parsedWorkType), getParserForType(parsedWorkType))
+        .then(function(result) {
+            if (result) {
+                return processResultForType(parsedWork, parsedWorkType, result);
+            } else {
+                console.log('/!\\ no extra for work')
+                return parsedWork;
+            }
+        });
+    } else {
+        return parsedWork;
+    }
+}
+
+let getParserForType = function(parsedWorkType) {
+    let parser;
+    if (WorkAndBallotTypeHelper.isQuestion(parsedWorkType)) {
+        parser = DeputyQuestionThemeParser;
+    } else if (WorkAndBallotTypeHelper.isProposition(parsedWorkType)) {
+        parser = ExtraInfosLawProposalParser;
+    } else if (WorkAndBallotTypeHelper.isCommission(parsedWorkType)) {
+        parser = ExtraInfosCommissionParser;
+    } else {
+        parser = DeputyWorkExtraInfosParser;
+    }
+    return parser;
+}
+
+let processResultForType = function(parsedWork, parsedWorkType, result) {
+    let resultingWork;
+    if (WorkAndBallotTypeHelper.isQuestion(parsedWorkType)) {
+        resultingWork = processResultForQuestion(parsedWork, result);
+    } else if (WorkAndBallotTypeHelper.isProposition(parsedWorkType) || WorkAndBallotTypeHelper.isCommission(parsedWorkType)) {
+        resultingWork = processResultForExtraInfos(parsedWork, parsedWorkType, result);
+    } else {
+        resultingWork = processResultForOtherTypes(parsedWork, result);
+    }
+    resultingWork.isCreation = WorkAndBallotTypeHelper.isCreation(parsedWorkType)
+    return resultingWork;
+}
+
+let processResultForQuestion = function(parsedWork, result) {
+    parsedWork.parsedTheme = result;
+    return parsedWork;
+}
+
+let processResultForExtraInfos = function(parsedWork, parsedWorkType, result) {
+    parsedWork.id = result.id;
+    if (result.description) {
+        parsedWork.description = result.description;
+    }
+    parsedWork.parsedTheme = result.theme;
+    parsedWork.extraInfos = result.extraInfos;
+
+    parsedWork.title = adjustTitleIfCommission(parsedWork.title, parsedWorkType)
+    return parsedWork;
+}
+
+let processResultForOtherTypes = function(parsedWork, result) {
+    parsedWork.id = result.id;
+    parsedWork.description = result.description;
+    parsedWork.parsedTheme = result.theme;
+    return parsedWork;
+}
+
+let adjustTitleIfCommission = function(workTitle, parsedWorkType) {
+    let title = workTitle
+    if (parsedWorkType == WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS) {
+        let split = title.split('-')[1];
+        if (split) {
+            title = split.trim();
+        }
+    }
+    return title
+}
+
+
 let setThemeToWork = function(work, parsedWorkType) {
     let themeToSearch;
     if (work.parsedTheme) {
         themeToSearch = work.parsedTheme
-    } else if (parsedWorkType === Constants.WORK_TYPE_COMMISSIONS || parsedWorkType === Constants.WORK_TYPE_PUBLIC_SESSIONS) {
+    } else if (parsedWorkType === WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS || parsedWorkType === WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS) {
         themeToSearch = 'Politique générale';
     }
 
@@ -180,89 +258,8 @@ let searchTheme = function(work, themeName) {
     })
 }
 
-let retrieveExtraForWork = function(parsedWork) {
-    if (isNotPublicSession(parsedWork.type)) {
-        return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, parsedWork.type != Constants.WORK_TYPE_QUESTIONS, getParserForType(parsedWork))
-        .then(function(result) {
-            if (result) {
-                return processResultForType(parsedWork, result);
-            } else {
-                console.log('/!\\ no extra for work')
-                return parsedWork;
-            }
-        });
-    } else {
-        return parsedWork;
-    }
-}
-
-let isNotPublicSession = function(workType) {
-    return workType === Constants.WORK_TYPE_QUESTIONS || workType === Constants.WORK_TYPE_PROPOSITIONS
-        || workType === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || workType === Constants.WORK_TYPE_REPORTS
-        || workType === Constants.WORK_TYPE_COMMISSIONS;
-}
-
-let getParserForType = function(parsedWork) {
-    let parser;
-    if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
-        parser = DeputyQuestionThemeParser;
-    } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
-        if (parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
-            parser = ExtraInfosCommissionParser;
-        } else {
-            parser = ExtraInfosLawProposalParser;
-        }
-    } else {
-        parser = DeputyWorkExtraInfosParser;
-    }
-    return parser;
-}
-
-let processResultForQuestion = function(parsedWork, result) {
-    parsedWork.parsedTheme = result;
-    return parsedWork;
-}
-
-let processResultForExtraInfos = function(parsedWork, result) {
-    parsedWork.id = result.id;
-    if (result.description) {
-        parsedWork.description = result.description;
-    }
-    parsedWork.parsedTheme = result.theme;
-    parsedWork.extraInfos = result.extraInfos;
-    return parsedWork;
-}
-
-let processResultForOtherTypes = function(parsedWork, result) {
-    parsedWork.id = result.id;
-    parsedWork.description = result.description;
-    parsedWork.parsedTheme = result.theme;
-    return parsedWork;
-}
-
-let processResultForType = function(parsedWork, result) {
-    let processedResult;
-    if (parsedWork.type === Constants.WORK_TYPE_QUESTIONS) {
-        processedResult = processResultForQuestion(parsedWork, result);
-    } else if (parsedWork.type === Constants.WORK_TYPE_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || parsedWork.type === Constants.WORK_TYPE_COMMISSIONS) {
-        processedResult = processResultForExtraInfos(parsedWork, result);
-    } else {
-        processedResult = processResultForOtherTypes(parsedWork, result);
-    }
-    return processedResult;
-}
-
-let retrieveDeputyInstances = function(deputy) {
-    let deputyInfosUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
-    return FetchUrlService.retrieveContent(deputyInfosUrl, DeputyInstancesParser)
-    .then(function(instancesWithRoles) {
-        deputy.instancesWithRoles = instancesWithRoles
-        return deputy
-    })
-}
-
 let retrieveDeputyInfosAndMandates = function(deputy) {
-    let mandatesUrl = Constants.DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
+    let mandatesUrl = DEPUTY_INFO_URL.replace(Constants.PARAM_DEPUTY_ID, deputy.officialId);
     return FetchUrlService.retrieveContent(mandatesUrl, DeputyInfosAndMandatesParser)
     .then(function(result) {
         if (result) {

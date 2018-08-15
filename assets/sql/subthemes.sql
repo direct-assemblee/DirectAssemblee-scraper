@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `subtheme` (
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `themeId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (1, "Affaires étrangères", 1),
@@ -355,7 +355,9 @@ INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
 (308, "Interdiction du glyphosate", 2),
 (309, "Agriculture et forêt", 2),
 (310, "Accidents du travail et maladies professionnelles", 22),
-(311, "Accidents du travail et maladies professionne", 22);
+(311, "Accidents du travail et maladies professionne", 22),
+(312, "Affaires européennes", 30),
+(313, "Utilisation des caméras mobiles par les autorités de sécurité publique", 20);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

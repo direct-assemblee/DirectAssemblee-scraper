@@ -39,7 +39,7 @@ module.exports = {
                 expectInstance = true;
                 expectedItemForInstance = 'type'
             } else if (expectInstance) {
-                if (attribs.href != null && attribs.href.startsWith('/instances/')) {
+                if (attribs.href && attribs.href.startsWith('/instances/')) {
                     let lightText = StringHelper.removeParentReference(attribs.href);
                     let start = lightText.indexOf(INSTANCE_ID_PREFIX)
                     lightText = lightText.substring(start + INSTANCE_ID_PREFIX.length)
@@ -54,9 +54,9 @@ module.exports = {
         }
 
         let onTextForInstances = function(text) {
-            if (expectedItemForInstance != null) {
+            if (expectedItemForInstance) {
                 let lightText = StringHelper.removeParentReference(text);
-                if (lightText != null && lightText.length > 0) {
+                if (lightText && lightText.length > 0) {
                     if (expectedItemForInstance === 'role') {
                         parsedRole = lightText
                         expectedItemForInstance = null;

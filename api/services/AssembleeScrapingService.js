@@ -154,14 +154,14 @@ let insertInstancesAndDeputyRoles = function(instancesWithRoles, deputyId) {
     return Promise.map(instancesWithRoles, function(instance) {
         return InstanceTypeService.find(instance.name, instance.type)
         .then(function(typeId) {
-            if (typeId != null) {
+            if (typeId) {
                 instance.typeId = typeId
                 return InstanceService.createOrUpdate(instance)
                 .then(function(insertedInstanceId) {
-                    if (insertedInstanceId != null) {
+                    if (insertedInstanceId) {
                         return RoleTypeService.find(instance.role)
                         .then(function(roleTypeId) {
-                            if (roleTypeId != null) {
+                            if (roleTypeId) {
                                 return RoleService.createOrUpdate(insertedInstanceId, deputyId, roleTypeId)
                             } else {
                                 console.log('/!\\ Could not find roleType ' + instance.role + ' in DB')

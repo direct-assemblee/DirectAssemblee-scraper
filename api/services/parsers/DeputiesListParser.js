@@ -48,7 +48,7 @@ module.exports = {
             onclosetag: function(tagname) {
                 if (tagname === 'td') {
                     expectedDataPos++;
-                } else if (tagname == 'tr' && parsedItem.lastname != null) {
+                } else if (tagname == 'tr' && parsedItem.lastname) {
                     expectedDataPos = 0;
                     resultItems.push(parsedItem);
                     // print(parsedItem)

@@ -1,6 +1,7 @@
 let Promise = require('bluebird');
 let ThemeHelper = require('../helpers/ThemeHelper')
 let DateHelper = require('../helpers/DateHelper')
+let WorkAndBallotTypeHelper = require('../helpers/WorkAndBallotTypeHelper')
 let ExtraInfoService = require('./ExtraInfoService')
 let DeputyService = require('./DeputyService')
 
@@ -173,8 +174,15 @@ let buildExtraInfosToInsert = function(insertedWorksId, work, deputyId) {
 }
 
 let findUnclassifiedQuestions = function() {
+    let questionId = WorkAndBallotTypeHelper.getWorkTypeId(WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_QUESTIONS)
     return Work.find()
-    .where({ type: 'question', tempTheme: {'!=': ''} })
+    .where({ tempTheme: {'!=': ''} })
+    .populate('type')
+    .then(function(works) {
+        return Promise.filter(works, function(work) {
+            return work.type == questionId
+        })
+    })
 }
 
 let saveWork = function(work) {

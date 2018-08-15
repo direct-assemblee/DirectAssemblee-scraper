@@ -8,10 +8,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `instancetype` (
   `id` int(3) NOT NULL AUTO_INCREMENT,
-  `maleName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `femaleName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `plural` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `singular` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 INSERT IGNORE `instancetype` (`id`, `plural`, `singular`) VALUES
 (1, 'Bureau', 'Bureau'),

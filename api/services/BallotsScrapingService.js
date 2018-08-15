@@ -5,43 +5,54 @@ let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
 let ThemeHelper = require('./helpers/ThemeHelper');
+let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper');
 let DateHelper = require('./helpers/DateHelper');
 let EmailService = require('./EmailService');
 let BallotService = require('./database/BallotService');
 
 const MAX_THEME_LENGTH = 55;
 const PARAM_BALLOT_TYPE = '{ballot_type}';
-const BALLOT_TYPE_ORDINARY = 'SOR';
-const BALLOT_TYPE_SOLEMN = 'SSO';
-const BALLOT_TYPE_OTHER = 'AUT';
-const BALLOT_TYPE_UNDEFINED = 'UND';
-const BALLOT_TYPE_ALL = 'TOUS';
-const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_ALL ];
+
+const BALLOT_OFFICIAL_TYPES = [ WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ORDINARY, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_SOLEMN, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_OTHER, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ALL ];
 const BALLOTS_PAGE_SIZE = 100;
 const BALLOTS_LIST_URL = Constants.BASE_URL + 'scrutins/liste/offset/' + Constants.PARAM_OFFSET + '/(type)/' + PARAM_BALLOT_TYPE + '/(idDossier)/TOUS/(legislature)/' + Constants.MANDATE_NUMBER;
 
-module.exports = {
+let self = module.exports = {
     retrieveBallotsList: async function() {
         let lastBallotDate = await BallotService.findLastBallotDate();
 
         let promises = [];
-        for (let i = 0 ; i < BALLOT_TYPES.length ; i++) {
-            promises.push(retrieveBallotsListOfType(BALLOT_TYPES[i], lastBallotDate))
+        for (let i = 0 ; i < BALLOT_OFFICIAL_TYPES.length ; i++) {
+            promises.push(retrieveBallotsListOfType(BALLOT_OFFICIAL_TYPES[i], lastBallotDate))
         }
         return Promise.all(promises)
         .then(function(ballots) {
-            let allBallots = [];
-            for (let i in ballots) {
-                for (let j in ballots[i]) {
-                    if (isNewBallot(allBallots, ballots[i][j].analysisUrl)) {
-                        allBallots.push(ballots[i][j]);
+            return self.filterBallots(ballots)
+            .then(function(allBallots) {
+                let count = allBallots ? allBallots.length : 0;
+                console.log(count + ' ballots added in the last 30 days')
+                return allBallots;
+            })
+        })
+    },
+
+    filterBallots: async function(ballots) {
+        let undefinedId = await WorkAndBallotTypeHelper.getBallotTypeId(WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_UNDEFINED)
+
+        let allBallots = [];
+        for (let i in ballots) {
+            for (let j in ballots[i]) {
+                let existingBallot = findBallotWithUrl(allBallots, ballots[i][j].analysisUrl)
+                if (existingBallot) {
+                    if (existingBallot.type == undefinedId) {
+                        existingBallot.type = ballots[i][j].type
                     }
+                } else {
+                    allBallots.push(ballots[i][j]);
                 }
             }
-            let count = allBallots ? allBallots.length : 0;
-            console.log(count + ' ballots added in the last 30 days')
-            return allBallots;
-        })
+        }
+        return allBallots
     },
 
     retrieveBallots: function(ballots) {
@@ -55,25 +66,25 @@ module.exports = {
     }
 }
 
-let isNewBallot = function(allBallots, url) {
-    let isNew = true;
+let findBallotWithUrl = function(allBallots, url) {
+    let ballot
     for (let i in allBallots) {
         if (url === allBallots[i].analysisUrl) {
-            isNew = false;
+            ballot = allBallots[i];
             break;
         }
     }
-    return isNew;
+    return ballot;
 }
 
-let retrieveBallotsListOfType = async function(ballotType, lastBallotDate) {
+let retrieveBallotsListOfType = async function(ballotOfficialType, lastBallotDate) {
     let results = [];
     let page = 0;
 
     let shouldGetNext = true;
     while (shouldGetNext) {
-        let url = getBallotsListPageUrl(ballotType, page);
-        let ballots = await retrieveBallotsListOfTypeWithPage(url, ballotType, lastBallotDate);
+        let url = getBallotsListPageUrl(ballotOfficialType, page);
+        let ballots = await retrieveBallotsListOfTypeWithPage(url, ballotOfficialType, lastBallotDate);
 
         shouldGetNext = false;
         if (ballots && ballots.length > 0) {
@@ -91,10 +102,7 @@ let getBallotsListPageUrl = function(ballotType, pageOffset) {
     return BALLOTS_LIST_URL.replace(Constants.PARAM_OFFSET, pageOffset * BALLOTS_PAGE_SIZE).replace(PARAM_BALLOT_TYPE, ballotType);
 }
 
-let retrieveBallotsListOfTypeWithPage = function(url, ballotType, lastBallotDate) {
-    if (ballotType === 'TOUS') {
-        ballotType = BALLOT_TYPE_UNDEFINED; // default value
-    }
+let retrieveBallotsListOfTypeWithPage = function(url, ballotOfficialType, lastBallotDate) {
     return FetchUrlService.retrieveContent(url, BallotsListParser)
     .then(function(ballots) {
         if (ballots) {
@@ -102,18 +110,26 @@ let retrieveBallotsListOfTypeWithPage = function(url, ballotType, lastBallotDate
                 return ballot != undefined && (!lastBallotDate || DateHelper.isLessThanAMonthOlder(ballot.date, lastBallotDate));
             })
             .map(function(ballot) {
-                if (ballot.title.indexOf('motion de censure') > 0) {
-                    ballot.type = 'motion_of_censure';
-                } else if (!ballot.type) {
-                    ballot.type = ballotType;
-                }
-                return ballot;
+                return adjustBallotType(ballot, ballotOfficialType)
             })
         } else {
             console.log('/!\\ ballot list : no content')
             return;
         }
     });
+}
+
+let adjustBallotType = async function(ballot, ballotOfficialType) {
+    let workType
+    if (ballot.title.indexOf('motion de censure') > 0) {
+        workType = WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_MOTION;
+    } else if (!ballot.type) {
+        workType = (ballotOfficialType === WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ALL) ? WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_UNDEFINED : ballotOfficialType;
+    } else {
+        workType = ballot.type
+    }
+    ballot.type = await WorkAndBallotTypeHelper.getBallotTypeId(workType)
+    return ballot
 }
 
 let retrieveBallotDetails = function(ballot, attempts) {

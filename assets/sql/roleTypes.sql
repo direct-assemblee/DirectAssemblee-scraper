@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `roletype` (
   `maleName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `femaleName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8 AUTO_INCREMENT=107;
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 INSERT IGNORE `roletype` (`id`, `maleName`, `femaleName`) VALUES
 (1, 'Président', 'Présidente'),
