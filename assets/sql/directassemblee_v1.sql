@@ -307,7 +307,7 @@ CREATE TABLE IF NOT EXISTS `work` (
     `date` varchar(255) DEFAULT NULL,
     `url` varchar(255) DEFAULT NULL,
     `description` longtext,
-    `type` varchar(255) DEFAULT NULL,
+    `type` int(11) DEFAULT NULL,
     `themeId` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
