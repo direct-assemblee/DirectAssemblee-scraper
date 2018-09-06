@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `ballot` (
     `originalThemeName` varchar(255) DEFAULT NULL,
     `date` varchar(255) DEFAULT NULL,
     `dateDetailed` varchar(255) DEFAULT NULL,
-    `type` varchar(255) DEFAULT NULL,
+    `type` int(11) DEFAULT NULL,
     `totalVotes` double DEFAULT NULL,
     `yesVotes` double DEFAULT NULL,
     `noVotes` double DEFAULT NULL,
