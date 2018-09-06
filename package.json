@@ -1,0 +1,47 @@
+{
+  "name": "dbbuilder-directassemblee",
+  "private": true,
+  "version": "0.0.0",
+  "description": "a Sails application",
+  "keywords": [],
+  "dependencies": {
+    "async": "2.0.1",
+    "bluebird": "3.5.1",
+    "commander": "2.11.0",
+    "connect-redis": "3.2.0",
+    "html-entities": "1.2.1",
+    "htmlparser2": "3.9.2",
+    "latinize": "0.4.0",
+    "lodash": "3.10.1",
+    "machinepack-mailgun": "0.6.0",
+    "mailgun-js": "^0.13.1",
+    "moment": "2.17.1",
+    "request": "2.83.0",
+    "request-promise": "4.2.2",
+    "sails": "1.0.0-40",
+    "sails-hook-orm": "2.0.0-16",
+    "sails-mysql": "1.0.0-16",
+    "webpack": "2.7.0"
+  },
+  "scripts": {
+    "debug": "node debug app.js",
+    "start": "node app.js",
+    "test": "mocha test"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mplat/dbbuilder-directassemblee.git"
+  },
+  "author": "mplat",
+  "license": "",
+  "engines": {
+    "node": "8"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.1",
+    "supertest": "^3.0.0"
+  }
+}
