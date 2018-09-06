@@ -21,4 +21,9 @@ module.exports = {
   //   connection: 'someMongodbServer'
   // }
 
+  mail {
+    apiKey: 'key-ebbfc9eff23fa37391a2a2ed9684dc0f'
+    domain: 'sandbox3a4906a7d94046d5b8d768acb8f615f4.mailgun.org'
+    receiver: 'morgane.plat@gmail.com'
+  }
 };
