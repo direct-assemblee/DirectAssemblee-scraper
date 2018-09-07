@@ -56,7 +56,7 @@ If you want to keep this feature, you should register your own Mailgun account a
 
 ##  Contribute
 
-Pull request are more than welcome ! If you want to do it, use a feature branch and please make sure to use a descriptive title and description for your pull request.
+Pull requests are more than welcome ! If you want to do it, use a feature branch and please make sure to use a descriptive title and description for your pull request.
 
 Unfortunately, the project doesn't have any unit tests yet, so it can take a while to make sure there is no regression in your pull request.
 
