@@ -47,9 +47,9 @@ Everytime a new theme is scraped, the app sends us a new mail so we can manually
 
 If you want to keep this feature, you should register your own Mailgun account and generate a `domain` and an `api key` that you will store in `config/env/production.js` and `config/env/development.js`
     ```shell
-    mail {
-      apiKey: 'key-xxx'
-      domain: 'sandboxxxx.mailgun.org'
+    mail: {
+      apiKey: 'key-xxx',
+      domain: 'sandboxxxx.mailgun.org',
       receiver: 'xxx@xxx.xxx'
     }
     ```
