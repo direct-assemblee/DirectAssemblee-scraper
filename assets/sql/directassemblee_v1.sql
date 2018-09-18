@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `deputy` (
     `firstname` varchar(255) DEFAULT NULL,
     `lastname` varchar(255) DEFAULT NULL,
     `birthDate` varchar(255) DEFAULT NULL,
-    `parliamentGroup` varchar(255) DEFAULT NULL,
+    `parliamentGroup` int(11) DEFAULT NULL,
     `departmentId` double DEFAULT NULL,
     `district` double DEFAULT NULL,
     `phone` varchar(255) DEFAULT NULL,
@@ -340,6 +340,15 @@ CREATE TABLE IF NOT EXISTS `ballottype` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;
 
+
+# Affichage de la table parliamentgroup
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `parliamentgroup` (
+  `id` int(1) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

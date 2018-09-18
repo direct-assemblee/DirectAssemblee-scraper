@@ -21,7 +21,7 @@ module.exports = {
             type: 'string'
         },
         parliamentGroup: {
-            type: 'string'
+            model: 'ParliamentGroup'
         },
         departmentId: {
             type: 'number'

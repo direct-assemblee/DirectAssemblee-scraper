@@ -1,4 +1,5 @@
 let DateHelper = require('../helpers/DateHelper.js');
+let ParliamentGroupService = require('./ParliamentGroupService.js')
 let Promise = require('bluebird')
 
 let self = module.exports = {
@@ -58,12 +59,15 @@ let self = module.exports = {
                     { 'name': deputy.department }
                 ).then(function(department) {
                     if (department) {
-                        let deputyToInsert = createDeputyModel(deputy, department.id)
-                        if (!foundDeputy) {
-                            return createDeputy(deputyToInsert);
-                        } else {
-                            return updateDeputy(deputyToInsert);
-                        }
+                        return ParliamentGroupService.find(deputy.parliamentGroup)
+                        .then(function(parliamentGroupId) {
+                            let deputyToInsert = createDeputyModel(deputy, department.id, parliamentGroupId)
+                            if (!foundDeputy) {
+                                return createDeputy(deputyToInsert);
+                            } else {
+                                return updateDeputy(deputyToInsert);
+                            }
+                        })
                     } else {
                         console.log('didn\'t find department : ' + deputy.department);
                     }
@@ -92,14 +96,14 @@ let self = module.exports = {
     }
 }
 
-let createDeputyModel = function(deputy, departmentId) {
+let createDeputyModel = function(deputy, departmentId, parliamentGroupId) {
     return {
         'officialId': deputy.officialId,
         'gender': deputy.civility === 'M.' ? 'M' : 'F',
         'firstname': deputy.firstname,
         'lastname': deputy.lastname,
         'birthDate': deputy.birthDate,
-        'parliamentGroup': deputy.parliamentGroup,
+        'parliamentGroup': parliamentGroupId,
         'departmentId': departmentId,
         'district': deputy.district,
         'phone': deputy.phone,
