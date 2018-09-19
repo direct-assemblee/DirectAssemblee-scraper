@@ -1,7 +1,7 @@
-var api_key = sails.config.mail.apiKey;
+var API_KEY = sails.config.mail.apiKey;
 var DOMAIN = sails.config.mail.domain;
 
-var mailgun = require('mailgun-js')({apiKey: api_key, domain: DOMAIN});
+var mailgun = require('mailgun-js')({ apiKey: API_KEY, domain: DOMAIN });
 
 var sentMails = [];
 
