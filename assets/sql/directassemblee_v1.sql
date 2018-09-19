@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `ballot` (
     `isAdopted` tinyint(1) DEFAULT NULL,
     `analysisUrl` varchar(255) DEFAULT NULL,
     `fileUrl` varchar(255) DEFAULT NULL,
-    `themeId` int(11) DEFAULT NULL,
+    `theme` int(11) DEFAULT NULL,
     PRIMARY KEY (`officialId`),
     UNIQUE KEY `officialId` (`officialId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `subscriber` (
 CREATE TABLE IF NOT EXISTS `subtheme` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) DEFAULT NULL,
-    `themeId` int(11) DEFAULT NULL,
+    `theme` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
     UNIQUE KEY `name` (`name`)
@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `work` (
     `url` varchar(255) DEFAULT NULL,
     `description` longtext,
     `type` int(11) DEFAULT NULL,
-    `themeId` int(11) DEFAULT NULL,
+    `theme` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
     UNIQUE KEY `url` (`url`)

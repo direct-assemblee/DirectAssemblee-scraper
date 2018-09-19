@@ -8,7 +8,7 @@ module.exports = {
             type: 'string',
             unique: true
         },
-        themeId: {
+        theme: {
             model: 'Theme'
         }
     }

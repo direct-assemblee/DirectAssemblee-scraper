@@ -13,7 +13,7 @@ let self = module.exports = {
                 return ThemeHelper.findTheme(question.tempTheme)
                 .then(function(foundTheme) {
                     if (foundTheme) {
-                        question.themeId = foundTheme.id;
+                        question.theme = foundTheme.id;
                         question.tempTheme = '';
                         return saveWork(Object.assign({}, question));
                     } else {
@@ -203,7 +203,7 @@ let saveWork = function(work) {
 let createBasicWorkModel = function(work) {
     return {
         title: work.title,
-        themeId: work.theme && work.theme.id ? work.theme.id : null,
+        theme: work.theme && work.theme.id ? work.theme.id : null,
         tempTheme: work.theme && !work.theme.id ? work.theme : '',
         originalThemeName: work.originalThemeName,
         date: work.date,

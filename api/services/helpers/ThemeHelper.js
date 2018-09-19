@@ -31,7 +31,7 @@ module.exports = {
         .then(function(foundSubthemes) {
             let theme;
             if (foundSubthemes.length > 0) {
-                theme = foundSubthemes[0].themeId;
+                theme = foundSubthemes[0].theme;
             } else {
                 theme = searchedSubTheme;
                 EmailService.sendNewThemeEmail(searchedSubTheme);

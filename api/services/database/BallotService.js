@@ -37,7 +37,7 @@ let createBallotModel = function(ballot) {
     return {
         officialId: ballot.officialId,
         title: ballot.title,
-        themeId: ballot.theme ? ballot.theme.id : null,
+        theme: ballot.theme ? ballot.theme.id : null,
         originalThemeName: originalThemeName,
         date: date,
         dateDetailed: ballot.dateDetailed,
@@ -60,7 +60,7 @@ let updateBallotModel = function(ballot) {
     return {
         officialId: ballot.officialId,
         title: ballot.title,
-        themeId: ballot.theme ? ballot.theme.id : null,
+        theme: ballot.theme ? ballot.theme.id : null,
         originalThemeName: originalThemeName,
         type: ballot.type,
         totalVotes: ballot.totalVotes,

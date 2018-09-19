@@ -9,11 +9,11 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `subtheme` (
   `id` int(4) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `themeId` int(11) DEFAULT NULL,
+  `theme` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-INSERT IGNORE `subtheme` (`id`, `name`, `themeId`) VALUES
+INSERT IGNORE `subtheme` (`id`, `name`, `theme`) VALUES
 (1, "Affaires étrangères", 1),
 (2, "Chambres consulaires", 1),
 (3, "Français de l'étranger", 1),

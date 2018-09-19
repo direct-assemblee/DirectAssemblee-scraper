@@ -10,7 +10,7 @@ module.exports = {
         title: {
             type: 'json'
         },
-        themeId: {
+        theme: {
             model: 'Theme'
         },
         tempTheme: 'string',
