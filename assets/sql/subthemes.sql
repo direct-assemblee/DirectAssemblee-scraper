@@ -357,7 +357,8 @@ INSERT IGNORE `subtheme` (`id`, `name`, `theme`) VALUES
 (310, "Accidents du travail et maladies professionnelles", 22),
 (311, "Accidents du travail et maladies professionne", 22),
 (312, "Affaires européennes", 30),
-(313, "Utilisation des caméras mobiles par les autorités de sécurité publique", 20);
+(313, "Utilisation des caméras mobiles par les autorités de sécurité publique", 20),
+(314, "Lutte contre les violences sexuelles et sexistes", 16);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
