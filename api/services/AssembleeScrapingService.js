@@ -36,7 +36,7 @@ let self = module.exports = {
 
         let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
 
-        return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 576)
+        return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
             console.log('=> look for non-updated deputies');
             return DeputyService.findNonUpdatedDeputies()
