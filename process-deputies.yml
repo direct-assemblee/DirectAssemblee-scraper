@@ -1,0 +1,16 @@
+apps:
+  - script : ./app.js
+    name : 'directass_dbbuilder'
+    node_args : '--max_old_space_size=4096'
+    args : "-t deputies"
+    autorestart : false
+    error_file : '/var/log/dbbuilder-err.log'
+    out_file : '/var/log/dbbuilder-out.log'
+    merge_logs : true
+    log_date_format : 'YYYY-MM-DD HH:mm Z'
+    env_development :
+      NODE_ENV: development
+      PORT: 1327
+    env_production:
+      NODE_ENV: production
+      PORT: 11327
