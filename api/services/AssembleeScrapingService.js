@@ -22,7 +22,7 @@ const DEBUG = false;
 const RANGE_STEP = 1;
 
 let self = module.exports = {
-    startScraping: async function() {
+    startScrapingDeputies: async function() {
         ThemeHelper.initThemes();
 
         console.log('==> start classifying unclassified questions');
@@ -36,30 +36,39 @@ let self = module.exports = {
 
         let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
 
-        return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
+        return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 576)
         .then(function() {
-            console.log('==> start scraping ballots');
-            return BallotsScrapingService.retrieveBallotsList()
-            .then(function(allBallots) {
-                let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
-                return retrieveAndInsertBallotsByRange(ballots, 0);
-            })
-        })
-        .then(function() {
-            RequestService.sendBallotsUpdateNotif();
-
             console.log('=> look for non-updated deputies');
             return DeputyService.findNonUpdatedDeputies()
             .then(function(nonUpdatedDeputies) {
                 return checkMandatesForNonUpdatedDeputies(nonUpdatedDeputies)
             })
             .then(function() {
-                console.log('==> done updating database !!')
-                RequestService.sendResetCache();
-                return FetchUrlService.howManyRequest();
+                return doneScraping()
             })
         })
+    },
+
+    startScrapingBallots: function() {
+        console.log('==> start scraping ballots');
+        return BallotsScrapingService.retrieveBallotsList()
+        .then(function(allBallots) {
+            let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
+            return retrieveAndInsertBallotsByRange(ballots, 0);
+        })
+        .then(function() {
+            RequestService.sendBallotsUpdateNotif();
+        })
+        .then(function() {
+            return doneScraping()
+        })
     }
+}
+
+let doneScraping = function() {
+    console.log('==> done updating database !!')
+    RequestService.sendResetCache();
+    return FetchUrlService.howManyRequest();
 }
 
 let subArrayIfDebug = function(array, start, size) {
