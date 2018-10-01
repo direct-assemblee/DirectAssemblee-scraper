@@ -50,7 +50,8 @@ let self = module.exports = {
     },
 
     startScrapingBallots: function() {
-        console.log('==> start scraping ballots');
+        ThemeHelper.initThemes();
+
         return BallotsScrapingService.retrieveBallotsList()
         .then(function(allBallots) {
             let ballots = subArrayIfDebug(allBallots, 0, RANGE_STEP);
