@@ -68,8 +68,10 @@ let self = module.exports = {
 
 let doneScraping = function() {
     console.log('==> done updating database !!')
-    RequestService.sendResetCache();
-    return FetchUrlService.howManyRequest();
+    return RequestService.sendResetCache()
+    .then(function()) {
+        return FetchUrlService.howManyRequest();
+    })
 }
 
 let subArrayIfDebug = function(array, start, size) {

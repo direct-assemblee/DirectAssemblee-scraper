@@ -17,7 +17,7 @@ module.exports = {
             json: true
         };
         console.log('sendDeputiesUpdateNotif ' + options.uri)
-        makeRequest(options);
+        return makeRequest(options);
     },
 
     sendBallotsUpdateNotif: function() {
@@ -29,7 +29,7 @@ module.exports = {
             },
             json: true
         };
-        makeRequest(options);
+        return makeRequest(options);
     },
 
     sendResetCache: function() {
@@ -41,12 +41,12 @@ module.exports = {
             },
             json: true
         };
-        makeRequest(options);
+        return makeRequest(options);
     },
 };
 
 let makeRequest = function(options) {
-    Request(options)
+    return Request(options)
     .then(function (parsedBody) {
         // POST succeeded...
         parsedBody = null;
