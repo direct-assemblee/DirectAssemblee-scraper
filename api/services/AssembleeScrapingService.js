@@ -69,7 +69,7 @@ let self = module.exports = {
 let doneScraping = function() {
     console.log('==> done updating database !!')
     return RequestService.sendResetCache()
-    .then(function()) {
+    .then(function() {
         return FetchUrlService.howManyRequest();
     })
 }
