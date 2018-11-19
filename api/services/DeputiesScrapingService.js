@@ -61,10 +61,13 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
     .then(function(declarations) {
         console.log('-- retrieved declarations for : ' + deputy.lastname);
         deputy.declarations = declarations;
+        console.log('-- affected declarations for : ' + deputy.lastname);
         return deputy;
     })
     .then(async function(deputy) {
+        console.log('-- start findWorksWithAuthorsAndSubscribers for : ' + deputy.lastname);
         let allWorks = await WorkService.findWorksWithAuthorsAndSubscribers();
+        console.log('-- end findWorksWithAuthorsAndSubscribers for : ' + deputy.lastname);
         return retrieveDeputyWork(allWorks, deputy)
         .then(function(works) {
             deputy.works = works;
