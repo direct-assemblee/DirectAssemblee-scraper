@@ -38,10 +38,13 @@ let self = module.exports = {
             method: 'GET',
             timeout: 20000
         }
+
+        console.log('-- execute request with settings : ' + settings);
+
         return request(settings)
         .then(function(content) {
             if (content === undefined || content.length < 1000) {
-                console.log('content : ' + content);
+                console.log('content is undefined : ' + content);
                 if (content && content.startsWith('<head><title>Object moved</title></head>')) {
                     let index = content.indexOf('\'');
                     if (index > 0) {
@@ -62,6 +65,7 @@ let self = module.exports = {
                     }
                 }
             } else {
+                console.log('-- executed request is OK')
                 let cleanContent = StringHelper.clean(content);
                 content = null;
                 return parseHtml(cleanContent, parser);
