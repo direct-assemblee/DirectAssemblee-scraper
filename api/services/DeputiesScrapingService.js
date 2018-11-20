@@ -82,8 +82,6 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
 }
 
 let retrieveDeputyWork = async function(allWorks, deputy) {
-
-    console.log('-- start retrieveDeputyWork for : ' + deputy.lastname);
     let lastWorkDate = await WorkService.findLastWorkDate(allWorks, deputy.officialId);
     console.log('-- lastWorkDate : ' + lastWorkDate);
     let deputyWorks = [];
@@ -100,7 +98,6 @@ let retrieveDeputyWork = async function(allWorks, deputy) {
                 concatWorks.push(works[i][j]);
             }
         }
-        console.log('-- end retrieveDeputyWork for : ' + deputy.lastname);
         return concatWorks;
     });
 }
@@ -108,8 +105,6 @@ let retrieveDeputyWork = async function(allWorks, deputy) {
 let retrieveDeputyWorkOfType = async function(deputy, parsedWorkType, lastWorkDate) {
     let results = [];
     let page = 0;
-
-    console.log('-- start retrieveDeputyWorkOfType for : ' + deputy.lastname);
 
     let shouldGetNext = true;
     while (shouldGetNext) {
@@ -124,7 +119,6 @@ let retrieveDeputyWorkOfType = async function(deputy, parsedWorkType, lastWorkDa
         }
         page++;
     }
-    console.log('-- end retrieveDeputyWorkOfType for : ' + deputy.lastname);
     return results;
 }
 
@@ -133,7 +127,6 @@ let getWorkPageUrl = function(deputy, parsedWorkType, pageOffset) {
 }
 
 let retrieveDeputyWorkOfTypeWithPage = function(workUrl, parsedWorkType, lastWorkDate) {
-    console.log('-- start retrieveDeputyWorkOfTypeWithPage for : ' + workUrl);
     return FetchUrlService.retrieveContent(workUrl, DeputyWorkParser)
     .then(function(works) {
         if (works) {
@@ -147,7 +140,6 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, parsedWorkType, lastWor
                 return WorkAndBallotTypeHelper.getWorkTypeId(parsedWorkType)
                 .then(function(workTypeId) {
                     work.type = workTypeId
-                    console.log('-- end retrieveDeputyWorkOfTypeWithPage for : ' + workUrl);
                     return setThemeToWork(work, parsedWorkType);
                 })
             })
