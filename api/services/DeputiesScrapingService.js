@@ -80,7 +80,7 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
 
 let retrieveDeputyWork = async function(allWorks, deputy) {
     let lastWorkDate = await WorkService.findLastWorkDate(allWorks, deputy.officialId);
-    console.log('-- lastWorkDate : ' + lastWorkDate);
+
     let deputyWorks = [];
     for (let i = 0 ; i < WORK_OFFICIAL_TYPES.length ; i++) {
         deputyWorks.push(retrieveDeputyWorkOfType(deputy, WORK_OFFICIAL_TYPES[i], lastWorkDate))
