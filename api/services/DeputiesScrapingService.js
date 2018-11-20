@@ -64,8 +64,7 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
         return deputy;
     })
     .then(async function(deputy) {
-        let allWorks = await WorkService.findWorksWithAuthorsAndSubscribers();
-        return retrieveDeputyWork(allWorks, deputy)
+        return retrieveDeputyWork(deputy)
         .then(function(works) {
             deputy.works = works;
             console.log('-- retrieved works for : ' + deputy.lastname);
@@ -78,12 +77,10 @@ let retrieveDeputyDetails = function(allDeputiesUrls, deputy) {
     })
 }
 
-let retrieveDeputyWork = async function(allWorks, deputy) {
-    let lastWorkDate = await WorkService.findLastWorkDate(allWorks, deputy.officialId);
-
+let retrieveDeputyWork = function(deputy) {
     let deputyWorks = [];
     for (let i = 0 ; i < WORK_OFFICIAL_TYPES.length ; i++) {
-        deputyWorks.push(retrieveDeputyWorkOfType(deputy, WORK_OFFICIAL_TYPES[i], lastWorkDate))
+        deputyWorks.push(retrieveDeputyWorkOfType(deputy, WORK_OFFICIAL_TYPES[i]))
     }
     return Promise.filter(deputyWorks, function(workOfType) {
         return workOfType.length > 0;
@@ -99,14 +96,14 @@ let retrieveDeputyWork = async function(allWorks, deputy) {
     });
 }
 
-let retrieveDeputyWorkOfType = async function(deputy, parsedWorkType, lastWorkDate) {
+let retrieveDeputyWorkOfType = async function(deputy, parsedWorkType) {
     let results = [];
     let page = 0;
 
     let shouldGetNext = true;
     while (shouldGetNext) {
         let url = getWorkPageUrl(deputy, parsedWorkType, page);
-        let works = await retrieveDeputyWorkOfTypeWithPage(url, parsedWorkType, lastWorkDate);
+        let works = await retrieveDeputyWorkOfTypeWithPage(url, parsedWorkType, deputy.lastWorkDate);
         shouldGetNext = false;
         if (works && works.length > 0) {
             for (let i in works) {

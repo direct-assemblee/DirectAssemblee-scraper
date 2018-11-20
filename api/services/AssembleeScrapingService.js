@@ -33,8 +33,8 @@ let self = module.exports = {
 
         console.log('==> start scraping deputies');
         let allDeputies = await DeputiesScrapingService.retrieveDeputiesList();
-
-        let deputies = subArrayIfDebug(allDeputies, 0, RANGE_STEP);
+        let deputiesWithLastWorkDates = await populateLastWorkDatesForDeputies(allDeputies);
+        let deputies = subArrayIfDebug(deputiesWithLastWorkDates, 0, RANGE_STEP);
 
         return retrieveAndInsertDeputiesByRange(allDeputiesUrls, deputies, 0)
         .then(function() {
@@ -64,6 +64,20 @@ let self = module.exports = {
             return doneScraping()
         })
     }
+}
+
+let populateLastWorkDatesForDeputies = async function(allDeputies) {
+    return WorkService.findWorksWithAuthorsAndSubscribers()
+    .then(function(allWorks) {
+        allDeputies.map(deputy => {
+            return WorkService.findLastWorkDate(allWorks, deputy.officialId)
+            .then(function(lastWorkDate) {
+                deputy.lastWorkDate = lastWorkDate
+                return deputy
+            })
+        })
+        return allDeputies
+    })
 }
 
 let doneScraping = function() {
