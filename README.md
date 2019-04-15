@@ -14,7 +14,7 @@ The data is stored in a MySQL database, and can be served with the [api applicat
 1. Install the development environment :
 
 - Install [Node.js](https://nodejs.org/en/download/package-manager/)
-- Install [npm5](https://www.npmjs.com/package/npm5
+- Install [npm5](https://www.npmjs.com/package/npm5)
 - Install [sails](https://sailsjs.com/get-started) :
 
 ```shell
