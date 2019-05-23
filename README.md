@@ -5,7 +5,7 @@ This application retrieves public data from [the Assemblée Nationale website](h
 - the deputies and their works : written questions, reports, law proposals, participations to commissions and public sessions
 - the current mandate ballots, and all deputies votes
 
-The data is stored in a MySQL database, and can be served with the [api application](https://github.com/direct-assemblee/DirectAssemblee-api).
+The data is stored in a [MySQL](https://www.mysql.com/fr/) database , and can be served with the [api application](https://github.com/direct-assemblee/DirectAssemblee-api).
 
 ## Setup
 
@@ -33,16 +33,25 @@ git clone <URL>
 npm install
 ```
 
-4. Launch the scraper :
+4. This project uses [Mailgun](https://www.mailgun.com/) to send mails when a new theme needs to be treated. See **Mailgun** section below to configure project.
+
+5. Create the database `directassemblee` on your local MySQL server.
+
+6. Launch the scraper . You should use `-t` argument to specify what you want to scrap :
+
+- Deputies :
 
 ```shell
-sails lift
+sails lift -t deputies
 ```
 
-5. This project uses [Mailgun](https://www.mailgun.com/) to send mails when a new theme needs to be treated. See **Mailgun** section below to configure project.
+- Ballots :
 
+```shell
+sails lift -t ballots
+```
 
-### Configure MySQL
+### MySQL issues
 
 > When you get `ER_ACCESS_DENIED_ERROR: Access denied for user 'root'@'localhost'`.
 
