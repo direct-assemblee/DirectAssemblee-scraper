@@ -126,7 +126,19 @@ module.exports = {
                 let lightText = StringHelper.removeParentReference(text.trim());
                 if (lightText && lightText.length > 0) {
                     if (expectedTypeForMandates === TAG_CURRENT_MANDATE) {
-                        let startingDateMatched = DateHelper.findAndFormatDateInString(lightText);
+                      
+                        //Texte sous la forme : ""Élu/Réelue	le DD/MM/YYYY (Date de début de mandat : DD/MM/YYYY)"
+                        // On coupe la chaine en deux car la date de début de mandat est spécifiée en seconde partie du texte
+                        let lightTextDatesComponents = lightText.split('début de mandat');
+                        let startingDateMatched;
+                        if (lightTextDatesComponents.length > 1) {
+                          startingDateMatched = DateHelper.findAndFormatDateInString(lightTextDatesComponents[1]);
+                        } else {
+                          //Sécurité pour éviter de ne pas avoir de date de début de mandat en cas d'absence de la seconde partie -> on prend la date d'élection/réelection
+                          //Ce cas ne doit normalement pas se produire.
+                          startingDateMatched = DateHelper.findAndFormatDateInString(lightTextDatesComponents[0]);
+                        }
+
                         if (startingDateMatched) {
                             mandatesGroup.currentMandateStartDate = startingDateMatched;
                             expectedTypeForMandates = null;
