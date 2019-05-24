@@ -49,7 +49,11 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (33, 'Utilisation des caméras mobiles par les autorités de sécurité publique', 'Utilisation des caméras pour la sécurité publique'),
 (34, 'Protocole contre la fabrication et le trafic illicites d\'armes à feu', 'Fabrication et le trafic illicites d\'armes à feu'),
 (35, 'Accord de coopération entre l\'Union européenne et la Nouvelle-Zélande', 'Accord entre l\'UE et la Nouvelle-Zélande'),
-(36, 'Immigration maîtrisée, droit d\'asile effectif et intégration réussie','Immigration, droit d\'asile et intégration');
+(36, 'Immigration maîtrisée, droit d\'asile effectif et intégration réussie','Immigration, droit d\'asile et intégration'),
+(37, 'Restauration de Notre-Dame de Paris et institution d\'une souscription nationale','Restauration de Notre-Dame de Paris'),
+(38, 'Droit voisin au profit des agences de presse et des éditeurs de presse','Profit des agences et des éditeurs de presse'),
+(39, 'Accompagnement des jeunes majeurs vulnérables vers l\'autonomie','Accompagnement des jeunes majeurs vulnérables'),
+(40, 'Protection des activités agricoles et cultures marines en zones littorale et de montagne','Protection des activités agricoles et cultures marines');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

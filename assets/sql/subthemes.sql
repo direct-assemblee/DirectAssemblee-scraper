@@ -359,7 +359,14 @@ INSERT IGNORE `subtheme` (`id`, `name`, `theme`) VALUES
 (312, "Affaires européennes", 30),
 (313, "Utilisation des caméras mobiles par les autorités de sécurité publique", 20),
 (314, "Lutte contre les violences sexuelles et sexistes", 16),
-(315, "Sciences et techniques", 23);
+(315, "Sciences et techniques", 23),
+(316, "Sectes et sociétés secrètes", 25),
+(317, "Agriculture et pêche", 2),
+(318, "Collectivités locales", 6),
+(319, "Nouvelles technologies", 25),
+(320, "Lois", 31),
+(321, "Pouvoir d\'achat", 25),
+(322, "Commission d\'enquête sur l\'alimentation industrielle", 2);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
