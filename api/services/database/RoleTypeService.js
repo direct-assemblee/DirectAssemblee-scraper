@@ -26,6 +26,6 @@ let self = module.exports = {
 let typeFound = function(type, name) {
     name = name.replace('(', '').replace(')', '')
     name = StringHelper.clean(name)
-    return name.toLowerCase() == StringHelper.clean(type.maleName.toLowerCase())
-        || name.toLowerCase() == StringHelper.clean(type.femaleName.toLowerCase())
+    return name.toLowerCase().startsWith(StringHelper.clean(type.maleName.toLowerCase()))
+        || name.toLowerCase().startsWith(StringHelper.clean(type.femaleName.toLowerCase()))
 }
