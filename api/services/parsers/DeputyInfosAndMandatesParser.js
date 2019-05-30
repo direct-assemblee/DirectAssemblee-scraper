@@ -216,7 +216,7 @@ module.exports = {
                     } else if (expectedItemForInfos === 'endOfMandate') {
                         let dateMatched = DateHelper.findAndFormatDateInString(lightText);
                         if (dateMatched && dateMatched.length > 0) {
-                            infos.endOfMandateDate = dateMatched[dateMatched.length - 1];
+                            infos.endOfMandateDate = dateMatched;
                             let reason = lightText.match(/\((.*)\)/i);
                             if (reason && reason.length > 1) {
                                 infos.endOfMandateReason = reason[1];

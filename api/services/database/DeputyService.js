@@ -77,10 +77,10 @@ let self = module.exports = {
     },
 
     saveEndOfMandate: function(deputy) {
-        let endingDate = deputy.endOfMandateDate ? DateHelper.formatDate(deputy.endOfMandateDate) : null;
+
         let toUpdate = {
             'currentMandateStartDate': '',
-            'mandateEndDate': endingDate,
+            'mandateEndDate': deputy.endOfMandateDate,
             'mandateEndReason': deputy.endOfMandateReason
         };
         return Deputy.update({

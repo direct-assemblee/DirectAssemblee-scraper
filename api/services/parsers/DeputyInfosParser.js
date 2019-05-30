@@ -52,7 +52,7 @@ module.exports = {
                         } else if (expectedItem === 'endOfMandate') {
                             let dateMatched = DateHelper.findAndFormatDateInString(lightText);
                             if (dateMatched && dateMatched.length > 0) {
-                                parsedItem.endOfMandateDate = dateMatched[dateMatched.length - 1];
+                                parsedItem.endOfMandateDate = dateMatched;
                                 let reason = lightText.match(/\((.*)\)/i);
                                 if (reason && reason.length > 1) {
                                     parsedItem.endOfMandateReason = reason[1];
