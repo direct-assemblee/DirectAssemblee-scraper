@@ -15,8 +15,11 @@ module.exports = {
                     expectedItem = 'title';
                 } else if (tagname === 'meta' && attribs.content) {
                     if (attribs.name === 'TITRE_DOSSIER') {
-                        if (attribs.content.indexOf(':') > 0) {
-                            let splitted = attribs.content.split(':');
+
+                        let attribsContent = attribs.content.replace(';', ':');
+
+                        if (attribsContent.indexOf(':') > 0) {
+                            let splitted = attribsContent.split(':');
                             let theme = StringHelper.removeParentReference(splitted[0]);
                             let desc = StringHelper.removeParentReference(splitted[1]);
                             parsedItem.description = desc.charAt(0).toUpperCase() + desc.slice(1);
@@ -24,7 +27,7 @@ module.exports = {
                                 parsedItem.theme = theme
                             }
                         } else {
-                            parsedItem.description = StringHelper.removeParentReference(attribs.content);
+                            parsedItem.description = StringHelper.removeParentReference(attribsContent);
                         }
                         expectedItem = 'motives';
                     }

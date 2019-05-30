@@ -9,7 +9,7 @@ module.exports = {
     sendNewThemeEmail: function (subtheme) {
         if (!sentMails.includes(subtheme)) {
             sentMails.push(subtheme);
-            console.log('Sending new email for subtheme : ' + subtheme);
+            console.log('Sending email for new subtheme : ' + subtheme);
             var data = {
                 from: 'Theme Helper <themeHelper@directassemblee.fr>',
                 to: sails.config.mail.receiver,
@@ -23,7 +23,7 @@ module.exports = {
     sendThemeTooLongEmail: function (theme) {
         if (!sentMails.includes(theme)) {
             sentMails.push(theme);
-            console.log('Sending new email for theme too long : ' + theme);
+            console.log('Sending email for theme too long : ' + theme);
             var data = {
                 from: 'Theme Helper <theme.helper@directassemblee.fr>',
                 to: sails.config.mail.receiver,
