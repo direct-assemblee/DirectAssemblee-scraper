@@ -6,29 +6,29 @@ var mailgun = require('mailgun-js')({ apiKey: API_KEY, domain: DOMAIN });
 var sentMails = [];
 
 module.exports = {
-    sendNewThemeEmail: function (subtheme) {
+    sendNewSubThemeEmail: function (subtheme) {
         if (!sentMails.includes(subtheme)) {
             sentMails.push(subtheme);
             console.log('Sending email for new subtheme : ' + subtheme);
             var data = {
                 from: 'Theme Helper <themeHelper@directassemblee.fr>',
                 to: sails.config.mail.receiver,
-                subject: 'Nouveau thème',
+                subject: 'Nouveau sous thème',
                 text: 'Cher ami' + ',\nIl faut ajouter ce nouveau sous-thème : \n' + subtheme + '\n  \nSincerely,\nThe Management'
             };
             sendEmail(data);
         }
     },
 
-    sendThemeTooLongEmail: function (theme) {
-        if (!sentMails.includes(theme)) {
-            sentMails.push(theme);
-            console.log('Sending email for theme too long : ' + theme);
+    sendSubThemeTooLongEmail: function (subtheme) {
+        if (!sentMails.includes(subtheme)) {
+            sentMails.push(subtheme);
+            console.log('Sending email for subtheme too long : ' + subtheme);
             var data = {
-                from: 'Theme Helper <theme.helper@directassemblee.fr>',
+                from: 'Theme Helper <themeHelper@directassemblee.fr>',
                 to: sails.config.mail.receiver,
-                subject: 'Thème trop long',
-                text: 'Cher ami' + ',\nCe thème est beaucoup trop long : \n' + theme + '\n  \nSincerely,\nThe Management'
+                subject: 'Sous thème trop long',
+                text: 'Cher ami' + ',\nCe thème est beaucoup trop long : \n' + subtheme + '\n  \nSincerely,\nThe Management'
             };
             sendEmail(data);
         }

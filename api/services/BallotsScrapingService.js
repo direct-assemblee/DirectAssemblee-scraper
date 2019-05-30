@@ -160,7 +160,7 @@ let retrieveBallotTheme = function(ballot) {
                     if (fullTheme && fullTheme.length > MAX_THEME_LENGTH) {
                         let shortName = ThemeHelper.findShorterName(fullTheme)
                         if (!shortName) {
-                            EmailService.sendThemeTooLongEmail(ballot.originalThemeName);
+                            EmailService.sendSubThemeTooLongEmail(ballot.originalThemeName);
                         }
                     }
                     return ballot;

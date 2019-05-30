@@ -34,7 +34,7 @@ module.exports = {
                 theme = foundSubthemes[0].theme;
             } else {
                 theme = searchedSubTheme;
-                EmailService.sendNewThemeEmail(searchedSubTheme);
+                EmailService.sendNewSubThemeEmail(searchedSubTheme);
             }
             return theme;
         });

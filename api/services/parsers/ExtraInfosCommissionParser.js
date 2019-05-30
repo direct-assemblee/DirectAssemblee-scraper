@@ -16,6 +16,7 @@ module.exports = {
                 } else if (tagname === 'meta' && attribs.content) {
                     if (attribs.name === 'TITRE_DOSSIER') {
 
+                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"  
                         let attribsContent = attribs.content.replace(';', ':');
 
                         if (attribsContent.indexOf(':') > 0) {
