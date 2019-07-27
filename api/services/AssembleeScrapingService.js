@@ -19,7 +19,7 @@ let RoleService = require('./database/RoleService')
 let InstanceTypeService = require('./database/InstanceTypeService')
 
 const DEBUG = false;
-const RANGE_STEP = 10;
+const RANGE_STEP = 2;
 
 let self = module.exports = {
     startScrapingDeputies: async function() {
