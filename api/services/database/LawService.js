@@ -46,13 +46,12 @@ var self = module.exports = {
 }
 
 let createLawModel = function(law) {
-    let date = DateHelper.findAndFormatDateInString(law.lastBallotDate)
     return {
         fileUrl: law.fileUrl,
         title: law.title,
         theme: law.theme ? law.theme.id : null,
         originalThemeName: getCamelCaseTheme(law.originalThemeName),
-        lastBallotDate: date
+        lastBallotDate: law.lastBallotDate
     }
 }
 
