@@ -13,6 +13,9 @@ module.exports = {
         originalThemeName: 'string',
         fileUrl: {
             type: 'string'
-        }
+        },
+        lastBallotDate: {
+            type: 'string'
+        },
     }
 };

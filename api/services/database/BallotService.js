@@ -5,7 +5,6 @@ module.exports = {
     insertBallotAndLaw: function(ballot, shouldUpdate) {
         return findOrInsertLaw(ballot)
         .then(function(lawId) {
-            console.log("==> inserting ballot with law Id " + lawId)
             return insertBallot(ballot, lawId, shouldUpdate)
         });
     },
@@ -43,11 +42,17 @@ let findOrInsertLaw = function(ballot) {
         if (!foundLaw) {
             return LawService.insertLaw(ballot);
         } else {
-            return foundLaw.id;
+            var newdate = DateHelper.isLater(DateHelper.formatDate(ballot.date), foundLaw.lastBallotDate);
+            if (newdate) {
+                return LawService.updateDate(ballot)
+                .then(() => foundLaw.id);
+            } else {
+                return foundLaw.id
+            }
         }
     })
     .catch(err => {
-        console.log(err);
+        console.log(err + " " + ballot.officialId);
         return null;
     })
 }
@@ -93,9 +98,6 @@ let updateBallot = function(foundBallot, ballotToUpdate) {
     return Ballot.update()
     .where({ officialId: foundBallot.officialId })
     .set(ballotToUpdate)
-    .then(function() {
-        return;
-    })
     .catch(err => {
         console.log('Error updating ballot ' + err);
         return

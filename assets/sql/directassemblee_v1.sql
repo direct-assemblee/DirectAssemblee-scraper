@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `law` (
     `fileUrl` varchar(255) DEFAULT NULL,
     `originalThemeName` varchar(255) DEFAULT NULL,
     `theme` int(11) DEFAULT NULL,
+    `lastBallotDate` varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
     UNIQUE KEY `fileUrl` (`fileUrl`)
