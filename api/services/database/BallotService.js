@@ -1,19 +1,12 @@
 let DateHelper = require('../helpers/DateHelper.js');
+let LawService = require('./LawService.js')
 
 module.exports = {
-    insertBallot: function(ballot, shouldUpdate) {
-        return Ballot.findOne({
-            officialId: ballot.officialId
-        }).then(function(foundBallot) {
-            if (!foundBallot || shouldUpdate) {
-                if (!foundBallot) {
-                    let ballotToInsert = createBallotModel(ballot)
-                    return createBallot(ballotToInsert);
-                } else {
-                    let ballotToUpdate = updateBallotModel(ballot)
-                    return updateBallot(foundBallot, ballotToUpdate);
-                }
-            }
+    insertBallotAndLaw: function(ballot, shouldUpdate) {
+        return findOrInsertLaw(ballot)
+        .then(function(lawId) {
+            console.log("==> inserting ballot with law Id " + lawId)
+            return insertBallot(ballot, lawId, shouldUpdate)
         });
     },
 
@@ -28,17 +21,42 @@ module.exports = {
     }
 }
 
-let createBallotModel = function(ballot) {
+let insertBallot = function(ballot, lawId, shouldUpdate) {
+    return Ballot.findOne({
+        officialId: ballot.officialId
+    }).then(function(foundBallot) {
+        if (!foundBallot || shouldUpdate) {
+            if (!foundBallot) {
+                let ballotToInsert = createBallotModel(ballot, lawId)
+                return createBallot(ballotToInsert);
+            } else {
+                let ballotToUpdate = updateBallotModel(ballot, lawId)
+                return updateBallot(foundBallot, ballotToUpdate);
+            }
+        }
+    });
+}
+
+let findOrInsertLaw = function(ballot) {
+    return LawService.findLaw(ballot.fileUrl)
+    .then(function(foundLaw) {
+        if (!foundLaw) {
+            return LawService.insertLaw(ballot);
+        } else {
+            return foundLaw.id;
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return null;
+    })
+}
+
+let createBallotModel = function(ballot, lawId) {
     let date = DateHelper.findAndFormatDateInString(ballot.date)
-    let originalThemeName = ballot.originalThemeName;
-    if (originalThemeName && originalThemeName.length > 0) {
-        originalThemeName = originalThemeName.charAt(0).toUpperCase() + originalThemeName.slice(1);
-    }
     return {
         officialId: ballot.officialId,
         title: ballot.title,
-        theme: ballot.theme ? ballot.theme.id : null,
-        originalThemeName: originalThemeName,
         date: date,
         dateDetailed: ballot.dateDetailed,
         type: ballot.type,
@@ -47,29 +65,23 @@ let createBallotModel = function(ballot) {
         noVotes: ballot.noVotes,
         isAdopted: ballot.isAdopted,
         analysisUrl: ballot.analysisUrl,
-        fileUrl: ballot.fileUrl,
-        nonVoting: ballot.nonVoting
+        nonVoting: ballot.nonVoting,
+        lawId: lawId
     }
 }
 
-let updateBallotModel = function(ballot) {
-    let originalThemeName = ballot.originalThemeName;
-    if (originalThemeName && originalThemeName.length > 0) {
-        originalThemeName = originalThemeName.charAt(0).toUpperCase() + originalThemeName.slice(1);
-    }
+let updateBallotModel = function(ballot, lawId) {
     return {
         officialId: ballot.officialId,
         title: ballot.title,
-        theme: ballot.theme ? ballot.theme.id : null,
-        originalThemeName: originalThemeName,
         type: ballot.type,
         totalVotes: ballot.totalVotes,
         yesVotes: ballot.yesVotes,
         noVotes: ballot.noVotes,
         isAdopted: ballot.isAdopted,
         analysisUrl: ballot.analysisUrl,
-        fileUrl: ballot.fileUrl,
-        nonVoting: ballot.nonVoting
+        nonVoting: ballot.nonVoting,
+        lawId: lawId
     }
 }
 

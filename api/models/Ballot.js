@@ -11,10 +11,6 @@ module.exports = {
         title: {
             type: 'json'
         },
-        theme: {
-            model: 'Theme'
-        },
-        originalThemeName: 'string',
         date: {
             type: 'string'
         },
@@ -42,8 +38,8 @@ module.exports = {
         analysisUrl: {
             type: 'string'
         },
-        fileUrl: {
-            type: 'string'
+        lawId: {
+            model: 'Law'
         }
     }
 };

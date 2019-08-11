@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS `ballot` (
     `updatedAt` varchar(255) DEFAULT NULL,
     `officialId` int(11) NOT NULL,
     `title` longtext,
-    `originalThemeName` varchar(255) DEFAULT NULL,
     `date` varchar(255) DEFAULT NULL,
     `dateDetailed` varchar(255) DEFAULT NULL,
     `type` int(11) DEFAULT NULL,
@@ -38,13 +37,23 @@ CREATE TABLE IF NOT EXISTS `ballot` (
     `nonVoting` double DEFAULT NULL,
     `isAdopted` tinyint(1) DEFAULT NULL,
     `analysisUrl` varchar(255) DEFAULT NULL,
-    `fileUrl` varchar(255) DEFAULT NULL,
-    `theme` int(11) DEFAULT NULL,
+    `lawId` int(11) DEFAULT NULL,
     PRIMARY KEY (`officialId`),
     UNIQUE KEY `officialId` (`officialId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE IF NOT EXISTS `law` (
+    `createdAt` varchar(255) DEFAULT NULL,
+    `updatedAt` varchar(255) DEFAULT NULL,
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `fileUrl` varchar(255) DEFAULT NULL,
+    `originalThemeName` varchar(255) DEFAULT NULL,
+    `theme` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `id` (`id`),
+    UNIQUE KEY `fileUrl` (`fileUrl`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 # Affichage de la table declaration
 # ------------------------------------------------------------
