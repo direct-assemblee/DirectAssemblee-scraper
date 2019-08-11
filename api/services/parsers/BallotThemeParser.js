@@ -1,8 +1,6 @@
 let htmlparser = require('htmlparser2');
 let StringHelper = require('../helpers/StringHelper');
 
-let USELESS_PARENTHESIS = /\([0-9]+\)/g;
-
 module.exports = {
     getParser: function(callback) {
         let parsedItem;
