@@ -7,7 +7,6 @@ module.exports = {
     getParser: function(callback) {
         let parsedItem = {};
         let expectedItem;
-        let currentDecla;
 
         return new htmlparser.Parser({
             onopentag: function(tagname, attribs) {
@@ -15,6 +14,14 @@ module.exports = {
                     expectedItem = 'title';
                 } else if (attribs.class === 'deputy-healine-sub-title') {
                     expectedItem = 'type';
+                } else if (attribs.class === 'titre-majuscul-gris-senat') {
+                    expectedItem = 'urlSenat';
+                } else if (expectedItem === 'urlSenat' && attribs.href) {
+                    let parsedUrl = StringHelper.removeParentReference(attribs.href);
+                    if (parsedUrl != null && parsedUrl != "#") {
+                        parsedItem.urlSenat = parsedUrl;
+                    }
+                    expectedItem = null;
                 }
             },
             ontext: function(text) {
@@ -27,7 +34,20 @@ module.exports = {
                                 endOfTitle = lightText.lastIndexOf('-');
                             }
                             let titleLength = lightText.length - (lightText.length - endOfTitle);
-                            parsedItem.originalThemeName = lightText.substring(0, titleLength);
+                            let wholeTitle = lightText.substring(0, titleLength);
+                            let split = wholeTitle.split(':');
+                            if (split) {
+                                parsedItem = {};
+                                if (split.length > 0 && split[0].trim().length > 0) {
+                                    parsedItem.theme = split[0].trim();
+                                }
+                                if (split.length > 1 && split[1].trim().length > 0) {
+                                    parsedItem.themeDetail = split[1].trim();
+                                    if (parsedItem.themeDetail) {
+                                        parsedItem.themeDetail = parsedItem.themeDetail.replace(USELESS_PARENTHESIS, '');
+                                    }
+                                }
+                            }
                         } else {
                             parsedItem.title = lightText;
                         }

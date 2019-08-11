@@ -11,7 +11,6 @@ let parseHtml = function(html, parser) {
     return new Promise(function(resolve, reject) {
         let p = parser.getParser(function(result) {
             html = null;
-            p.end();
             p = null;
             resolve(result);
         })

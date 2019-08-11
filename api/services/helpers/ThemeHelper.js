@@ -25,6 +25,10 @@ module.exports = {
     },
 
     findTheme: function(searchedSubTheme) {
+        return findTheme(searchedSubTheme, true)
+    },
+
+    findTheme: function(searchedSubTheme, fixAndSendMail) {
         return Promise.filter(subthemes, function(subtheme) {
             return subtheme.name.includes(searchedSubTheme);
         })
@@ -32,7 +36,12 @@ module.exports = {
             let theme;
             if (foundSubthemes.length > 0) {
                 theme = foundSubthemes[0].theme;
-            } else {
+                for (i in foundSubthemes) {
+                    if (searchedSubTheme == foundSubthemes[i].name) {
+                        theme = foundSubthemes[i].theme;
+                    }
+                }
+            } else if (fixAndSendMail) {
                 theme = searchedSubTheme;
                 EmailService.sendNewSubThemeEmail(searchedSubTheme);
             }

@@ -4,13 +4,11 @@ let Constants = require('./Constants.js')
 let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
-let ThemeHelper = require('./helpers/ThemeHelper');
 let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper');
 let DateHelper = require('./helpers/DateHelper');
 let EmailService = require('./EmailService');
 let BallotService = require('./database/BallotService');
 
-const MAX_THEME_LENGTH = 55;
 const PARAM_BALLOT_TYPE = '{ballot_type}';
 
 const BALLOT_OFFICIAL_TYPES = [ WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ORDINARY, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_SOLEMN, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_OTHER, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ALL ];
@@ -135,55 +133,8 @@ let adjustBallotType = async function(ballot, ballotOfficialType) {
 let retrieveBallotDetails = function(ballot, attempts) {
     return FetchUrlService.retrieveContent(ballot.analysisUrl, BallotParser)
     .then(function(ballotAnalysis) {
-        let fullBallot = mergeBallotWithAnalysis(ballot, ballotAnalysis);
-        return retrieveBallotTheme(fullBallot);
+        return mergeBallotWithAnalysis(ballot, ballotAnalysis);
     });
-}
-
-let retrieveBallotTheme = function(ballot) {
-    if (ballot.fileUrl) {
-        return FetchUrlService.retrieveContent(ballot.fileUrl, BallotThemeParser)
-        .then(function(parsedTheme) {
-            if (parsedTheme && parsedTheme.theme) {
-                return ThemeHelper.findTheme(parsedTheme.theme)
-                .then(function(foundTheme) {
-                    if (foundTheme) {
-                        ballot.theme = foundTheme;
-                        ballot.originalThemeName = parsedTheme.themeDetail;
-                    } else {
-                        console.log('/!\\ new theme not recognized : ' + parsedTheme);
-                    }
-                    return ballot;
-                })
-                .then(function(ballot) {
-                    let fullTheme = ballot.originalThemeName;
-                    if (fullTheme && fullTheme.length > MAX_THEME_LENGTH) {
-                        let shortName = ThemeHelper.findShorterName(fullTheme)
-                        if (!shortName) {
-                            EmailService.sendSubThemeTooLongEmail(ballot.originalThemeName);
-                        }
-                    }
-                    return ballot;
-                })
-            } else {
-                return ballot;
-            }
-        })
-    } else {
-        return new Promise(function(resolve, reject) {
-            if (ballot.title.indexOf('politique générale') > 0) {
-                return ThemeHelper.findTheme('Politique générale')
-                .then(function(foundTheme) {
-                    if (foundTheme) {
-                        ballot.theme = foundTheme;
-                    }
-                    resolve(ballot);
-                })
-            } else {
-                resolve(ballot);
-            }
-        })
-    }
 }
 
 let mergeBallotWithAnalysis = function(ballot, ballotAnalysis) {

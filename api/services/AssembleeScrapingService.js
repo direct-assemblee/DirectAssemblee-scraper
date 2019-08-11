@@ -266,7 +266,7 @@ let retrieveAndInsertLaws = function(ballots) {
 
 let insertLaws = function(laws) {
     let promises = [];
-    laws.forEach(law => promises.push(LawService.insertLaw(law)))
+    laws.forEach(law => promises.push(LawService.insertOrUpdateLaw(law)))
     return Promise.all(promises)
 }
 

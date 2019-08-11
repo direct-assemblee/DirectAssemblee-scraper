@@ -1,13 +1,13 @@
 let DateHelper = require('../helpers/DateHelper.js');
 
 var self = module.exports = {
-    insertLaw: function(law) {
-        return LawService.findLaw(law.fileUrl)
+    insertOrUpdateLaw: function(law) {
+        return self.findLaw(law.fileUrl)
         .then(function(foundLaw) {
             if (!foundLaw) {
                 return insertLaw(law);
             } else {
-                return foundLaw.id
+                return updateLaw(law);
             }
         })
         .catch(err => {
@@ -26,14 +26,6 @@ var self = module.exports = {
         }
     },
 
-    insertLaw: function(law) {
-        let lawToInsert = createLawModel(law);
-        return Law.create(lawToInsert).fetch()
-        .catch(err => {
-            return self.findLaw(law.fileUrl);
-        }).then(law => law.id)
-    },
-
     updateDate: function(law) {
         return Law.update()
         .where({ fileUrl: law.fileUrl })
@@ -43,6 +35,21 @@ var self = module.exports = {
             return
         });
     }
+}
+
+let insertLaw = function(law) {
+    let lawToInsert = createLawModel(law);
+    return Law.create(lawToInsert)
+    .catch(err => {
+        return self.findLaw(law.fileUrl);
+    })
+}
+
+let updateLaw = function(law) {
+    let lawToInsert = createLawModel(law);
+    return Law.update()
+    .where({ fileUrl: law.fileUrl })
+    .set(lawToInsert)
 }
 
 let createLawModel = function(law) {
