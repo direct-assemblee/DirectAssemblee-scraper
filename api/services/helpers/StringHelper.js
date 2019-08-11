@@ -13,6 +13,7 @@ let self = module.exports = {
     clean: function(content) {
         let cleaned = self.removeParentReference(content);
         cleaned = cleaned.replace(/&quot;/g, '\'');
+        cleaned = cleaned.replace(/&#039;/g, '\'');
         cleaned = entities.decode(cleaned);
         cleaned = removeSpecialChars(cleaned);
         return cleaned;
