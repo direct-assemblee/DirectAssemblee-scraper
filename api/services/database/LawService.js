@@ -1,6 +1,21 @@
 let DateHelper = require('../helpers/DateHelper.js');
 
 var self = module.exports = {
+    insertLaw: function(law) {
+        return LawService.findLaw(law.fileUrl)
+        .then(function(foundLaw) {
+            if (!foundLaw) {
+                return insertLaw(law);
+            } else {
+                return foundLaw.id
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            return;
+        })
+    },
+
     findLaw: function(fileUrl) {
         if (fileUrl == undefined) {
             return Promise.reject("No file url for law ");
@@ -31,9 +46,10 @@ var self = module.exports = {
 }
 
 let createLawModel = function(law) {
-    let date = DateHelper.findAndFormatDateInString(law.date)
+    let date = DateHelper.findAndFormatDateInString(law.lastBallotDate)
     return {
         fileUrl: law.fileUrl,
+        title: law.title,
         theme: law.theme ? law.theme.id : null,
         originalThemeName: getCamelCaseTheme(law.originalThemeName),
         lastBallotDate: date

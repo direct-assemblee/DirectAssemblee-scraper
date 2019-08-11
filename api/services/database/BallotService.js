@@ -2,10 +2,14 @@ let DateHelper = require('../helpers/DateHelper.js');
 let LawService = require('./LawService.js')
 
 module.exports = {
-    insertBallotAndLaw: function(ballot, shouldUpdate) {
-        return findOrInsertLaw(ballot)
-        .then(function(lawId) {
-            return insertBallot(ballot, lawId, shouldUpdate)
+    insertBallot: function(ballot, shouldUpdate) {
+        return LawService.findLaw(ballot.fileUrl)
+        .then(function(foundLaw) {
+            return insertBallot(ballot, foundLaw.id, shouldUpdate)
+        })
+        .catch(err => {
+            console.log(err + " -  ballot id : " + ballot.officialId);
+            return insertBallot(ballot, null, shouldUpdate)
         });
     },
 
@@ -34,27 +38,6 @@ let insertBallot = function(ballot, lawId, shouldUpdate) {
             }
         }
     });
-}
-
-let findOrInsertLaw = function(ballot) {
-    return LawService.findLaw(ballot.fileUrl)
-    .then(function(foundLaw) {
-        if (!foundLaw) {
-            return LawService.insertLaw(ballot);
-        } else {
-            var newdate = DateHelper.isLater(DateHelper.formatDate(ballot.date), foundLaw.lastBallotDate);
-            if (newdate) {
-                return LawService.updateDate(ballot)
-                .then(() => foundLaw.id);
-            } else {
-                return foundLaw.id
-            }
-        }
-    })
-    .catch(err => {
-        console.log(err + " " + ballot.officialId);
-        return null;
-    })
 }
 
 let createBallotModel = function(ballot, lawId) {

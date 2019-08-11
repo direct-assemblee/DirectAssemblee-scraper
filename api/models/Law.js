@@ -7,6 +7,9 @@ module.exports = {
             type: 'number',
             autoIncrement: true
         },
+        title: {
+            type: 'string'
+        },
         theme: {
             model: 'Theme'
         },
@@ -16,6 +19,6 @@ module.exports = {
         },
         lastBallotDate: {
             type: 'string'
-        },
+        }
     }
 };

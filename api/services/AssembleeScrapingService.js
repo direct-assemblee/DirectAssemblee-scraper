@@ -2,6 +2,8 @@
 
 let Promise = require('bluebird');
 
+let DateHelper = require('./helpers/DateHelper.js');
+let LawService = require('./database/LawService.js');
 let DeputyService = require('./database/DeputyService.js');
 let BallotService = require('./database/BallotService.js');
 let VoteService = require('./database/VoteService.js');
@@ -9,6 +11,7 @@ let MandateService = require('./database/MandateService.js');
 let DeclarationService = require('./database/DeclarationService.js');
 let WorkService = require('./database/WorkService.js');
 let BallotsScrapingService = require('./BallotsScrapingService');
+let LawsScrapingService = require('./LawsScrapingService');
 let DeputiesScrapingService = require('./DeputiesScrapingService');
 let DeputyHelper = require('./helpers/DeputyHelper')
 let ThemeHelper = require('./helpers/ThemeHelper')
@@ -227,21 +230,51 @@ let retrieveSlicesOfBallots = async function(slices, deputiesNames) {
 
 let retrieveAndInsertBallots = function(ballotsRange, deputiesNames) {
     return BallotsScrapingService.retrieveBallots(ballotsRange)
-    .then(function(ballotsRangeRetrieved) {
-        console.log('-- retrieved ballots ' + ballotsRangeRetrieved.length)
-        return insertBallots(ballotsRangeRetrieved)
-        .then(function() {
-            ballotsRangeRetrieved = null;
-            return insertVotesForBallots(ballotsRange, deputiesNames);
+    .then(ballotsRangeRetrieved => {
+        return retrieveAndInsertLaws(ballotsRangeRetrieved)
+        .then(() => {
+            return insertBallots(ballotsRangeRetrieved)
+            .then(() => insertVotesForBallots(ballotsRangeRetrieved, deputiesNames))
         })
     })
+}
+
+let retrieveAndInsertLaws = function(ballots) {
+    let laws = new Map();
+    for (let i in ballots) {
+        let fileUrl = ballots[i].fileUrl;
+        if (fileUrl != null) {
+            let formattedBallotDate = DateHelper.formatDate(ballots[i].date);
+            if (!laws.has(fileUrl)) {
+                laws.set(fileUrl, { fileUrl: fileUrl, lastBallotDate: formattedBallotDate })
+            } else if (DateHelper.isLater(formattedBallotDate, laws.get(fileUrl).lastBallotDate)) {
+                laws.set(fileUrl, { fileUrl: fileUrl, lastBallotDate: formattedBallotDate })
+            }
+        }
+    }
+    return Promise.map(laws.values(), law => law.fileUrl)
+    .then(lawsUrls => {
+        return LawsScrapingService.retrieveLaws(lawsUrls)
+        .then(retrievedLaws => {
+            for (let i in retrievedLaws) {
+                retrievedLaws[i].lastBallotDate = laws.get(retrievedLaws[i].fileUrl).lastBallotDate;
+            }
+            return insertLaws(retrievedLaws)
+        })
+    })
+}
+
+let insertLaws = function(laws) {
+    let promises = [];
+    laws.forEach(law => promises.push(LawService.insertLaw(law)))
+    return Promise.all(promises)
 }
 
 let insertBallots = function(ballots) {
     let promises = [];
     for (let i in ballots) {
         if (ballots[i]) {
-            promises.push(BallotService.insertBallotAndLaw(ballots[i], true));
+            promises.push(BallotService.insertBallot(ballots[i], true));
         }
     }
     ballots = null;
@@ -280,7 +313,7 @@ let insertVotesForBallot = async function(ballot, deputies) {
     return VoteService.insertVotes(ballot.officialId, votesToInsert)
     .then(function() {
        ballot.nonVoting = findNonVotings(votesToInsert);
-       return BallotService.insertBallotAndLaw(ballot, true);
+       return BallotService.insertBallot(ballot, true);
    })
 }
 
