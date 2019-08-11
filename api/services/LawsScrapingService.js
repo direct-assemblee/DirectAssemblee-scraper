@@ -18,6 +18,8 @@ let retrieveLawAndTheme = function(url) {
     .then(law => {
         if (law && !law.theme) {
             return retrieveThemeFromSenat(law)
+        } else {
+            return law
         }
     })
     .then(function(law) {
@@ -53,6 +55,7 @@ let retrieveThemeFromSenat = function(retrievedLaw) {
             }
         })
     } else {
+        console.log('/!\\ no link to Senat\'s website ' + retrievedLaw.theme)
         return retrievedLaw;
     }
 }
@@ -62,7 +65,7 @@ let findAndHandleTheme = function(law, sendMail) {
     .then(function(foundTheme) {
         if (foundTheme) {
             law.theme = foundTheme;
-            if (law.themeDetails) {
+            if (law.themeDetail) {
                 law.originalThemeName = law.themeDetail;
             }
         } else {

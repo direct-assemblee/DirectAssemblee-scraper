@@ -256,6 +256,9 @@ let retrieveAndInsertLaws = function(ballots) {
     .then(lawsUrls => {
         return LawsScrapingService.retrieveLaws(lawsUrls)
         .then(retrievedLaws => {
+            retrievedLaws = retrievedLaws.filter(function(law) {
+                return law != null
+            })
             for (let i in retrievedLaws) {
                 retrievedLaws[i].lastBallotDate = laws.get(retrievedLaws[i].fileUrl).lastBallotDate;
             }
