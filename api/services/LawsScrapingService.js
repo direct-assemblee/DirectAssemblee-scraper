@@ -63,13 +63,13 @@ let retrieveThemeFromSenat = function(retrievedLaw) {
 let findAndHandleTheme = function(law, sendMail) {
     return ThemeHelper.findTheme(law.theme, sendMail)
     .then(function(foundTheme) {
+        law.originalThemeName = law.theme;
         if (foundTheme) {
             law.theme = foundTheme;
             if (law.themeDetail) {
                 law.originalThemeName = law.themeDetail;
             }
         } else {
-            law.originalThemeName = law.theme;
             law.theme = null;
         }
         return law;
