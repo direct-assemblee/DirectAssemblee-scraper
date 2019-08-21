@@ -13,7 +13,7 @@ module.exports = {
         return new htmlparser.Parser({
             onopentag: function(tagname, attribs) {
                 if (tagname === 'title') {
-                    expectedItem = 'title';
+                    expectedItem = 'name';
                 } else if (attribs.class === 'deputy-healine-sub-title') {
                     expectedItem = 'type';
                 } else if (attribs.class === 'titre-majuscul-gris-senat') {
@@ -27,10 +27,10 @@ module.exports = {
                 }
             },
             ontext: function(text) {
-                if (expectedItem === 'title' || expectedItem === 'type') {
+                if (expectedItem === 'name' || expectedItem === 'type') {
                     let lightText = StringHelper.removeParentReference(text);
                     if (lightText && lightText.length > 0) {
-                        if (expectedItem === 'title') {
+                        if (expectedItem === 'name') {
                             let endOfTitle = lightText.lastIndexOf('(');
                             if (endOfTitle == -1) {
                                 endOfTitle = lightText.lastIndexOf('-');
@@ -40,18 +40,18 @@ module.exports = {
                             let split = wholeTitle.split(':');
                             if (split) {
                                 parsedItem = {};
-                                if (split.length > 0 && split[0].trim().length > 0) {
-                                    parsedItem.theme = split[0].trim();
-                                }
                                 if (split.length > 1 && split[1].trim().length > 0) {
-                                    parsedItem.themeDetail = split[1].trim();
-                                    if (parsedItem.themeDetail) {
-                                        parsedItem.themeDetail = parsedItem.themeDetail.replace(USELESS_PARENTHESIS, '');
+                                    parsedItem.originalTheme = split[0].trim();
+                                    parsedItem.name = split[1].trim();
+                                    if (parsedItem.name) {
+                                        parsedItem.name = parsedItem.name.replace(USELESS_PARENTHESIS, '');
                                     }
+                                } else {
+                                    parsedItem.name = split[0].trim();    
                                 }
                             }
                         } else {
-                            parsedItem.title = lightText;
+                            parsedItem.typeName = lightText;
                         }
                         expectedItem = null;
                     }

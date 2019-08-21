@@ -4,6 +4,7 @@ let Promise = require('bluebird');
 
 let DateHelper = require('./helpers/DateHelper.js');
 let LawService = require('./database/LawService.js');
+let LawTypeService = require('./database/LawTypeService.js');
 let DeputyService = require('./database/DeputyService.js');
 let BallotService = require('./database/BallotService.js');
 let VoteService = require('./database/VoteService.js');
@@ -269,8 +270,13 @@ let retrieveAndInsertLaws = function(ballots) {
 
 let insertLaws = function(laws) {
     let promises = [];
-    laws.forEach(law => promises.push(LawService.insertOrUpdateLaw(law)))
+    laws.forEach(law => promises.push(LawTypeService.insertLawType(law.typeName)))
     return Promise.all(promises)
+    .then(() => {
+        promises = [];
+        laws.forEach(law => promises.push(LawService.insertOrUpdateLaw(law)))
+        return Promise.all(promises)
+    })
 }
 
 let insertBallots = function(ballots) {

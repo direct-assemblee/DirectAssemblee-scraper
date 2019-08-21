@@ -35,7 +35,7 @@ let retrieveLaw = function(url) {
     .then(law => {
         if (law) {
             law.fileUrl = url;
-            if (law.theme) {
+            if (law.originalTheme) {
                 return findAndHandleTheme(law, false)
             }
         }
@@ -43,37 +43,40 @@ let retrieveLaw = function(url) {
     })
 }
 
-let retrieveThemeFromSenat = function(retrievedLaw) {
-    if (retrievedLaw != null && retrievedLaw.urlSenat != null) {
-        return FetchUrlService.retrieveContentWithIsoEncoding(retrievedLaw.urlSenat, true, SenatLawParser)
+let retrieveThemeFromSenat = function(law) {
+    if (law != null && law.urlSenat != null) {
+        return FetchUrlService.retrieveContentWithIsoEncoding(law.urlSenat, true, SenatLawParser)
         .then(theme => {
             if (theme != undefined) {
-                retrievedLaw.theme = theme;
-                return findAndHandleTheme(retrievedLaw, true)
+                return findTheme(theme, true)
+                .then(foundTheme => {
+                    law.theme = foundTheme;
+                    return law;
+                })
             } else {
-                return retrievedLaw;
+                return law;
             }
         })
     } else {
-        console.log('/!\\ no link to Senat\'s website ' + retrievedLaw.theme)
-        return retrievedLaw;
+        console.log('/!\\ no link to Senat\'s website ' + law.theme)
+        return law;
     }
 }
 
 let findAndHandleTheme = function(law, sendMail) {
-    return ThemeHelper.findTheme(law.theme, sendMail)
+    return findTheme(law.originalTheme, sendMail)
     .then(function(foundTheme) {
-        law.originalThemeName = law.theme;
         if (foundTheme) {
             law.theme = foundTheme;
-            if (law.themeDetail) {
-                law.originalThemeName = law.themeDetail;
-            }
         } else {
             law.theme = null;
         }
         return law;
     })
+}
+
+let findTheme = function(searchThemeName, sendMail) {
+    return ThemeHelper.findTheme(searchThemeName, sendMail)
 }
 
 let sendNewThemeEmailIfNeeded = function(law) {

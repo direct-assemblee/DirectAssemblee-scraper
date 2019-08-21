@@ -79,8 +79,7 @@ INSERT IGNORE `shorttheme` (`id`, `fullName`, `shortName`) VALUES
 (63, 'Droits des consommateurs en matière de démarchage téléphonique', 'Droits des consommateurs - démarchage téléphonique'),
 (64, 'Physicien médical et qualifications professionnelles dans le domaine de la santé', 'Qualifications professionnelles dans le domaine de la santé'),
 (65, 'Prorogation de l\'application de la loi sur l\'état d\'urgence (2)', 'Loi sur l\'état d\'urgence'),
-(66, 'Accession à la pleine souveraineté de la Nouvelle-Calédonie', 'Pleine souveraineté de la Nouvelle-Calédonie')
-;
+(66, 'Accession à la pleine souveraineté de la Nouvelle-Calédonie', 'Pleine souveraineté de la Nouvelle-Calédonie');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

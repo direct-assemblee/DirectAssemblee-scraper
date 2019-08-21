@@ -7,18 +7,14 @@ module.exports = {
             type: 'number',
             autoIncrement: true
         },
-        title: {
-            type: 'string'
-        },
+        name: 'string',
+        fileUrl: 'string',
+        lastBallotDate: 'string',
         theme: {
             model: 'Theme'
         },
-        originalThemeName: 'string',
-        fileUrl: {
-            type: 'string'
+        typeId: {
+            model: 'LawType'
         },
-        lastBallotDate: {
-            type: 'string'
-        }
     }
 };

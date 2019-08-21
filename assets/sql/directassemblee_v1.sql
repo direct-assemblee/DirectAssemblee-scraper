@@ -42,16 +42,23 @@ CREATE TABLE IF NOT EXISTS `ballot` (
     UNIQUE KEY `officialId` (`officialId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `lawtype` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `id` (`id`),
+    UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `law` (
     `createdAt` varchar(255) DEFAULT NULL,
     `updatedAt` varchar(255) DEFAULT NULL,
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `title` longtext,
     `fileUrl` varchar(255) DEFAULT NULL,
-    `originalThemeName` varchar(255) DEFAULT NULL,
+    `name` varchar(255) DEFAULT NULL,
     `theme` int(11) DEFAULT NULL,
     `lastBallotDate` varchar(255) DEFAULT NULL,
+    `typeId` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
     UNIQUE KEY `fileUrl` (`fileUrl`)
