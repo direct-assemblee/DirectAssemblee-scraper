@@ -1,8 +1,6 @@
 let WorkTypeService = require('../database/WorkTypeService')
-let BallotTypeService = require('../database/BallotTypeService')
 
 let workTypes;
-let ballotTypes;
 
 let self = module.exports = {
     QUESTION: 'Question',
@@ -17,30 +15,20 @@ let self = module.exports = {
     WORK_OFFICIAL_PATH_COMMISSIONS: 'ComptesRendusCommission',
     WORK_OFFICIAL_PATH_PUBLIC_SESSIONS: 'ComptesRendusSeance',
 
-    BALLOT_SOLEMN: 'Scrutin solennel',
-    BALLOT_ORDINARY: 'Scrutin ordinaire',
-    BALLOT_MOTION: 'Motion de censure',
-    BALLOT_OTHER: 'Autre scrutin',
-    BALLOT_UNDEFINED: 'Scrutin (type à venir)',
-    BALLOT_OFFICIAL_TYPE_ORDINARY: 'SOR',
-    BALLOT_OFFICIAL_TYPE_SOLEMN: 'SSO',
-    BALLOT_OFFICIAL_TYPE_OTHER: 'AUT',
-    BALLOT_OFFICIAL_TYPE_MOTION: 'MOT',
-    BALLOT_OFFICIAL_TYPE_UNDEFINED: 'UND',
-    BALLOT_OFFICIAL_TYPE_ALL: 'TOUS',
+    allTypes: function() {
+        return [ self.WORK_OFFICIAL_PATH_QUESTIONS,
+            self.WORK_OFFICIAL_PATH_REPORTS,
+            self.WORK_OFFICIAL_PATH_PROPOSITIONS,
+            self.WORK_OFFICIAL_PATH_COSIGNED_PROPOSITIONS,
+            self.WORK_OFFICIAL_PATH_COMMISSIONS,
+            self.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS ]
+    },
 
-    getWorkTypeId: async function(searchedType) {
+    getWorkTypeId: async function(searchedTypeNameOrId) {
         if (!workTypes) {
             workTypes = await WorkTypeService.findAllWorkTypes()
         }
-        return findCorrectId(workTypes, searchedType)
-    },
-
-    getBallotTypeId: async function(searchedType) {
-        if (!ballotTypes) {
-            ballotTypes = await BallotTypeService.findAllBallotTypes()
-        }
-        return findCorrectId(ballotTypes, searchedType)
+        return findCorrectId(workTypes, searchedTypeNameOrId)
     },
 
     isPublicSession: function(workType) {
@@ -64,10 +52,10 @@ let self = module.exports = {
     }
 }
 
-let findCorrectId = function(referenceTypes, searchedType) {
+let findCorrectId = function(referenceTypes, searchedTypeNameOrId) {
     let id;
     for (let i in referenceTypes) {
-        if (isCorrectType(referenceTypes[i], searchedType)) {
+        if (isCorrectType(referenceTypes[i], searchedTypeNameOrId)) {
             id = referenceTypes[i].id
             break;
         }
@@ -75,6 +63,7 @@ let findCorrectId = function(referenceTypes, searchedType) {
     return id
 }
 
-let isCorrectType = function(referenceType, searchedType) {
-    return searchedType.startsWith(referenceType.officialPath)
+let isCorrectType = function(referenceType, searchedTypeNameOrId) {
+    return searchedTypeNameOrId == referenceType.id
+        || searchedTypeNameOrId.startsWith(referenceType.officialPath)
 }

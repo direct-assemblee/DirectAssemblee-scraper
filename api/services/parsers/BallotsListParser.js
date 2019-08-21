@@ -1,6 +1,6 @@
 let htmlparser = require('htmlparser2');
 let StringHelper = require('../helpers/StringHelper');
-let WorkAndBallotTypeHelper = require('../helpers/WorkAndBallotTypeHelper');
+let BallotTypeHelper = require('../helpers/BallotTypeHelper');
 
 module.exports = {
     getParser: function(callback) {
@@ -25,7 +25,7 @@ module.exports = {
                     if (lightText && lightText.length > 0) {
                         if (expectedData === 'id') {
                             if (lightText.includes('*')) {
-                                parsedItem.type = WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_SOLEMN;
+                                parsedItem.type = BallotTypeHelper.BALLOT_OFFICIAL_TYPE_SOLEMN;
                             }
                             parsedItem.officialId = lightText.replace('*', '');
                             expectedData = 'date';

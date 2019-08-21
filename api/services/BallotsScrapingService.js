@@ -4,14 +4,14 @@ let Constants = require('./Constants.js')
 let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
 let BallotThemeParser = require('./parsers/BallotThemeParser');
-let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper');
+let BallotTypeHelper = require('./helpers/BallotTypeHelper');
 let DateHelper = require('./helpers/DateHelper');
 let EmailService = require('./EmailService');
 let BallotService = require('./database/BallotService');
 
 const PARAM_BALLOT_TYPE = '{ballot_type}';
 
-const BALLOT_OFFICIAL_TYPES = [ WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ORDINARY, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_SOLEMN, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_OTHER, WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ALL ];
+const BALLOT_OFFICIAL_TYPES = BallotTypeHelper.allTypes();
 const BALLOTS_PAGE_SIZE = 100;
 const BALLOTS_LIST_URL = Constants.BASE_URL + 'scrutins/liste/offset/' + Constants.PARAM_OFFSET + '/(type)/' + PARAM_BALLOT_TYPE + '/(idDossier)/TOUS/(legislature)/' + Constants.MANDATE_NUMBER;
 
@@ -35,7 +35,7 @@ let self = module.exports = {
     },
 
     filterBallots: async function(ballots) {
-        let undefinedId = await WorkAndBallotTypeHelper.getBallotTypeId(WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_UNDEFINED)
+        let undefinedId = await BallotTypeHelper.getBallotTypeId(BallotTypeHelper.BALLOT_OFFICIAL_TYPE_UNDEFINED)
 
         let allBallots = [];
         for (let i in ballots) {
@@ -120,13 +120,13 @@ let retrieveBallotsListOfTypeWithPage = function(url, ballotOfficialType, lastBa
 let adjustBallotType = async function(ballot, ballotOfficialType) {
     let workType
     if (ballot.title.indexOf('motion de censure') > 0) {
-        workType = WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_MOTION;
+        workType = BallotTypeHelper.BALLOT_OFFICIAL_TYPE_MOTION;
     } else if (!ballot.type) {
-        workType = (ballotOfficialType === WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_ALL) ? WorkAndBallotTypeHelper.BALLOT_OFFICIAL_TYPE_UNDEFINED : ballotOfficialType;
+        workType = (ballotOfficialType === BallotTypeHelper.BALLOT_OFFICIAL_TYPE_ALL) ? BallotTypeHelper.BALLOT_OFFICIAL_TYPE_UNDEFINED : ballotOfficialType;
     } else {
         workType = ballot.type
     }
-    ballot.type = await WorkAndBallotTypeHelper.getBallotTypeId(workType)
+    ballot.type = await BallotTypeHelper.getBallotTypeId(workType)
     return ballot
 }
 

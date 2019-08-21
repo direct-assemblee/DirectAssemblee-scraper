@@ -19,12 +19,15 @@ var self = module.exports = {
                 return;
             })
         })
-
+        .catch(err => {
+            console.log(err);
+            return;
+        })
     },
 
     findLaw: function(fileUrl) {
         if (fileUrl == undefined) {
-            return Promise.reject("No file url for law ");
+            return Promise.reject("/!\\ no file url for law ");
         } else {
             return Law.findOne({
                 fileUrl: fileUrl
@@ -36,8 +39,8 @@ var self = module.exports = {
         return Law.update()
         .where({ fileUrl: law.fileUrl })
         .set({ lastBallotDate: DateHelper.findAndFormatDateInString(law.date) })
-        .catch(err => {
-            console.log('Error updating law ' + err);
+        .catch({ code: 'E_UNIQUE' }, err => {
+            console.log('/!\\ Error updating law ');
             return
         });
     }
@@ -45,7 +48,7 @@ var self = module.exports = {
 
 let insertLaw = function(lawToInsert) {
     return Law.create(lawToInsert)
-    .catch(err => {
+    .catch({ code: 'E_UNIQUE' }, err => {
         return self.findLaw(lawToInsert.fileUrl);
     })
 }
@@ -64,12 +67,4 @@ let createLawModel = function(law, foundLawType) {
         lastBallotDate: law.lastBallotDate,
         typeId: foundLawType.id
     }
-}
-
-let getCamelCaseTheme = function(theme) {
-    let originalThemeName = theme;
-    if (originalThemeName && originalThemeName.length > 0) {
-        originalThemeName = originalThemeName.charAt(0).toUpperCase() + originalThemeName.slice(1);
-    }
-    return originalThemeName;
 }

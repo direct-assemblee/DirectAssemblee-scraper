@@ -22,12 +22,6 @@ let retrieveLawAndTheme = function(url) {
             return law
         }
     })
-    .then(function(law) {
-        if (law) {
-            sendNewThemeEmailIfNeeded(law)
-        }
-        return law;
-    });
 }
 
 let retrieveLaw = function(url) {
@@ -58,7 +52,7 @@ let retrieveThemeFromSenat = function(law) {
             }
         })
     } else {
-        console.log('/!\\ no link to Senat\'s website ' + law.theme)
+        console.log('/!\\ no link to Senat\'s website : ' + law.name)
         return law;
     }
 }
@@ -77,17 +71,4 @@ let findAndHandleTheme = function(law, sendMail) {
 
 let findTheme = function(searchThemeName, sendMail) {
     return ThemeHelper.findTheme(searchThemeName, sendMail)
-}
-
-let sendNewThemeEmailIfNeeded = function(law) {
-    if (!law.theme) {
-        console.log('/!\\ new theme not recognized : ' + law.originalThemeName);
-        EmailService.sendNewSubThemeEmail(law.originalThemeName);
-    }
-    if (law.originalThemeName && law.originalThemeName.length > MAX_THEME_LENGTH) {
-        let shortName = ThemeHelper.findShorterName(law.originalThemeName)
-        if (!shortName) {
-            EmailService.sendSubThemeTooLongEmail(law.originalThemeName);
-        }
-    }
 }

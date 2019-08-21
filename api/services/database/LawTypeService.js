@@ -14,7 +14,7 @@ var self = module.exports = {
 
     findLawType: function(lawTypeName) {
         if (lawTypeName == undefined) {
-            return Promise.reject("No law type");
+            return Promise.reject("/!\\ no law type");
         } else {
             return LawType.findOne({
                 name: lawTypeName
@@ -25,4 +25,7 @@ var self = module.exports = {
 
 let insertLawType = function(lawTypeName) {
     return LawType.create({ name: lawTypeName })
+    .catch({ code: 'E_UNIQUE' }, err => {
+        return self.findLawType(lawTypeName)
+    })
 }

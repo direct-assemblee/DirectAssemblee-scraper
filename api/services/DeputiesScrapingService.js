@@ -3,7 +3,7 @@
 let Promise = require('bluebird');
 let Constants = require('./Constants.js')
 
-let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper')
+let WorkTypeHelper = require('./helpers/WorkTypeHelper')
 let DateHelper = require('./helpers/DateHelper')
 let WorkService = require('./database/WorkService')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
@@ -19,7 +19,7 @@ let DeputyInfosAndMandatesParser = require('./parsers/DeputyInfosAndMandatesPars
 
 const PARAM_WORK_TYPE = '{work_type}';
 const PARAM_DEPUTY_NAME = '{deputy_name}';
-const WORK_OFFICIAL_TYPES = [ WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_QUESTIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_REPORTS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_PROPOSITIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COSIGNED_PROPOSITIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS, WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS ]
+const WORK_OFFICIAL_TYPES = WorkTypeHelper.allTypes();
 const WORK_PAGE_SIZE = 10;
 
 const DEPUTIES_LIST_URL = Constants.BASE_URL + 'deputes/liste/departements/(vue)/tableau';
@@ -131,10 +131,13 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, parsedWorkType, lastWor
                 return retrieveExtraForWork(work, parsedWorkType);
             })
             .map(function(work) {
-                return WorkAndBallotTypeHelper.getWorkTypeId(parsedWorkType)
+                return WorkTypeHelper.getWorkTypeId(parsedWorkType)
                 .then(function(workTypeId) {
-                    work.type = workTypeId
-                    return setThemeToWork(work, parsedWorkType);
+                    work.subtype = {
+                        name: work.subtype,
+                        parentType: workTypeId
+                    }
+                    return setSubthemeToWork(work, parsedWorkType);
                 })
             })
         } else {
@@ -145,8 +148,8 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, parsedWorkType, lastWor
 }
 
 let retrieveExtraForWork = function(parsedWork, parsedWorkType) {
-    if (!WorkAndBallotTypeHelper.isPublicSession(parsedWorkType)) {
-        return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, !WorkAndBallotTypeHelper.isQuestion(parsedWorkType), getParserForType(parsedWorkType))
+    if (!WorkTypeHelper.isPublicSession(parsedWorkType)) {
+        return FetchUrlService.retrieveContentWithIsoEncoding(parsedWork.url, !WorkTypeHelper.isQuestion(parsedWorkType), getParserForType(parsedWorkType))
         .then(function(result) {
             if (result) {
                 return processResultForType(parsedWork, parsedWorkType, result);
@@ -162,11 +165,11 @@ let retrieveExtraForWork = function(parsedWork, parsedWorkType) {
 
 let getParserForType = function(parsedWorkType) {
     let parser;
-    if (WorkAndBallotTypeHelper.isQuestion(parsedWorkType)) {
+    if (WorkTypeHelper.isQuestion(parsedWorkType)) {
         parser = DeputyQuestionThemeParser;
-    } else if (WorkAndBallotTypeHelper.isProposition(parsedWorkType)) {
+    } else if (WorkTypeHelper.isProposition(parsedWorkType)) {
         parser = ExtraInfosLawProposalParser;
-    } else if (WorkAndBallotTypeHelper.isCommission(parsedWorkType)) {
+    } else if (WorkTypeHelper.isCommission(parsedWorkType)) {
         parser = ExtraInfosCommissionParser;
     } else {
         parser = DeputyWorkExtraInfosParser;
@@ -176,14 +179,14 @@ let getParserForType = function(parsedWorkType) {
 
 let processResultForType = function(parsedWork, parsedWorkType, result) {
     let resultingWork;
-    if (WorkAndBallotTypeHelper.isQuestion(parsedWorkType)) {
+    if (WorkTypeHelper.isQuestion(parsedWorkType)) {
         resultingWork = processResultForQuestion(parsedWork, result);
-    } else if (WorkAndBallotTypeHelper.isProposition(parsedWorkType) || WorkAndBallotTypeHelper.isCommission(parsedWorkType)) {
+    } else if (WorkTypeHelper.isProposition(parsedWorkType) || WorkTypeHelper.isCommission(parsedWorkType)) {
         resultingWork = processResultForExtraInfos(parsedWork, parsedWorkType, result);
     } else {
         resultingWork = processResultForOtherTypes(parsedWork, result);
     }
-    resultingWork.isCreation = WorkAndBallotTypeHelper.isCreation(parsedWorkType)
+    resultingWork.isCreation = WorkTypeHelper.isCreation(parsedWorkType)
     return resultingWork;
 }
 
@@ -200,7 +203,7 @@ let processResultForExtraInfos = function(parsedWork, parsedWorkType, result) {
     parsedWork.parsedTheme = result.theme;
     parsedWork.extraInfos = result.extraInfos;
 
-    parsedWork.title = adjustTitleIfCommission(parsedWork.title, parsedWorkType)
+    parsedWork.subtype = adjustSubtypeNameIfCommission(parsedWork.subtype, parsedWorkType)
     return parsedWork;
 }
 
@@ -211,31 +214,32 @@ let processResultForOtherTypes = function(parsedWork, result) {
     return parsedWork;
 }
 
-let adjustTitleIfCommission = function(workTitle, parsedWorkType) {
-    let title = workTitle
-    if (parsedWorkType == WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS) {
-        let split = title.split('-')[1];
+let adjustSubtypeNameIfCommission = function(workSubtype, parsedWorkType) {
+    let subtype = workSubtype
+    if (parsedWorkType == WorkTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS) {
+        let split = workSubtype.split('-')[1];
         if (split) {
-            title = split.trim();
+            subtype = split.trim();
         }
     }
-    return title
+    return subtype
 }
 
-
-let setThemeToWork = function(work, parsedWorkType) {
+let setSubthemeToWork = function(work, parsedWorkType) {
     let themeToSearch;
     if (work.parsedTheme) {
         themeToSearch = work.parsedTheme
-    } else if (parsedWorkType === WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS || parsedWorkType === WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS) {
+    } else if (parsedWorkType === WorkTypeHelper.WORK_OFFICIAL_PATH_COMMISSIONS || parsedWorkType === WorkTypeHelper.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS) {
         themeToSearch = 'Politique générale';
     }
 
     if (themeToSearch) {
-        return searchTheme(work, themeToSearch)
-        .then(function(theme) {
-            work.theme = theme.foundTheme;
-            work.originalThemeName = theme.originalThemeName;
+        return searchSubtheme(work, themeToSearch)
+        .then(function(foundSubtheme) {
+            work.subtheme = foundSubtheme;
+            if (!foundSubtheme) {
+                work.unclassifiedTemporaryTheme = themeToSearch;
+            }
             return work;
         })
     } else {
@@ -245,13 +249,13 @@ let setThemeToWork = function(work, parsedWorkType) {
     }
 }
 
-let searchTheme = function(work, themeName) {
-    return ThemeHelper.findTheme(themeName)
-    .then(function(foundTheme) {
-        if (!foundTheme) {
-            console.log('/!\\ new theme not recognized : ' + themeName);
+let searchSubtheme = function(work, themeName) {
+    return ThemeHelper.findSubtheme(themeName)
+    .then(function(foundSubtheme) {
+        if (!foundSubtheme) {
+            console.log('WORK /!\\ new theme not recognized : ' + themeName);
         }
-        return { foundTheme: foundTheme, originalThemeName : themeName };
+        return foundSubtheme;
     })
 }
 

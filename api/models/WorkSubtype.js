@@ -4,8 +4,9 @@ module.exports = {
             type: 'number',
             autoIncrement: true
         },
-        displayName: 'string',
         name: 'string',
-        officialPath: 'string'
+        parentTypeId: {
+            model: 'WorkType'
+        }
     }
 };

@@ -1,23 +1,24 @@
 let Promise = require('bluebird');
 let ThemeHelper = require('../helpers/ThemeHelper')
 let DateHelper = require('../helpers/DateHelper')
-let WorkAndBallotTypeHelper = require('../helpers/WorkAndBallotTypeHelper')
+let WorkTypeHelper = require('../helpers/WorkTypeHelper')
 let ExtraInfoService = require('./ExtraInfoService')
 let DeputyService = require('./DeputyService')
+let WorkSubtypeService = require('./WorkSubtypeService.js')
 
 let self = module.exports = {
     classifyUnclassifiedQuestions: function() {
         return findUnclassifiedQuestions()
         .then(function(unclassifiedQuestions) {
             return Promise.map(unclassifiedQuestions, function(question) {
-                return ThemeHelper.findTheme(question.tempTheme)
-                .then(function(foundTheme) {
-                    if (foundTheme) {
-                        question.theme = foundTheme.id;
-                        question.tempTheme = '';
+                return ThemeHelper.findSubtheme(question.unclassifiedTemporaryTheme)
+                .then(function(foundSubtheme) {
+                    if (foundSubtheme) {
+                        question.subthemeId = foundSubtheme.id;
+                        question.unclassifiedTemporaryTheme = '';
                         return saveWork(Object.assign({}, question));
                     } else {
-                        console.log('/!\\ new theme not recognized : ' + question.theme);
+                        console.log('UNCLASSIFIED /!\\ new theme not recognized : ' + question.theme);
                         return question;
                     }
                 })
@@ -59,15 +60,10 @@ let self = module.exports = {
                 return isPast && isNew
             }, { concurrency: 1 })
             .mapSeries(function(work) {
-                let extraToInsert = []
-                return createOrUpdateWork(work)
-                .then(function(insertedWorkId) {
-                    let extras = buildExtraInfosToInsert(insertedWorkId, work, deputyId)
-                    return ExtraInfoService.createOrUpdateExtrasInfos(extras)
-                    .then(function() {
-                        work.id = insertedWorkId
-                        return work;
-                    })
+                return getInsertSubtypeId(work.subtype)
+                .then(subtypeId => {
+                    work.subtypeId = subtypeId
+                    return insertWork(work, deputyId)
                 })
             }, { concurrency: 1 })
         }
@@ -90,6 +86,29 @@ let self = module.exports = {
             .populate('participants')
             .sort('date DESC')
     }
+}
+
+let getInsertSubtypeId = function(subtype) {
+    return WorkSubtypeService.insertWorkSubtype(subtype)
+    .then(() => {
+        return WorkSubtypeService.findWorkSubtype(subtype.name)
+        .then(subtype => {
+            return subtype.id
+        })
+    })
+}
+
+let insertWork = function(work, deputyId) {
+    let extraToInsert = []
+    return createOrUpdateWork(work)
+    .then(function(insertedWorkId) {
+        let extras = buildExtraInfosToInsert(insertedWorkId, work, deputyId)
+        return ExtraInfoService.createOrUpdateExtrasInfos(extras)
+        .then(function() {
+            work.id = insertedWorkId
+            return work;
+        })
+    })
 }
 
 let populateWork = function(workId) {
@@ -174,13 +193,14 @@ let buildExtraInfosToInsert = function(insertedWorksId, work, deputyId) {
 }
 
 let findUnclassifiedQuestions = function() {
-    let questionId = WorkAndBallotTypeHelper.getWorkTypeId(WorkAndBallotTypeHelper.WORK_OFFICIAL_PATH_QUESTIONS)
+    let questionId = WorkTypeHelper.getWorkTypeId(WorkTypeHelper.WORK_OFFICIAL_PATH_QUESTIONS)
     return Work.find()
-    .where({ tempTheme: {'!=': ''} })
-    .populate('type')
+    .where({ unclassifiedTemporaryTheme: {'!=': ''} })
+    .populate('subtypeId')
     .then(function(works) {
         return Promise.filter(works, function(work) {
-            return work.type == questionId
+            return WorkTypeHelper.getWorkTypeId(work.subtype.parentTypeId)
+            return work.subtype.parentType.id == questionId
         })
     })
 }
@@ -202,13 +222,12 @@ let saveWork = function(work) {
 
 let createBasicWorkModel = function(work) {
     return {
-        title: work.title,
-        theme: work.theme && work.theme.id ? work.theme.id : null,
-        tempTheme: work.theme && !work.theme.id ? work.theme : '',
-        originalThemeName: work.originalThemeName,
+        subthemeId: work.subtheme && work.subtheme.id ? work.subtheme.id : null,
+        unclassifiedTemporaryTheme: work.subtheme && !work.subtheme.id ? work.subtheme : '',
         date: work.date,
         url: work.url,
         description: work.description,
-        type: work.type
+        subtypeId: work.subtypeId,
+        unclassifiedTemporaryTheme: work.unclassifiedTemporaryTheme
     }
 }

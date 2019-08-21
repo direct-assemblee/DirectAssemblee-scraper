@@ -8,7 +8,7 @@ let subthemes;
 
 const REFRESH_PERIOD = 30*60*1000;
 
-module.exports = {
+let self = module.exports = {
     initThemes: function() {
         refreshShortThemes();
         refreshSubthemes();
@@ -28,11 +28,15 @@ module.exports = {
         return findTheme(searchedSubTheme, true)
     },
 
-    findTheme: function(searchedSubTheme, fixAndSendMail) {
-        return Promise.filter(subthemes, function(subtheme) {
+    findSubtheme: function(searchedSubTheme) {
+        return findTheme(searchedSubTheme, true)
+    },
+
+    findSubtheme: function(searchedSubTheme, fixAndSendMail) {
+        return Promise.filter(subthemes, subtheme => {
             return subtheme.name.includes(searchedSubTheme);
         })
-        .then(function(foundSubthemes) {
+        .then(foundSubthemes => {
             let theme;
             if (foundSubthemes.length > 0) {
                 theme = foundSubthemes[0].theme;
@@ -47,12 +51,17 @@ module.exports = {
             }
             return theme;
         });
+    },
+
+    findTheme: function(searchedSubTheme, fixAndSendMail) {
+        return self.findSubtheme(searchedSubTheme, fixAndSendMail)
+        .then(subtheme => subtheme.theme != null ? subtheme.theme : subtheme)
     }
 }
 
 let refreshShortThemes = function() {
     return ShortThemeService.findShortThemes()
-    .then(function(themes) {
+    .then(themes => {
         shortThemes = themes;
     })
 }

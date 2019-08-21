@@ -319,14 +319,12 @@ CREATE TABLE IF NOT EXISTS `work` (
     `createdAt` varchar(255) DEFAULT NULL,
     `updatedAt` varchar(255) DEFAULT NULL,
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `title` longtext,
-    `tempTheme` varchar(255) DEFAULT NULL,
-    `originalThemeName` varchar(255) DEFAULT NULL,
+    `unclassifiedTemporaryTheme` varchar(255) DEFAULT NULL,
     `date` varchar(255) DEFAULT NULL,
     `url` varchar(255) DEFAULT NULL,
     `description` longtext,
-    `type` int(11) DEFAULT NULL,
-    `theme` int(11) DEFAULT NULL,
+    `subtypeId` int(11) DEFAULT NULL,
+    `subthemeId` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
     UNIQUE KEY `url` (`url`)
@@ -337,11 +335,21 @@ CREATE TABLE IF NOT EXISTS `work` (
 # Affichage de la table worktype
 # ------------------------------------------------------------
 
+
 CREATE TABLE IF NOT EXISTS `worktype` (
     `id` int(1) NOT NULL AUTO_INCREMENT,
     `displayName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
     `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
     `officialPath` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS `workSubtype` (
+    `id` int(1) NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+    `parentTypeId` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;
 

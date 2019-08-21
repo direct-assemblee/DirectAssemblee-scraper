@@ -7,17 +7,11 @@ module.exports = {
             type: 'number',
             autoIncrement: true
         },
-        title: {
-            type: 'json'
+        subthemeId: {
+            model: 'Subtheme'
         },
-        theme: {
-            model: 'Theme'
-        },
-        tempTheme: 'string',
-        originalThemeName: 'string',
-        date: {
-            type: 'string'
-        },
+        unclassifiedTemporaryTheme: 'string',
+        date: 'string',
         url: {
             type: 'string',
             unique: true
@@ -25,8 +19,8 @@ module.exports = {
         description: {
             type: 'json'
         },
-        type: {
-            model: 'WorkType'
+        subtypeId: {
+            model: 'WorkSubtype'
         },
         authors: {
             collection: 'deputy',
