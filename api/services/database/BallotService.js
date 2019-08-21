@@ -5,7 +5,8 @@ module.exports = {
     insertBallot: function(ballot, shouldUpdate) {
         return LawService.findLaw(ballot.fileUrl)
         .then(function(foundLaw) {
-            return insertBallot(ballot, foundLaw.id, shouldUpdate)
+            let lawId = foundLaw ? foundLaw.id : null
+            return insertBallot(ballot, lawId, shouldUpdate)
         })
         .catch(err => {
             console.log(err + " -  ballot id : " + ballot.officialId);

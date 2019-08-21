@@ -246,14 +246,13 @@ let retrieveAndInsertLaws = function(ballots) {
         let fileUrl = ballots[i].fileUrl;
         if (fileUrl != null) {
             let formattedBallotDate = DateHelper.formatDate(ballots[i].date);
-            if (!laws.has(fileUrl)) {
-                laws.set(fileUrl, { fileUrl: fileUrl, lastBallotDate: formattedBallotDate })
-            } else if (DateHelper.isLater(formattedBallotDate, laws.get(fileUrl).lastBallotDate)) {
+            if (!laws.has(fileUrl) || DateHelper.isLater(formattedBallotDate, laws.get(fileUrl).lastBallotDate)) {
                 laws.set(fileUrl, { fileUrl: fileUrl, lastBallotDate: formattedBallotDate })
             }
         }
     }
     return Promise.map(laws.values(), law => law.fileUrl)
+    .filter(url => url != null && url.indexOf('/.asp') == -1)
     .then(lawsUrls => {
         return LawsScrapingService.retrieveLaws(lawsUrls)
         .then(retrievedLaws => {
