@@ -65,5 +65,5 @@ let findCorrectId = function(referenceTypes, searchedTypeNameOrId) {
 
 let isCorrectType = function(referenceType, searchedTypeNameOrId) {
     return searchedTypeNameOrId == referenceType.id
-        || searchedTypeNameOrId.startsWith(referenceType.officialPath)
+        || (typeof searchedTypeNameOrId === 'string' && searchedTypeNameOrId.startsWith(referenceType.officialPath))
 }

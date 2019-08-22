@@ -7,19 +7,19 @@ let DeputyService = require('./DeputyService')
 let WorkSubtypeService = require('./WorkSubtypeService.js')
 
 let self = module.exports = {
-    classifyUnclassifiedQuestions: function() {
-        return findUnclassifiedQuestions()
-        .then(function(unclassifiedQuestions) {
-            return Promise.map(unclassifiedQuestions, function(question) {
-                return ThemeHelper.findSubtheme(question.unclassifiedTemporaryTheme)
+    classifyUnclassifiedWorks: function() {
+        return findUnclassifiedWorks()
+        .then(function(unclassifiedWorks) {
+            return Promise.map(unclassifiedWorks, function(work) {
+                return ThemeHelper.findSubtheme(work.unclassifiedTemporaryTheme)
                 .then(function(foundSubtheme) {
                     if (foundSubtheme) {
-                        question.subthemeId = foundSubtheme.id;
-                        question.unclassifiedTemporaryTheme = '';
-                        return saveWork(Object.assign({}, question));
+                        work.subthemeId = foundSubtheme.id;
+                        work.unclassifiedTemporaryTheme = '';
+                        return saveWork(Object.assign({}, work));
                     } else {
-                        console.log('UNCLASSIFIED /!\\ new theme not recognized : ' + question.theme);
-                        return question;
+                        console.log('/!\\ new theme not recognized : ' + work.theme);
+                        return work;
                     }
                 })
             })
@@ -192,17 +192,9 @@ let buildExtraInfosToInsert = function(insertedWorksId, work, deputyId) {
     return extraInfosToInsert
 }
 
-let findUnclassifiedQuestions = function() {
-    let questionId = WorkTypeHelper.getWorkTypeId(WorkTypeHelper.WORK_OFFICIAL_PATH_QUESTIONS)
+let findUnclassifiedWorks = function() {
     return Work.find()
     .where({ unclassifiedTemporaryTheme: {'!=': ''} })
-    .populate('subtypeId')
-    .then(function(works) {
-        return Promise.filter(works, function(work) {
-            return WorkTypeHelper.getWorkTypeId(work.subtype.parentTypeId)
-            return work.subtype.parentType.id == questionId
-        })
-    })
 }
 
 let saveWork = function(work) {
@@ -223,7 +215,6 @@ let saveWork = function(work) {
 let createBasicWorkModel = function(work) {
     return {
         subthemeId: work.subtheme && work.subtheme.id ? work.subtheme.id : null,
-        unclassifiedTemporaryTheme: work.subtheme && !work.subtheme.id ? work.subtheme : '',
         date: work.date,
         url: work.url,
         description: work.description,

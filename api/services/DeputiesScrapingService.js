@@ -154,7 +154,7 @@ let retrieveExtraForWork = function(parsedWork, parsedWorkType) {
             if (result) {
                 return processResultForType(parsedWork, parsedWorkType, result);
             } else {
-                console.log('/!\\ no extra for work')
+                console.log('/!\\ no extra for work : ' + parsedWork.url)
                 return parsedWork;
             }
         });
@@ -250,10 +250,10 @@ let setSubthemeToWork = function(work, parsedWorkType) {
 }
 
 let searchSubtheme = function(work, themeName) {
-    return ThemeHelper.findSubtheme(themeName)
+    return ThemeHelper.findSubtheme(themeName, true, work.url)
     .then(function(foundSubtheme) {
         if (!foundSubtheme) {
-            console.log('WORK /!\\ new theme not recognized : ' + themeName);
+            console.log('/!\\ new theme not recognized : ' + themeName);
         }
         return foundSubtheme;
     })

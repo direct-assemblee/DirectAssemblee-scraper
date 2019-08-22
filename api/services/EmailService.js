@@ -6,15 +6,15 @@ var mailgun = require('mailgun-js')({ apiKey: API_KEY, domain: DOMAIN });
 var sentMails = [];
 
 module.exports = {
-    sendNewSubThemeEmail: function (subtheme) {
+    sendNewSubThemeEmail: function (subtheme, itemUrl) {
         if (!sentMails.includes(subtheme)) {
             sentMails.push(subtheme);
-            console.log('Sending email for new subtheme : ' + subtheme);
+            console.log('/Theme\\ Sending email for new subtheme : ' + subtheme);
             var data = {
                 from: 'Theme Helper <themeHelper@directassemblee.fr>',
                 to: sails.config.mail.receiver,
                 subject: 'Nouveau sous thème',
-                text: 'Cher ami' + ',\nIl faut ajouter ce nouveau sous-thème : \n' + subtheme + '\n  \nSincerely,\nThe Management'
+                text: subtheme + '\nIssu de l\'url : ' + itemUrl
             };
             sendEmail(data);
         }

@@ -23,14 +23,14 @@ let RoleService = require('./database/RoleService')
 let InstanceTypeService = require('./database/InstanceTypeService')
 
 const DEBUG = false;
-const RANGE_STEP = 2;
+const RANGE_STEP = 1;
 
 let self = module.exports = {
     startScrapingDeputies: async function() {
         ThemeHelper.initThemes();
 
-        console.log('==> start classifying unclassified questions');
-        await WorkService.classifyUnclassifiedQuestions();
+        console.log('==> start classifying unclassified works');
+        await WorkService.classifyUnclassifiedWorks();
 
         console.log('==> retrieves declarations urls');
         let allDeputiesUrls = await DeclarationScrapingService.retrieveAllDeputiesDeclarationsUrls();

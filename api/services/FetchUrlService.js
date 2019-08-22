@@ -40,7 +40,7 @@ let self = module.exports = {
         return request(settings)
         .then(function(content) {
             if (content === undefined || content.length < 1000) {
-                console.log('content : ' + content);
+                // console.log('content : ' + content);
                 if (content && content.startsWith('<head><title>Object moved</title></head>')) {
                     let index = content.indexOf('\'');
                     if (index > 0) {
@@ -55,7 +55,7 @@ let self = module.exports = {
                     return self.retrieveContentWithAttempt(url, isIsoEncoding, attemptNumber, parser);
                 } else {
                     attemptNumber++;
-                    console.log('--- RETRY (no content) : ' + url)
+                    // console.log('--- RETRY (no content) : ' + url)
                     if (attemptNumber < 3) {
                         return self.retrieveContentWithAttempt(url, isIsoEncoding, attemptNumber, parser);
                     }

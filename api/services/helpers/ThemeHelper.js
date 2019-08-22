@@ -29,27 +29,26 @@ let self = module.exports = {
     },
 
     findSubtheme: function(searchedSubTheme) {
-        return findTheme(searchedSubTheme, true)
+        return findSubtheme(searchedSubTheme, true)
     },
 
-    findSubtheme: function(searchedSubTheme, fixAndSendMail) {
+    findSubtheme: function(searchedSubTheme, fixAndSendMail, itemUrl) {
         return Promise.filter(subthemes, subtheme => {
             return subtheme.name.includes(searchedSubTheme);
         })
         .then(foundSubthemes => {
-            let theme;
+            let subtheme;
             if (foundSubthemes.length > 0) {
-                theme = foundSubthemes[0].theme;
+                subtheme = foundSubthemes[0];
                 for (i in foundSubthemes) {
                     if (searchedSubTheme == foundSubthemes[i].name) {
-                        theme = foundSubthemes[i].theme;
+                        theme = foundSubthemes[i];
                     }
                 }
             } else if (fixAndSendMail) {
-                theme = searchedSubTheme;
-                EmailService.sendNewSubThemeEmail(searchedSubTheme);
+                EmailService.sendNewSubThemeEmail(searchedSubTheme, itemUrl);
             }
-            return theme;
+            return subtheme;
         });
     },
 

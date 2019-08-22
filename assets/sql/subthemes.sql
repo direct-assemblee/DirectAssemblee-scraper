@@ -428,8 +428,7 @@ INSERT IGNORE `subtheme` (`id`, `name`, `theme`) VALUES
 (381, "Confiance dans l'action publique", 15),
 (382, "Motion de censure déposée en application de l'article 49 alinéa 2 de la Constitution par M. Christian Jacob et 90 membres de l\'Assemblée", 31),
 (383, "Motion de censure déposée en application de l'article 49 alinéa 2 de la Constitution par MM. André Chassaigne, Jean-Luc Mélenchon, Mme Valérie Rabault et 59 membres de l\’Assemblée", 31),
-(384, "Rétablissement du pouvoir d'achat des Français", 35)
-;
+(384, "Capital-décès pour les enfants", 22);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
