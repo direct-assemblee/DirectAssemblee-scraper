@@ -27,7 +27,7 @@ var self = module.exports = {
 
     findLaw: function(fileUrl) {
         if (fileUrl == undefined) {
-            return Promise.reject("/!\\ no file url for law ");
+            return Promise.reject("/!\\ no file url ");
         } else {
             return Law.findOne({
                 fileUrl: fileUrl

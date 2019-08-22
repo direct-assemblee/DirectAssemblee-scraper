@@ -140,10 +140,9 @@ let retrieveDeputyWorkOfTypeWithPage = function(workUrl, parsedWorkType, lastWor
                     return setSubthemeToWork(work, parsedWorkType);
                 })
             })
-        } else {
-            console.log('/!\\ work : no works')
-            return null;
         }
+        console.log('/!\\ work : no works')
+        return null;
     });
 }
 
@@ -158,9 +157,8 @@ let retrieveExtraForWork = function(parsedWork, parsedWorkType) {
                 return parsedWork;
             }
         });
-    } else {
-        return parsedWork;
     }
+    return parsedWork;
 }
 
 let getParserForType = function(parsedWorkType) {
@@ -234,29 +232,17 @@ let setSubthemeToWork = function(work, parsedWorkType) {
     }
 
     if (themeToSearch) {
-        return searchSubtheme(work, themeToSearch)
-        .then(function(foundSubtheme) {
+        return ThemeHelper.findSubtheme(themeToSearch, true, work.url)
+        .then(foundSubtheme => {
             work.subtheme = foundSubtheme;
             if (!foundSubtheme) {
+                console.log('/!\\ new theme not recognized : ' + themeToSearch);
                 work.unclassifiedTemporaryTheme = themeToSearch;
             }
             return work;
         })
-    } else {
-        return new Promise(function(resolve) {
-            resolve(work);
-        })
     }
-}
-
-let searchSubtheme = function(work, themeName) {
-    return ThemeHelper.findSubtheme(themeName, true, work.url)
-    .then(function(foundSubtheme) {
-        if (!foundSubtheme) {
-            console.log('/!\\ new theme not recognized : ' + themeName);
-        }
-        return foundSubtheme;
-    })
+    return new Promise(resolve => resolve(work))
 }
 
 let retrieveDeputyInfosAndMandates = function(deputy) {

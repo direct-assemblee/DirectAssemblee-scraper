@@ -16,20 +16,22 @@ let self = module.exports = {
         setInterval(refreshSubthemes, REFRESH_PERIOD)
     },
 
-    findShorterName: function(fullname) {
+    sendMailIfNoShortName: function(searchedSubTheme, url) {
+        var shortNameFound = false;
         for (let i in shortThemes) {
-            if (shortThemes[i].fullName.toLowerCase() === fullname.toLowerCase()) {
-                return shortThemes[i].shortName;
+            if (shortThemes[i].fullName.toLowerCase() === searchedSubTheme.toLowerCase()) {
+                shortNameFound = true;
+                break;
             }
+        }
+        if (!shortNameFound) {
+            EmailService.sendSubThemeTooLongEmail(searchedSubTheme, url);
         }
     },
 
-    findTheme: function(searchedSubTheme) {
-        return findTheme(searchedSubTheme, true)
-    },
-
-    findSubtheme: function(searchedSubTheme) {
-        return findSubtheme(searchedSubTheme, true)
+    findTheme: function(searchedSubTheme, fixAndSendMail) {
+        return self.findSubtheme(searchedSubTheme, fixAndSendMail)
+        .then(subtheme => subtheme.theme != null ? subtheme.theme : subtheme)
     },
 
     findSubtheme: function(searchedSubTheme, fixAndSendMail, itemUrl) {
@@ -50,11 +52,6 @@ let self = module.exports = {
             }
             return subtheme;
         });
-    },
-
-    findTheme: function(searchedSubTheme, fixAndSendMail) {
-        return self.findSubtheme(searchedSubTheme, fixAndSendMail)
-        .then(subtheme => subtheme.theme != null ? subtheme.theme : subtheme)
     }
 }
 
@@ -67,7 +64,7 @@ let refreshShortThemes = function() {
 
 let refreshSubthemes = function() {
     return SubthemeService.findSubthemes()
-    .then(function(themes) {
+    .then(themes => {
         subthemes = themes;
     })
 }

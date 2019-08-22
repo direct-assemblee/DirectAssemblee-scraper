@@ -20,15 +20,15 @@ module.exports = {
         }
     },
 
-    sendSubThemeTooLongEmail: function (subtheme) {
+    sendSubThemeTooLongEmail: function(subtheme, itemUrl) {
         if (!sentMails.includes(subtheme)) {
             sentMails.push(subtheme);
-            console.log('Sending email for subtheme too long : ' + subtheme);
+            console.log('/Theme\\ Sending email for subtheme too long : ' + subtheme);
             var data = {
                 from: 'Theme Helper <themeHelper@directassemblee.fr>',
                 to: sails.config.mail.receiver,
                 subject: 'Sous thème trop long',
-                text: 'Cher ami' + ',\nCe thème est beaucoup trop long : \n' + subtheme + '\n  \nSincerely,\nThe Management'
+                text: 'Trop long : '+ subtheme + '\nIssu de l\'url : ' + itemUrl
             };
             sendEmail(data);
         }

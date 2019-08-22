@@ -9,18 +9,17 @@ let WorkSubtypeService = require('./WorkSubtypeService.js')
 let self = module.exports = {
     classifyUnclassifiedWorks: function() {
         return findUnclassifiedWorks()
-        .then(function(unclassifiedWorks) {
-            return Promise.map(unclassifiedWorks, function(work) {
-                return ThemeHelper.findSubtheme(work.unclassifiedTemporaryTheme)
-                .then(function(foundSubtheme) {
+        .then(unclassifiedWorks => {
+            return Promise.map(unclassifiedWorks, work => {
+                return ThemeHelper.findSubtheme(work.unclassifiedTemporaryTheme, true)
+                .then(foundSubtheme => {
                     if (foundSubtheme) {
                         work.subthemeId = foundSubtheme.id;
                         work.unclassifiedTemporaryTheme = '';
                         return saveWork(Object.assign({}, work));
-                    } else {
-                        console.log('/!\\ new theme not recognized : ' + work.theme);
-                        return work;
                     }
+                    console.log('/!\\ new theme not recognized : ' + work.theme);
+                    return work;
                 })
             })
         })
@@ -30,28 +29,22 @@ let self = module.exports = {
         if (workId) {
             return Work.findOne()
             .where({ id: workId })
-        } else {
-            return new Promise(function(resolve, reject) {
-                resolve()
-            })
         }
+        return new Promise((resolve, reject) => resolve())
     },
 
     findWorkFromUrl: function(workUrl) {
         if (workUrl) {
             return Work.findOne()
             .where({ url: workUrl })
-        } else {
-            return new Promise(function(resolve, reject) {
-                resolve()
-            })
         }
+        return new Promise((resolve, reject) => resolve())
     },
 
     insertWorks: function(works, deputyId) {
         if (works && works.length > 0) {
             let urls = []
-            return Promise.filter(works, function(work) {
+            return Promise.filter(works, work => {
                 let isPast = DateHelper.isPast(work.date)
                 let isNew = !urls.includes(work.url)
                 if (isPast && isNew) {
@@ -59,7 +52,7 @@ let self = module.exports = {
                 }
                 return isPast && isNew
             }, { concurrency: 1 })
-            .mapSeries(function(work) {
+            .mapSeries(work => {
                 return getInsertSubtypeId(work.subtype)
                 .then(subtypeId => {
                     work.subtypeId = subtypeId

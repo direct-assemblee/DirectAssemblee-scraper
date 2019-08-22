@@ -3,7 +3,6 @@ let Constants = require('./Constants.js')
 
 let BallotsListParser = require('./parsers/BallotsListParser');
 let BallotParser = require('./parsers/BallotParser');
-let BallotThemeParser = require('./parsers/BallotThemeParser');
 let BallotTypeHelper = require('./helpers/BallotTypeHelper');
 let DateHelper = require('./helpers/DateHelper');
 let EmailService = require('./EmailService');

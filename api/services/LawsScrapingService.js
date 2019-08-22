@@ -16,11 +16,7 @@ let self = module.exports = {
 let retrieveLawAndTheme = function(url) {
     return retrieveLaw(url)
     .then(law => {
-        if (law && !law.theme) {
-            return retrieveThemeFromSenat(law)
-        } else {
-            return law
-        }
+        return law && !law.theme ? retrieveThemeFromSenat(law) : law;
     })
 }
 
@@ -30,7 +26,12 @@ let retrieveLaw = function(url) {
         if (law) {
             law.fileUrl = url;
             if (law.originalTheme) {
-                return findAndHandleTheme(law, false)
+                return findAndSetThemeToLaw(law.originalTheme, law, false)
+                .then(law => {
+                    if (law.originalTheme.length > MAX_THEME_LENGTH) {
+                        ThemeHelper.sendMailIfNoShortName(law.originalTheme, law.fileUrl)
+                    }
+                })
             }
         }
         return law;
@@ -41,15 +42,7 @@ let retrieveThemeFromSenat = function(law) {
     if (law != null && law.urlSenat != null) {
         return FetchUrlService.retrieveContentWithIsoEncoding(law.urlSenat, true, SenatLawParser)
         .then(theme => {
-            if (theme != undefined) {
-                return findTheme(theme, true)
-                .then(foundTheme => {
-                    law.theme = foundTheme;
-                    return law;
-                })
-            } else {
-                return law;
-            }
+            return theme != undefined ? findAndSetThemeToLaw(theme, law, true) : law;
         })
     } else {
         console.log('/!\\ no link to Senat\'s website : ' + law.name)
@@ -57,18 +50,10 @@ let retrieveThemeFromSenat = function(law) {
     }
 }
 
-let findAndHandleTheme = function(law, sendMail) {
-    return findTheme(law.originalTheme, sendMail)
-    .then(function(foundTheme) {
-        if (foundTheme) {
-            law.theme = foundTheme;
-        } else {
-            law.theme = null;
-        }
+let findAndSetThemeToLaw = function(searchThemeName, law, sendMail) {
+    return ThemeHelper.findTheme(searchThemeName, sendMail, law.fileUrl)
+    .then(foundTheme => {
+        law.theme = foundTheme ? foundTheme : null;
         return law;
     })
-}
-
-let findTheme = function(searchThemeName, sendMail) {
-    return ThemeHelper.findTheme(searchThemeName, sendMail)
 }
