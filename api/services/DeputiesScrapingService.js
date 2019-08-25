@@ -194,10 +194,10 @@ let processResultForQuestion = function(parsedWork, result) {
 }
 
 let processResultForExtraInfos = function(parsedWork, parsedWorkType, result) {
-    parsedWork.id = result.id;
     if (result.description) {
         parsedWork.description = result.description;
     }
+    parsedWork.name = result.name;
     parsedWork.parsedTheme = result.theme;
     parsedWork.extraInfos = result.extraInfos;
 

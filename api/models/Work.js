@@ -7,6 +7,7 @@ module.exports = {
             type: 'number',
             autoIncrement: true
         },
+        name: 'string',
         subthemeId: {
             model: 'Subtheme'
         },

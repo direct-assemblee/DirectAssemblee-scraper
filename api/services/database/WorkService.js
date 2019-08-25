@@ -207,6 +207,7 @@ let saveWork = function(work) {
 
 let createBasicWorkModel = function(work) {
     return {
+        name: work.name,
         subthemeId: work.subtheme && work.subtheme.id ? work.subtheme.id : null,
         date: work.date,
         url: work.url,

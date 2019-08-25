@@ -319,6 +319,7 @@ CREATE TABLE IF NOT EXISTS `work` (
     `createdAt` varchar(255) DEFAULT NULL,
     `updatedAt` varchar(255) DEFAULT NULL,
     `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) DEFAULT NULL,
     `unclassifiedTemporaryTheme` varchar(255) DEFAULT NULL,
     `date` varchar(255) DEFAULT NULL,
     `url` varchar(255) DEFAULT NULL,
@@ -346,7 +347,7 @@ CREATE TABLE IF NOT EXISTS `worktype` (
 
 
 
-CREATE TABLE IF NOT EXISTS `workSubtype` (
+CREATE TABLE IF NOT EXISTS `worksubtype` (
     `id` int(1) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
     `parentTypeId` int(11) DEFAULT NULL,

@@ -12,23 +12,21 @@ module.exports = {
         return new htmlparser.Parser({
             onopentag: function(tagname, attribs) {
                 if (tagname === 'title') {
-                    expectedItem = 'title';
+                    expectedItem = 'description';
                 } else if (tagname === 'meta' && attribs.content) {
                     if (attribs.name === 'TITRE_DOSSIER') {
-
-                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"  
+                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"
                         let attribsContent = attribs.content.replace(';', ':');
-
                         if (attribsContent.indexOf(':') > 0) {
                             let splitted = attribsContent.split(':');
                             let theme = StringHelper.removeParentReference(splitted[0]);
                             let desc = StringHelper.removeParentReference(splitted[1]);
-                            parsedItem.description = desc.charAt(0).toUpperCase() + desc.slice(1);
+                            parsedItem.name = desc.charAt(0).toUpperCase() + desc.slice(1);
                             if (theme && theme !== 'DOSSIER') {
                                 parsedItem.theme = theme
                             }
                         } else {
-                            parsedItem.description = StringHelper.removeParentReference(attribsContent);
+                            parsedItem.name = StringHelper.removeParentReference(attribsContent);
                         }
                         expectedItem = 'motives';
                     }
@@ -42,16 +40,15 @@ module.exports = {
                 }
             },
             ontext: function(text) {
-                if (expectedItem === 'title' || expectedItem === 'motives' || expectedItem === 'motives_text') {
+                if (expectedItem === 'description' || expectedItem === 'motives' || expectedItem === 'motives_text') {
                     let lightText = StringHelper.removeParentReference(text);
                     if (lightText && lightText.length > 0) {
-                        if (expectedItem === 'title') {
-                            let separator = lightText.indexOf('-');
-                            lightText = lightText.replace('-', ' ').replace(/\s+/g, ' ');
-                            let splitText = lightText.split(' ');
-                            let index = splitText.indexOf('N°') + 1;
-                            if (index > 0) {
-                                parsedItem.id = splitText[index];
+                        if (expectedItem === 'description') {
+                            let splitText = lightText.split('-');
+                            if (splitText.length > 1 && splitText[1].trim().length > 0) {
+                                parsedItem.description = splitText[1].trim();
+                            } else {
+                                parsedItem.description = splitText[0].trim();
                             }
                         } else if (expectedItem === 'motives') {
                             if (lightText === 'EXPOSÉ DES MOTIFS') {
@@ -81,6 +78,7 @@ module.exports = {
                         extraInfo = extraInfo.replace(/\n/g, '\n\n')
                     }
                     parsedItem.extraInfos.push({ info: 'lawMotives', value: extraInfo });
+                    // print(parsedItem);
                     callback(parsedItem);
                 } else if (tagname === 'p' && expectedItem && extraInfo) {
                     extraInfo += '\n';
@@ -93,4 +91,13 @@ module.exports = {
 let regexLastIndexOf = function(str, regex) {
     var match = str.match(regex);
     return str.lastIndexOf(match[match.length-1]);
+}
+
+
+let print = function(parsedItem) {
+    console.log('------------- LAW PROPOSITION ');
+    console.log('theme : ' + parsedItem.theme);
+    console.log('name : ' + parsedItem.name);
+    console.log('description : ' + parsedItem.description);
+    console.log('------------- ');
 }
