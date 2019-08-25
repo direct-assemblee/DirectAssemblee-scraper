@@ -32,7 +32,7 @@ module.exports = {
             ontext: function(text) {
                 if (currentItem) {
                     if (expectedItem === 'section.subtype') {
-                        currentItem.subtype = StringHelper.removeParentReference(text);
+                        currentItem.subtype = StringHelper.clean(text);
                         if (currentItem.subtype) {
                             currentItem.subtype = currentItem.subtype.replace('-', ' ').replace(/\s+/g, ' ');
                             let index = currentItem.subtype.indexOf('de M');
@@ -43,6 +43,8 @@ module.exports = {
                             if (index > 0) {
                                 currentItem.subtype = currentItem.subtype.substring(0, index);
                             }
+                                console.log('subtype = ' + currentItem.subtype)
+
                             expectedItem = 'section.date';
                         }
                     } else if (expectedItem === 'section.date') {

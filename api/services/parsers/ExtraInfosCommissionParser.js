@@ -15,10 +15,8 @@ module.exports = {
                     expectedItem = 'title';
                 } else if (tagname === 'meta' && attribs.content) {
                     if (attribs.name === 'TITRE_DOSSIER') {
-
-                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"  
+                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"
                         let attribsContent = attribs.content.replace(';', ':');
-
                         if (attribsContent.indexOf(':') > 0) {
                             let splitted = attribsContent.split(':');
                             let theme = StringHelper.removeParentReference(splitted[0]);
@@ -30,15 +28,17 @@ module.exports = {
                         } else {
                             parsedItem.description = StringHelper.removeParentReference(attribsContent);
                         }
+                    } else if (attribs.name === 'NOMCOMMISSION') {
+                        parsedItem.name = attribs.content;
                     }
-                } else if (attribs.class === 'nomcommission') {
-                    expectedItem = 'commissionName';
                 } else if (attribs.class === 'SOMseance') {
                     expectedItem = 'commissionTime';
+                } else if (attribs.class === 'SOMnumcr') {
+                    expectedItem = 'reportNumber';
                 }
             },
             ontext: function(text) {
-                if (expectedItem === 'title' || (expectedItem && expectedItem.startsWith('commission'))) {
+                if (expectedItem === 'title' || expectedItem) {
                     let lightText = StringHelper.removeParentReference(text);
                     if (lightText && lightText.length > 0) {
                         if (expectedItem === 'title') {
@@ -49,9 +49,7 @@ module.exports = {
                             if (index > 0) {
                                 parsedItem.id = splitText[index];
                             }
-                        } else if (expectedItem === 'commissionName') {
-                            parsedItem.extraInfos.push({ info: expectedItem, value: lightText });
-                        } else if (expectedItem === 'commissionTime') {
+                        } else if (expectedItem === 'reportNumber' || expectedItem === 'commissionTime') {
                             parsedItem.extraInfos.push({ info: expectedItem, value: lightText });
                         }
                         expectedItem = null;
@@ -64,6 +62,6 @@ module.exports = {
                     expectedItem = null;
                 }
             }
-        }, {decodeEntities: true});
+        }, { decodeEntities: true });
     }
 }
