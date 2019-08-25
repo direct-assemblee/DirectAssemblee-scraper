@@ -9,7 +9,7 @@ let WorkService = require('./database/WorkService')
 let DeputiesListParser = require('./parsers/DeputiesListParser');
 let DeclarationScrapingService = require('./DeclarationScrapingService');
 let DeputyWorkParser = require('./parsers/DeputyWorkParser');
-let DeputyQuestionThemeParser = require('./parsers/DeputyQuestionThemeParser');
+let DeputyQuestionExtraParser = require('./parsers/DeputyQuestionExtraParser');
 let ThemeHelper = require('./helpers/ThemeHelper')
 let DeputyWorkExtraInfosParser = require('./parsers/DeputyWorkExtraInfosParser');
 let ExtraInfosLawProposalParser = require('./parsers/ExtraInfosLawProposalParser')
@@ -164,7 +164,7 @@ let retrieveExtraForWork = function(parsedWork, parsedWorkType) {
 let getParserForType = function(parsedWorkType) {
     let parser;
     if (WorkTypeHelper.isQuestion(parsedWorkType)) {
-        parser = DeputyQuestionThemeParser;
+        parser = DeputyQuestionExtraParser;
     } else if (WorkTypeHelper.isProposition(parsedWorkType)) {
         parser = ExtraInfosLawProposalParser;
     } else if (WorkTypeHelper.isCommission(parsedWorkType)) {
@@ -189,7 +189,8 @@ let processResultForType = function(parsedWork, parsedWorkType, result) {
 }
 
 let processResultForQuestion = function(parsedWork, result) {
-    parsedWork.parsedTheme = result;
+    parsedWork.parsedTheme = result.theme;
+    parsedWork.name = result.name;
     return parsedWork;
 }
 
