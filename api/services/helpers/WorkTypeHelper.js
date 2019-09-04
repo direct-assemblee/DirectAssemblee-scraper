@@ -43,6 +43,10 @@ let self = module.exports = {
         return workType == self.WORK_OFFICIAL_PATH_COMMISSIONS
     },
 
+    isReport: function(workType) {
+        return workType == self.WORK_OFFICIAL_PATH_REPORTS
+    },
+
     isProposition: function(workType) {
         return workType == self.WORK_OFFICIAL_PATH_PROPOSITIONS || workType == self.WORK_OFFICIAL_PATH_COSIGNED_PROPOSITIONS
     },

@@ -11,9 +11,9 @@ let DeclarationScrapingService = require('./DeclarationScrapingService');
 let DeputyWorkParser = require('./parsers/DeputyWorkParser');
 let DeputyQuestionExtraParser = require('./parsers/DeputyQuestionExtraParser');
 let ThemeHelper = require('./helpers/ThemeHelper')
-let DeputyWorkExtraInfosParser = require('./parsers/DeputyWorkExtraInfosParser');
-let ExtraInfosLawProposalParser = require('./parsers/ExtraInfosLawProposalParser')
-let ExtraInfosCommissionParser = require('./parsers/ExtraInfosCommissionParser')
+let WorkReportParser = require('./parsers/WorkReportParser');
+let WorkLawProposalParser = require('./parsers/WorkLawProposalParser')
+let WorkCommissionParser = require('./parsers/WorkCommissionParser')
 let DeputyInfosParser = require('./parsers/DeputyInfosParser');
 let DeputyInfosAndMandatesParser = require('./parsers/DeputyInfosAndMandatesParser');
 
@@ -166,11 +166,11 @@ let getParserForType = function(parsedWorkType) {
     if (WorkTypeHelper.isQuestion(parsedWorkType)) {
         parser = DeputyQuestionExtraParser;
     } else if (WorkTypeHelper.isProposition(parsedWorkType)) {
-        parser = ExtraInfosLawProposalParser;
+        parser = WorkLawProposalParser;
     } else if (WorkTypeHelper.isCommission(parsedWorkType)) {
-        parser = ExtraInfosCommissionParser;
-    } else {
-        parser = DeputyWorkExtraInfosParser;
+        parser = WorkCommissionParser;
+    } else if (WorkTypeHelper.isReport(parsedWorkType)) {
+        parser = WorkReportParser;
     }
     return parser;
 }

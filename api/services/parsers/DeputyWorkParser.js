@@ -34,6 +34,8 @@ module.exports = {
                     if (expectedItem === 'section.subtype') {
                         currentItem.subtype = StringHelper.clean(text);
                         if (currentItem.subtype) {
+                            // let's make sure we get a name for all items which urls will not load
+                            currentItem.name = currentItem.subtype;
                             currentItem.subtype = currentItem.subtype.replace('-', ' ').replace(/\s+/g, ' ');
                             let index = currentItem.subtype.indexOf('de M');
                             if (index > 0) {
@@ -52,8 +54,9 @@ module.exports = {
                             if (dateMatched) {
                                 let seanceText = 'séance'
                                 let seanceIndex = lightText.indexOf(seanceText);
-                                if (lightText.includes(seanceText)) {
+                                if (lightText.toLowerCase().includes(seanceText)) {
                                     currentItem.subtype = lightText.substring(0, seanceIndex + seanceText.length)
+                                    currentItem.name = lightText.trim();
                                 }
                                 currentItem.date = dateMatched;
                                 expectedItem = null;
