@@ -207,7 +207,7 @@ let processResultForExtraInfos = function(parsedWork, parsedWorkType, result) {
 }
 
 let processResultForOtherTypes = function(parsedWork, result) {
-    parsedWork.id = result.id;
+    parsedWork.name = result.name;
     parsedWork.description = result.description;
     parsedWork.parsedTheme = result.theme;
     return parsedWork;

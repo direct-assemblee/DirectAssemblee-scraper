@@ -11,37 +11,34 @@ module.exports = {
         return new htmlparser.Parser({
             onopentag: function(tagname, attribs) {
                 if (tagname === 'title') {
-                    expectedItem = 'title';
+                    expectedItem = 'description';
                 } else if (tagname === 'meta' && attribs.content) {
                     if (attribs.name === 'TITRE_DOSSIER') {
-
-                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"                        
+                        //Au cas où le site de l'AN utilise ";" comme séparateur au lieu de ":"
                         let attribsContent = attribs.content.replace(';', ':');
-
                         if (attribsContent.indexOf(':') > 0) {
                             let splitted = attribsContent.split(':');
                             let theme = StringHelper.removeParentReference(splitted[0]);
                             let desc = StringHelper.removeParentReference(splitted[1]);
-                            parsedItem.description = desc.charAt(0).toUpperCase() + desc.slice(1);
+                            parsedItem.name = desc.charAt(0).toUpperCase() + desc.slice(1);
                             if (theme && theme !== 'DOSSIER') {
                                 parsedItem.theme = theme;
                             }
                         } else {
-                            parsedItem.description = StringHelper.removeParentReference(attribsContent);
+                            parsedItem.name = StringHelper.removeParentReference(attribsContent);
                         }
                     }
                 }
             },
             ontext: function(text) {
-                if (expectedItem === 'title') {
+                if (expectedItem === 'description') {
                     let lightText = StringHelper.removeParentReference(text);
                     if (lightText && lightText.length > 0) {
-                        let separator = lightText.indexOf('-');
-                        lightText = lightText.replace('-', ' ').replace(/\s+/g, ' ');
-                        let splitText = lightText.split(' ');
-                        let index = splitText.indexOf('N°') + 1;
-                        if (index > 0) {
-                            parsedItem.id = splitText[index];
+                        let splitText = lightText.split('-');
+                        if (splitText.length > 1 && splitText[1].trim().length > 0) {
+                            parsedItem.description = splitText[1].trim();
+                        } else {
+                            parsedItem.description = splitText[0].trim();
                         }
                     }
                     expectedItem = null;

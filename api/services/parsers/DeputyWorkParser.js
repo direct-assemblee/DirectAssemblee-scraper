@@ -43,8 +43,6 @@ module.exports = {
                             if (index > 0) {
                                 currentItem.subtype = currentItem.subtype.substring(0, index);
                             }
-                                console.log('subtype = ' + currentItem.subtype)
-
                             expectedItem = 'section.date';
                         }
                     } else if (expectedItem === 'section.date') {
