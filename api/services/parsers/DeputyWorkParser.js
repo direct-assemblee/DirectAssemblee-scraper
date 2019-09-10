@@ -45,6 +45,7 @@ module.exports = {
                             if (index > 0) {
                                 currentItem.subtype = currentItem.subtype.substring(0, index);
                             }
+                            currentItem.subtype = currentItem.subtype.trim();
                             expectedItem = 'section.date';
                         }
                     } else if (expectedItem === 'section.date') {
@@ -53,7 +54,7 @@ module.exports = {
                             let dateMatched = DateHelper.findAndFormatDateInString(lightText);
                             if (dateMatched) {
                                 let seanceText = 'séance'
-                                let seanceIndex = lightText.indexOf(seanceText);
+                                let seanceIndex = lightText.toLowerCase().indexOf(seanceText);
                                 if (lightText.toLowerCase().includes(seanceText)) {
                                     currentItem.subtype = lightText.substring(0, seanceIndex + seanceText.length)
                                     currentItem.name = lightText.trim();
