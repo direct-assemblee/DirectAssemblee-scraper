@@ -30,6 +30,9 @@ module.exports = {
                         }
                     } else if (attribs.name === 'NOMCOMMISSION') {
                         parsedItem.name = attribs.content;
+                        if (parsedItem.name == 'Commission d\'enqu') {
+                            parsedItem.name += 'ête'
+                        }
                     }
                 } else if (attribs.class === 'SOMseance') {
                     expectedItem = 'commissionTime';
