@@ -19,6 +19,9 @@ module.exports = {
         },
         lastBallotDate: {
             type: 'string'
+        },
+        status: {
+            type: 'LawStatus'
         }
     }
 };

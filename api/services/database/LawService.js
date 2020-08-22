@@ -1,6 +1,17 @@
 let DateHelper = require('../helpers/DateHelper.js');
+let Promise = require('bluebird');
+
+const STATUS_DEBATING = 2;
 
 var self = module.exports = {
+    findAllDebatingLaws: function() {
+        return Law.find()
+        .populate('status')
+        .then(laws => {
+            return Promise.filter(laws, law => !law.status.isDone)
+        })
+    },
+
     insertOrUpdateLaw: function(law) {
         return self.findLaw(law.fileUrl)
         .then(function(foundLaw) {

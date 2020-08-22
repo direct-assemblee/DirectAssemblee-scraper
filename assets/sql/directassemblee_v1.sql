@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `law` (
     `fileUrl` varchar(255) DEFAULT NULL,
     `originalThemeName` varchar(255) DEFAULT NULL,
     `theme` int(11) DEFAULT NULL,
+    `status` int(11) DEFAULT NULL,
     `lastBallotDate` varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
@@ -360,6 +361,21 @@ CREATE TABLE IF NOT EXISTS `parliamentgroup` (
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+
+
+# Affichage de la table lawstatus
+# ------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `lawstatus` (
+    `id` int(1) NOT NULL AUTO_INCREMENT,
+    `isDone` int(1),
+    `isAdopted` int(1),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
+
+
+
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
